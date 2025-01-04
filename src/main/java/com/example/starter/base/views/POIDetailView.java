@@ -18,8 +18,12 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     private List<PointOfInterest> pointsOfInterest;
 
     public POIDetailView() {
-        setAlignItems(Alignment.CENTER);
-        pointsOfInterest = getPointsOfInterest();
+        // Initialize your points of interest list here
+        pointsOfInterest = List.of(
+            new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
+            new PointOfInterest("Šenek Manor", "Renaissance manor house.", "senek.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6")
+            // Add more points of interest as needed
+        );
     }
 
     @Override
@@ -27,30 +31,21 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         removeAll();
 
         PointOfInterest poi = pointsOfInterest.stream()
-                .filter(p -> p.getName().equals(parameter))
+                .filter(p -> p.getName().toLowerCase().replace(" ", "-").equals(parameter))
                 .findFirst()
                 .orElse(null);
 
         if (poi != null) {
             H2 title = new H2(poi.getName());
-            Image image = new Image(poi.getImageUrl(), poi.getName());
-            image.setWidth("300px");
-
             Paragraph description = new Paragraph(poi.getDescription());
+            Image image = new Image(poi.getImageResource(), poi.getName());
+            image.setWidth("300px");  // Set a fixed width for the image
             Anchor mapLink = new Anchor(poi.getMapUrl(), "View on Google Maps");
             mapLink.setTarget("_blank");
 
-            add(title, image, description, mapLink);
+            add(title, description, image, mapLink);
         } else {
             add(new H2("Point of Interest not found"));
         }
-    }
-
-    private List<PointOfInterest> getPointsOfInterest() {
-        return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "images/castle.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
-                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "images/park.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
-                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "images/icecream.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6")
-        );
     }
 }
