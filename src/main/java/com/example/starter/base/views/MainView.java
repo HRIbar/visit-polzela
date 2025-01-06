@@ -31,7 +31,7 @@ public class MainView extends VerticalLayout {
     }
 
     private RouterLink createPoiLink(PointOfInterest poi) {
-        String poiUrl = "poi/" + poi.getName().toLowerCase().replace(" ", "-");
+        String poiUrl = poi.getName().toLowerCase().replace(" ", "-");
         RouterLink link = new RouterLink("", POIDetailView.class, poiUrl);
 
         Div container = new Div();
@@ -66,7 +66,7 @@ public class MainView extends VerticalLayout {
 
     private List<PointOfInterest> getPointsOfInterest() {
         return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
+                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", "https://maps.app.goo.gl/V2ktuGAVd2fjnXSa9?g_st=ac"),
                 new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
                 new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6")
         );
