@@ -89,14 +89,24 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     private HorizontalLayout createImageGallery(PointOfInterest poi) {
         HorizontalLayout gallery = new HorizontalLayout();
         gallery.setSpacing(true);
+        gallery.setWidth("100%");
+        gallery.setJustifyContentMode(JustifyContentMode.CENTER);
 
+        String basePath = poi.getImagePath().replace(".jpg", "");
         for (int i = 1; i <= 3; i++) {
-            Image image = new Image("/META-INF/resources/images/" + poi.getImagePath().replace(".jpg", Integer.toString(i))  + ".jpg", poi.getName());
-            image.setWidth("200px");
-            image.setHeight("200px");
+            String imagePath = "/images/" + basePath + i + ".jpg";
+            Image image = new Image(imagePath, poi.getName());
+
+            // Set width to 320px and height to 180px to maintain 16:9 aspect ratio
+            image.setWidth("320px");
+            image.setHeight("180px");
+
+            // Ensure the image covers the area without stretching
+            image.getStyle().set("object-fit", "cover");
+
             gallery.add(image);
         }
-        
+
         return gallery;
     }
 
@@ -104,23 +114,23 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         Map map = new Map();
         map.setHeight("400px");
         map.setWidth("100%");
-        
+
         // You'll need to add actual coordinates for each POI
         Coordinate poiLocation = new Coordinate(0, 0); // Replace with actual coordinates
         map.setCenter(poiLocation);
         map.setZoom(15);
-        
+
         MarkerFeature marker = new MarkerFeature(poiLocation);
         map.getFeatureLayer().addFeature(marker);
-        
+
         return map;
     }
 
     private List<PointOfInterest> getPointsOfInterest() {
         return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", "https://maps.app.goo.gl/V2ktuGAVd2fjnXSa9?g_st=ac"),
-                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
-                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6")
+                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", loadMapUrlFromFile("castle.txt"), loadMapUrlFromFile("go-castle.txt")),
+                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", loadMapUrlFromFile("park.txt"), loadMapUrlFromFile("go-park.txt")),
+                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", loadMapUrlFromFile("icecream.txt"), loadMapUrlFromFile("go-icecream.txt"))
         );
     }
 
@@ -148,5 +158,18 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         }
 
         return descriptionLayout;
+    }
+
+    private String loadMapUrlFromFile(String fileName) {
+        String resourcePath = "/META-INF/resources/links/" + fileName;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                return "Map URL not available.";
+            }
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error loading map URL.";
+        }
     }
 }

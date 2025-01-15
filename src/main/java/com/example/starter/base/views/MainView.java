@@ -9,6 +9,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Route("")
@@ -66,9 +69,22 @@ public class MainView extends VerticalLayout {
 
     private List<PointOfInterest> getPointsOfInterest() {
         return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", "https://maps.app.goo.gl/V2ktuGAVd2fjnXSa9?g_st=ac"),
-                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6"),
-                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", "https://maps.app.goo.gl/zAGbpjfUBCKdj5Ue6")
+                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", loadMapUrlFromFile("castle.txt"), loadMapUrlFromFile("go-castle.txt")),
+                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", loadMapUrlFromFile("park.txt"), loadMapUrlFromFile("go-park.txt")),
+                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", loadMapUrlFromFile("icecream.txt"), loadMapUrlFromFile("go-icecream.txt"))
         );
+    }
+
+    private String loadMapUrlFromFile(String fileName) {
+        String resourcePath = "/META-INF/resources/" + fileName;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                return "Map URL not available.";
+            }
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error loading map URL.";
+        }
     }
 }

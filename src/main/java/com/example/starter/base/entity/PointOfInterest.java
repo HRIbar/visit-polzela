@@ -12,11 +12,14 @@ public class PointOfInterest {
     private String imagePath;
     private String mapUrl;
 
-    public PointOfInterest(String name, String description, String imagePath, String mapUrl) {
+    String navigationUrl;
+
+    public PointOfInterest(String name, String description, String imagePath, String mapUrl, String navigationUrl) {
         this.name = name;
         this.description = description;
         this.imagePath = imagePath;
         this.mapUrl = mapUrl;
+        this.navigationUrl = navigationUrl;
     }
 
     // Getters
@@ -64,5 +67,25 @@ public class PointOfInterest {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMapUrl(String mapUrl) {
+        this.mapUrl = mapUrl;
+    }
+
+    public String getNavigationUrl() {
+        return navigationUrl;
+    }
+
+    public void setNavigationUrl(String navigationUrl) {
+        this.navigationUrl = navigationUrl;
     }
 }
