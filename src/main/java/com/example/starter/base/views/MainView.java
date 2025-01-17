@@ -1,6 +1,7 @@
 package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
+import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -17,7 +18,10 @@ import java.util.List;
 @Route("")
 public class MainView extends VerticalLayout {
 
-    public MainView() {
+    private POIService poiService;
+
+    public MainView(POIService poiService) {
+        this.poiService = poiService;
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
         setPadding(true);
@@ -25,7 +29,7 @@ public class MainView extends VerticalLayout {
         H1 title = new H1("Welcome to Polzela");
         add(title);
 
-        List<PointOfInterest> pointsOfInterest = getPointsOfInterest();
+        List<PointOfInterest> pointsOfInterest =  poiService.getPointsOfInterest();
 
         for (PointOfInterest poi : pointsOfInterest) {
             RouterLink poiLink = createPoiLink(poi);
@@ -65,26 +69,5 @@ public class MainView extends VerticalLayout {
         );
 
         return link;
-    }
-
-    private List<PointOfInterest> getPointsOfInterest() {
-        return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", loadMapUrlFromFile("castle.txt"), loadMapUrlFromFile("go-castle.txt")),
-                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", loadMapUrlFromFile("park.txt"), loadMapUrlFromFile("go-park.txt")),
-                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", loadMapUrlFromFile("icecream.txt"), loadMapUrlFromFile("go-icecream.txt"))
-        );
-    }
-
-    private String loadMapUrlFromFile(String fileName) {
-        String resourcePath = "/META-INF/resources/" + fileName;
-        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
-            if (is == null) {
-                return "Map URL not available.";
-            }
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error loading map URL.";
-        }
     }
 }

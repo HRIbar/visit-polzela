@@ -1,0 +1,3 @@
+castle,Polzela Castle,Historic castle in Polzela.,https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601,https://maps.app.goo.gl/jp9xW42AM45nbu2F8
+park,Park Šenek,A serene park perfect for relaxation.,https://www.openstreetmap.org/way/326921620#map=19/46.283478/15.074862,https://maps.app.goo.gl/1vjKHXKhh8Rs4gUu9
+icecream,Ice Cream Seller,Delicious local ice cream.,https://www.openstreetmap.org/way/341873536,https://maps.app.goo.gl/CrEZa1F6oSKS962S6

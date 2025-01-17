@@ -1,6 +1,7 @@
 package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
+import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
@@ -23,13 +24,15 @@ import java.nio.charset.StandardCharsets;
 public class POIDetailView extends VerticalLayout implements HasUrlParameter<String> {
 
     private List<PointOfInterest> pointsOfInterest;
+    private POIService poiService;
 
-    public POIDetailView() {
+    public POIDetailView(POIService poiService) {
+        this.poiService = poiService;
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
         setPadding(true);
 
-        pointsOfInterest = getPointsOfInterest();
+        pointsOfInterest = poiService.getPointsOfInterest();
     }
 
     private String loadDescription(PointOfInterest poi) {
@@ -75,8 +78,8 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             Button navigateButton = new Button("Take me there!");
             navigateButton.addClickListener(e -> {
                 getUI().ifPresent(ui -> ui.getPage().executeJs(
-                    "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
-                    poi.getName().replace(" ", "+") + "', '_blank');"
+                        "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
+                                poi.getName().replace(" ", "+") + "', '_blank');"
                 ));
             });
 
@@ -113,10 +116,10 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     private Map createMap(PointOfInterest poi) {
         Map map = new Map();
         map.setHeight("400px");
-        map.setWidth("100%");
+        map.setWidth("80%");
 
         // You'll need to add actual coordinates for each POI
-        Coordinate poiLocation = new Coordinate(0, 0); // Replace with actual coordinates
+        Coordinate poiLocation = parseOsmUrl(poi.getMapUrl()); // Replace with actual coordinates
         map.setCenter(poiLocation);
         map.setZoom(15);
 
@@ -126,12 +129,18 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         return map;
     }
 
-    private List<PointOfInterest> getPointsOfInterest() {
-        return List.of(
-                new PointOfInterest("Polzela Castle", "Historic castle in Polzela.", "castle.jpg", loadMapUrlFromFile("castle.txt"), loadMapUrlFromFile("go-castle.txt")),
-                new PointOfInterest("Local Park", "A serene park perfect for relaxation.", "park.jpg", loadMapUrlFromFile("park.txt"), loadMapUrlFromFile("go-park.txt")),
-                new PointOfInterest("Ice Cream Seller", "Delicious local ice cream.", "icecream.jpg", loadMapUrlFromFile("icecream.txt"), loadMapUrlFromFile("go-icecream.txt"))
-        );
+    private Coordinate parseOsmUrl(String url) {
+        try {
+            String[] parts = url.split("/");
+            if (parts.length >= 5) {
+                double lat = Double.parseDouble(parts[parts.length - 2]);
+                double lon = Double.parseDouble(parts[parts.length - 1]);
+                return new Coordinate(lon, lat);
+            }
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+        return new Coordinate(0, 0); // Default coordinate if parsing fails
     }
 
     private VerticalLayout displayDescription(String description) {
@@ -161,7 +170,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     }
 
     private String loadMapUrlFromFile(String fileName) {
-        String resourcePath = "/META-INF/resources/links/" + fileName;
+        String resourcePath = "/META-INF/resources/pointsofinterest/" + fileName;
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) {
                 return "Map URL not available.";
