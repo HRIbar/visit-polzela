@@ -4,9 +4,9 @@ self.addEventListener('install', (event) => {
             return cache.addAll([
                 '/',
                 '/manifest.json',
-                '/poi-descriptions/polzela-castle.txt',
-                '/poi-descriptions/local-park.txt',
-                '/poi-descriptions/ice-cream-seller.txt',
+                '/poi-descriptions/castle.txt',
+                '/poi-descriptions/park.txt',
+                '/poi-descriptions/icecream.txt',
                 // Add other resources you want to cache
             ]);
         })

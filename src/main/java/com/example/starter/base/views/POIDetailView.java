@@ -36,7 +36,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     }
 
     private String loadDescription(PointOfInterest poi) {
-        String fileName = poi.getName().toLowerCase().replace(" ", "-") + ".txt";
+        String fileName = poi.getName() + ".txt";
         String resourcePath = "/META-INF/resources/poi-descriptions/" + fileName;
 
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
@@ -55,12 +55,12 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         removeAll();
 
         PointOfInterest poi = pointsOfInterest.stream()
-                .filter(p -> p.getName().toLowerCase().replace(" ", "-").equals(parameter))
+                .filter(p -> p.getName().equals(parameter))
                 .findFirst()
                 .orElse(null);
 
         if (poi != null) {
-            H2 title = new H2(poi.getName());
+            H2 title = new H2(poi.getDisplayName());
             add(title);
 
             // Load and display the detailed description
@@ -79,7 +79,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             navigateButton.addClickListener(e -> {
                 getUI().ifPresent(ui -> ui.getPage().executeJs(
                         "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
-                                poi.getName().replace(" ", "+") + "', '_blank');"
+                                poi.getDisplayName().replace(" ", "+") + "', '_blank');"
                 ));
             });
 
@@ -98,7 +98,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         String basePath = poi.getImagePath().replace(".jpg", "");
         for (int i = 1; i <= 3; i++) {
             String imagePath = "/images/" + basePath + i + ".jpg";
-            Image image = new Image(imagePath, poi.getName());
+            Image image = new Image(imagePath, poi.getDisplayName());
 
             // Set width to 320px and height to 180px to maintain 16:9 aspect ratio
             image.setWidth("320px");

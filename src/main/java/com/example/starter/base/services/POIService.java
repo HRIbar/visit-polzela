@@ -27,8 +27,9 @@ public class POIService {
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
                     PointOfInterest poi = new PointOfInterest(
-                            parts[1].trim(),  // name (2nd argument in CSV)
-                            parts[2].trim(),  // description (3rd argument in CSV)
+                            parts[0].trim(),  // name (1st argument in CSV)
+                            parts[1].trim(),  // displayName (2nd argument in CSV)
+                            parts[2].trim(),  // short description (3rd argument in CSV)
                             parts[0].trim() + ".jpg",  // imagePath (1st argument + ".jpg")
                             parts[3].trim(),  // mapUrl (4th argument in CSV)
                             parts[4].trim()   // navigationUrl (5th argument in CSV)

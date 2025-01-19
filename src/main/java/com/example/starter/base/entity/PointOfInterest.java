@@ -7,26 +7,40 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class PointOfInterest {
+
     private String name;
+    private String displayName;
     private String description;
     private String imagePath;
     private String mapUrl;
-
     String navigationUrl;
 
-    public PointOfInterest(String name, String description, String imagePath, String mapUrl, String navigationUrl) {
+    public PointOfInterest(String name, String displayName, String description, String imagePath, String mapUrl, String navigationUrl) {
         this.name = name;
+        this.displayName = displayName;
         this.description = description;
         this.imagePath = imagePath;
         this.mapUrl = mapUrl;
         this.navigationUrl = navigationUrl;
     }
 
+
+
     // Getters
-    public String getName() { return name; }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDisplayName() { return displayName; }
     public String getDescription() { return description; }
     public StreamResource getImageResource() {
-        return new StreamResource(getName(), () -> {
+        return new StreamResource(getDisplayName(), () -> {
             String fullPath = "/META-INF/resources/images/" + imagePath;
             System.out.println("Attempting to load resource from: " + fullPath);
             InputStream inputStream = getClass().getResourceAsStream(fullPath);
@@ -69,8 +83,8 @@ public class PointOfInterest {
         this.imagePath = imagePath;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public void setDescription(String description) {
