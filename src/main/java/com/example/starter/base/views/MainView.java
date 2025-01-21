@@ -2,6 +2,9 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.flowingcode.vaadin.addons.googlemaps.GoogleMap;
+import com.flowingcode.vaadin.addons.googlemaps.LatLon;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -65,6 +68,16 @@ public class MainView extends VerticalLayout {
         titleDiv.add(welcomeText, polzelaText);
         titleContainer.add(titleDiv);
         add(titleContainer);
+
+        GoogleMap map = new GoogleMap("AIzaSyADDutm6dRpAMwWEJL6HVGqvxkzGjpmmEo", null, null);
+        map.setCenter(new LatLon(37.7749, -122.4194)); // Example: San Francisco
+        map.setZoom(12);
+        map.setWidth("100px");
+        map.setHeight("200px");
+
+        add(map);
+        
+        System.out.println(map.getElement().getOuterHTML());
 
         List<PointOfInterest> pointsOfInterest =  poiService.getPointsOfInterest();
 

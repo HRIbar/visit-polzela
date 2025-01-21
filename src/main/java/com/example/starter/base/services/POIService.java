@@ -24,7 +24,7 @@ public class POIService {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(";");
                 if (parts.length >= 5) {
                     PointOfInterest poi = new PointOfInterest(
                             parts[0].trim(),  // name (1st argument in CSV)

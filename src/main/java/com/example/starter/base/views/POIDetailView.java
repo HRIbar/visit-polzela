@@ -2,7 +2,9 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.flowingcode.vaadin.addons.googlemaps.GoogleMapMarker;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
@@ -16,6 +18,11 @@ import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import com.flowingcode.vaadin.addons.googlemaps.GoogleMap;
+import com.flowingcode.vaadin.addons.googlemaps.LatLon;
+
+
 
 @Route("poi")
 public class POIDetailView extends VerticalLayout implements HasUrlParameter<String> {
@@ -69,7 +76,14 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             HorizontalLayout gallery = createImageGallery(poi);
 
             // Google Maps
-            //Map map = createMap(poi);
+            GoogleMap map = createMap(poi);
+
+            Div mapContainer = new Div(map);
+            mapContainer.getStyle().set("display", "flex")
+                    .set("justify-content", "center")
+                    .set("align-items", "center")
+                    .set("height", "400px")
+                    .set("width", "80%");
 
             // "Take me there!" button
             Button navigateButton = new Button("Take me there!");
@@ -80,7 +94,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title, description, gallery, navigateButton);
+            add(title, description, gallery,mapContainer, navigateButton);
         } else {
             add(new H2("Point of Interest not found"));
         }
@@ -110,38 +124,43 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         return gallery;
     }
 
-    /*
-    private Map createMap(PointOfInterest poi) {
 
-        Map map = new Map();
+    private GoogleMap createMap(PointOfInterest poi) {
+        GoogleMap map = new GoogleMap("AIzaSyADDutm6dRpAMwWEJL6HVGqvxkzGjpmmEo", null, null);
         map.setHeight("400px");
         map.setWidth("80%");
 
-        // You'll need to add actual coordinates for each POI
-        Coordinate poiLocation = parseOsmUrl(poi.getMapUrl()); // Replace with actual coordinates
+        LatLon poiLocation = parseGoogleMapsUrl(poi.getMapUrl());
         map.setCenter(poiLocation);
         map.setZoom(15);
 
-        MarkerFeature marker = new MarkerFeature(poiLocation);
-        map.getFeatureLayer().addFeature(marker);
+        GoogleMapMarker marker = new GoogleMapMarker(poi.getName(),poiLocation,false);
+        map.addMarker(marker);
 
+        // Ensure the map is visible
+        map.setVisible(true);
         return map;
     }
 
-    private Coordinate parseOsmUrl(String url) {
+    private LatLon parseGoogleMapsUrl(String url) {
         try {
-            String[] parts = url.split("/");
-            if (parts.length >= 5) {
-                double lat = Double.parseDouble(parts[parts.length - 2]);
-                double lon = Double.parseDouble(parts[parts.length - 1]);
-                return new Coordinate(lon, lat);
+            // Example Google Maps URL:
+            // https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2922926,17z/
+            String[] parts = url.split("@");
+            if (parts.length > 1) {
+                String[] coordinates = parts[1].split(",");
+                if (coordinates.length >= 2) {
+                    double lat = Double.parseDouble(coordinates[0]);
+                    double lon = Double.parseDouble(coordinates[1]);
+                    return new LatLon(lat, lon);
+                }
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
-        return new Coordinate(0, 0); // Default coordinate if parsing fails
+        return new LatLon(0, 0); // Default coordinate if parsing fails
     }
-    */
+
 
     private VerticalLayout displayDescription(String description) {
         VerticalLayout descriptionLayout = new VerticalLayout();
