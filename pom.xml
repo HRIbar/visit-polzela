@@ -56,11 +56,6 @@
             </exclusions>
             <version>${vaadin.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-map-flow</artifactId>
-            <version>24.6.0</version>
-        </dependency>
 
         <!-- Uncomment the following if you are using any of the Pro components -->
         <!--

@@ -11,9 +11,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.component.map.Map;
-import com.vaadin.flow.component.map.configuration.Coordinate;
-import com.vaadin.flow.component.map.configuration.feature.MarkerFeature;
 
 import java.util.List;
 import java.io.IOException;
@@ -72,7 +69,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             HorizontalLayout gallery = createImageGallery(poi);
 
             // Google Maps
-            Map map = createMap(poi);
+            //Map map = createMap(poi);
 
             // "Take me there!" button
             Button navigateButton = new Button("Take me there!");
@@ -83,7 +80,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title, description, gallery, map, navigateButton);
+            add(title, description, gallery, navigateButton);
         } else {
             add(new H2("Point of Interest not found"));
         }
@@ -113,7 +110,9 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         return gallery;
     }
 
+    /*
     private Map createMap(PointOfInterest poi) {
+
         Map map = new Map();
         map.setHeight("400px");
         map.setWidth("80%");
@@ -142,6 +141,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         }
         return new Coordinate(0, 0); // Default coordinate if parsing fails
     }
+    */
 
     private VerticalLayout displayDescription(String description) {
         VerticalLayout descriptionLayout = new VerticalLayout();
