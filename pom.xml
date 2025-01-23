@@ -56,6 +56,11 @@
             </exclusions>
             <version>${vaadin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>software.xdev</groupId>
+            <artifactId>vaadin-maps-leaflet-flow</artifactId>
+            <version>4.2.0</version>
+        </dependency>
 
         <!-- Uncomment the following if you are using any of the Pro components -->
         <!--

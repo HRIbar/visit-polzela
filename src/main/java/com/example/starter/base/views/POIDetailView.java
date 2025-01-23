@@ -12,6 +12,13 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import software.xdev.vaadin.maps.leaflet.map.LMap;
+import software.xdev.vaadin.maps.leaflet.layer.LLayer;
+import software.xdev.vaadin.maps.leaflet.map.LMar;
+import software.xdev.vaadin.maps.leaflet.basictypes.LLatLng;
+import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
+
+
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +30,11 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
     private List<PointOfInterest> pointsOfInterest;
     private POIService poiService;
 
-    public POIDetailView(POIService poiService) {
+    private final LComponentManagementRegistry componentRegistry;
+
+    public POIDetailView(POIService poiService, LComponentManagementRegistry componentRegistry) {
         this.poiService = poiService;
+        this.componentRegistry = componentRegistry;
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
         setPadding(true);
@@ -110,38 +120,46 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         return gallery;
     }
 
-    /*
-    private Map createMap(PointOfInterest poi) {
 
-        Map map = new Map();
+
+    private LMap createMap(PointOfInterest poi) {
+        LMap map = new LMap(componentRegistry);
         map.setHeight("400px");
         map.setWidth("80%");
 
-        // You'll need to add actual coordinates for each POI
-        Coordinate poiLocation = parseOsmUrl(poi.getMapUrl()); // Replace with actual coordinates
-        map.setCenter(poiLocation);
-        map.setZoom(15);
+        // Add OpenStreetMap tile layer
+        LTileLayer tileLayer = new LTileLayer(componentRegistry, "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+        tileLayer.setAttribution("© OpenStreetMap contributors");
+        map.addLayer(tileLayer);
 
-        MarkerFeature marker = new MarkerFeature(poiLocation);
-        map.getFeatureLayer().addFeature(marker);
+        // Parse the OSM URL to get coordinates
+        LLatLng poiLocation = parseOsmUrl(poi.getMapUrl());
+
+        // Set the view to the POI location
+        map.setView(poiLocation, 15);
+
+        // Add a marker for the POI
+        LMarker marker = new LMarker(componentRegistry, poiLocation);
+        marker.bindPopup(poi.getDisplayName());
+        map.addLayer(marker);
 
         return map;
     }
 
-    private Coordinate parseOsmUrl(String url) {
+    private LLatLng parseOsmUrl(String url) {
         try {
             String[] parts = url.split("/");
             if (parts.length >= 5) {
                 double lat = Double.parseDouble(parts[parts.length - 2]);
                 double lon = Double.parseDouble(parts[parts.length - 1]);
-                return new Coordinate(lon, lat);
+                return new LLatLng(componentRegistry,lon, lat);
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
-        return new Coordinate(0, 0); // Default coordinate if parsing fails
+        return new LLatLng(componentRegistry, 0, 0); // Default coordinate if parsing fails
     }
-    */
+
 
     private VerticalLayout displayDescription(String description) {
         VerticalLayout descriptionLayout = new VerticalLayout();
