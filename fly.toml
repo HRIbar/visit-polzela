@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for visit-polzela on 2025-01-19T13:18:19Z
+# fly.toml app configuration file generated for visit-polzela-bwsl9a on 2025-01-25T22:08:55Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'visit-polzela'
+app = 'visit-polzela-bwsl9a'
 primary_region = 'fra'
 
 [build]
