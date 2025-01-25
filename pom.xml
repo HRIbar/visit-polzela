@@ -61,6 +61,11 @@
             <artifactId>vaadin-maps-leaflet-flow</artifactId>
             <version>4.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+            <version>3.0.6.Final</version>
+        </dependency>
 
         <!-- Uncomment the following if you are using any of the Pro components -->
         <!--

@@ -12,20 +12,27 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import org.jboss.logging.Logger;
 import software.xdev.vaadin.maps.leaflet.map.LMap;
-import software.xdev.vaadin.maps.leaflet.layer.LLayer;
-import software.xdev.vaadin.maps.leaflet.map.LMar;
-import software.xdev.vaadin.maps.leaflet.basictypes.LLatLng;
 import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
+import software.xdev.vaadin.maps.leaflet.MapContainer;
 
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.StyleSheet;
 
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
+
+@JavaScript("https://unpkg.com/leaflet@1.7.1/dist/leaflet.js")
+@StyleSheet("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css")
 @Route("poi")
 public class POIDetailView extends VerticalLayout implements HasUrlParameter<String> {
+
+    private static final Logger LOG = Logger.getLogger(POIDetailView.class);
 
     private List<PointOfInterest> pointsOfInterest;
     private POIService poiService;
@@ -78,8 +85,8 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             // Image Gallery
             HorizontalLayout gallery = createImageGallery(poi);
 
-            // Google Maps
-            //Map map = createMap(poi);
+            // Open street Maps
+            MapContainer map = createMap(poi);
 
             // "Take me there!" button
             Button navigateButton = new Button("Take me there!");
@@ -90,7 +97,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title, description, gallery, navigateButton);
+            add(title, description, gallery, map, navigateButton);
         } else {
             add(new H2("Point of Interest not found"));
         }
@@ -122,42 +129,47 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
 
 
 
-    private LMap createMap(PointOfInterest poi) {
-        LMap map = new LMap(componentRegistry);
-        map.setHeight("400px");
-        map.setWidth("80%");
-
-        // Add OpenStreetMap tile layer
-        LTileLayer tileLayer = new LTileLayer(componentRegistry, "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-        tileLayer.setAttribution("© OpenStreetMap contributors");
-        map.addLayer(tileLayer);
+    private MapContainer createMap(PointOfInterest poi) {
+        // Create the MapContainer
+        MapContainer mapContainer = new MapContainer(componentRegistry);
+        mapContainer.setHeight("400px");
+        mapContainer.setWidth("80%");
 
         // Parse the OSM URL to get coordinates
-        LLatLng poiLocation = parseOsmUrl(poi.getMapUrl());
+        double[] coordinates = parseOsmUrl(poi.getMapUrl());
+        double lat = coordinates[0];
+        double lng = coordinates[1];
 
-        // Set the view to the POI location
-        map.setView(poiLocation, 15);
+        // Use JavaScript to initialize the map after the component is attached
+        mapContainer.addAttachListener(event -> getUI().ifPresent(ui -> ui.access(() -> {
+            String js = String.format(Locale.US,
+                    "var map = L.map(arguments[0]).setView([%f, %f], 15);" +
+                            "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" +
+                            "    attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'" +
+                            "}).addTo(map);" +
+                            "L.marker([%f, %f]).addTo(map).bindPopup('%s').openPopup();",
+                    lat, lng,
+                    lat, lng,
+                    poi.getDisplayName().replace("'", "\\'")
+            );
+            ui.getPage().executeJs(js, mapContainer.getElement());
+        })));
 
-        // Add a marker for the POI
-        LMarker marker = new LMarker(componentRegistry, poiLocation);
-        marker.bindPopup(poi.getDisplayName());
-        map.addLayer(marker);
-
-        return map;
+        return mapContainer;
     }
 
-    private LLatLng parseOsmUrl(String url) {
+    private double[] parseOsmUrl(String url) {
         try {
             String[] parts = url.split("/");
             if (parts.length >= 5) {
                 double lat = Double.parseDouble(parts[parts.length - 2]);
-                double lon = Double.parseDouble(parts[parts.length - 1]);
-                return new LLatLng(componentRegistry,lon, lat);
+                double lng = Double.parseDouble(parts[parts.length - 1]);
+                return new double[]{lat, lng};
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+            LOG.error("Error parsing OSM URL: " + url, e);
         }
-        return new LLatLng(componentRegistry, 0, 0); // Default coordinate if parsing fails
+        return new double[]{0, 0}; // Default coordinate if parsing fails
     }
 
 
