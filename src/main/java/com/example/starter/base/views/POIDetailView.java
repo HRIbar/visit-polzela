@@ -12,19 +12,36 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import org.jboss.logging.Logger;
+import software.xdev.vaadin.maps.leaflet.map.LMap;
+import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
+import software.xdev.vaadin.maps.leaflet.MapContainer;
+
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.StyleSheet;
+
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
+
+@JavaScript("https://unpkg.com/leaflet@1.7.1/dist/leaflet.js")
+@StyleSheet("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css")
 @Route("poi")
 public class POIDetailView extends VerticalLayout implements HasUrlParameter<String> {
+
+    private static final Logger LOG = Logger.getLogger(POIDetailView.class);
 
     private List<PointOfInterest> pointsOfInterest;
     private POIService poiService;
 
-    public POIDetailView(POIService poiService) {
+    private final LComponentManagementRegistry componentRegistry;
+
+    public POIDetailView(POIService poiService, LComponentManagementRegistry componentRegistry) {
         this.poiService = poiService;
+        this.componentRegistry = componentRegistry;
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
         setPadding(true);
@@ -68,8 +85,8 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             // Image Gallery
             HorizontalLayout gallery = createImageGallery(poi);
 
-            // Google Maps
-            //Map map = createMap(poi);
+            // Open street Maps
+            MapContainer map = createMap(poi);
 
             // "Take me there!" button
             Button navigateButton = new Button("Take me there!");
@@ -80,7 +97,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title, description, gallery, navigateButton);
+            add(title, description, gallery, map, navigateButton);
         } else {
             add(new H2("Point of Interest not found"));
         }
@@ -110,38 +127,51 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         return gallery;
     }
 
-    /*
-    private Map createMap(PointOfInterest poi) {
 
-        Map map = new Map();
-        map.setHeight("400px");
-        map.setWidth("80%");
 
-        // You'll need to add actual coordinates for each POI
-        Coordinate poiLocation = parseOsmUrl(poi.getMapUrl()); // Replace with actual coordinates
-        map.setCenter(poiLocation);
-        map.setZoom(15);
+    private MapContainer createMap(PointOfInterest poi) {
+        // Create the MapContainer
+        MapContainer mapContainer = new MapContainer(componentRegistry);
+        mapContainer.setHeight("400px");
+        mapContainer.setWidth("80%");
 
-        MarkerFeature marker = new MarkerFeature(poiLocation);
-        map.getFeatureLayer().addFeature(marker);
+        // Parse the OSM URL to get coordinates
+        double[] coordinates = parseOsmUrl(poi.getMapUrl());
+        double lat = coordinates[0];
+        double lng = coordinates[1];
 
-        return map;
+        // Use JavaScript to initialize the map after the component is attached
+        mapContainer.addAttachListener(event -> getUI().ifPresent(ui -> ui.access(() -> {
+            String js = String.format(Locale.US,
+                    "var map = L.map(arguments[0]).setView([%f, %f], 15);" +
+                            "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" +
+                            "    attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'" +
+                            "}).addTo(map);" +
+                            "L.marker([%f, %f]).addTo(map).bindPopup('%s').openPopup();",
+                    lat, lng,
+                    lat, lng,
+                    poi.getDisplayName().replace("'", "\\'")
+            );
+            ui.getPage().executeJs(js, mapContainer.getElement());
+        })));
+
+        return mapContainer;
     }
 
-    private Coordinate parseOsmUrl(String url) {
+    private double[] parseOsmUrl(String url) {
         try {
             String[] parts = url.split("/");
             if (parts.length >= 5) {
                 double lat = Double.parseDouble(parts[parts.length - 2]);
-                double lon = Double.parseDouble(parts[parts.length - 1]);
-                return new Coordinate(lon, lat);
+                double lng = Double.parseDouble(parts[parts.length - 1]);
+                return new double[]{lat, lng};
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+            LOG.error("Error parsing OSM URL: " + url, e);
         }
-        return new Coordinate(0, 0); // Default coordinate if parsing fails
+        return new double[]{0, 0}; // Default coordinate if parsing fails
     }
-    */
+
 
     private VerticalLayout displayDescription(String description) {
         VerticalLayout descriptionLayout = new VerticalLayout();
