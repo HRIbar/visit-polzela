@@ -14,9 +14,10 @@ import com.vaadin.flow.router.Route;
 
 import com.vaadin.flow.server.VaadinService;
 import org.jboss.logging.Logger;
-import software.xdev.vaadin.maps.leaflet.map.LMap;
 import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
 import software.xdev.vaadin.maps.leaflet.MapContainer;
+
+import com.vaadin.flow.component.dialog.Dialog;
 
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -78,6 +79,9 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             H2 title = new H2(poi.getDisplayName());
             add(title);
 
+            Image image = new Image(poi.getImageResource(), poi.getDisplayName());
+            image.setWidth("800px");
+
             // Load and display the detailed description
             String detailedDescription = loadDescription(poi);
             VerticalLayout description = displayDescription(detailedDescription);
@@ -98,7 +102,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title, description, gallery, map, navigateButton);
+            add(title,image, description, gallery, map, navigateButton);
         } else {
             add(new H2("Point of Interest not found"));
         }
@@ -122,6 +126,16 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
 
                 // Ensure the image covers the area without stretching
                 image.getStyle().set("object-fit", "cover");
+
+                // Make the image clickable
+                image.getElement().addEventListener("click", e -> showEnlargedImage(imagePath, poi.getDisplayName()));
+
+                // Add a hover effect
+                image.getElement().getStyle().set("cursor", "pointer");
+                image.getElement().getStyle().set("transition", "transform 0.3s ease-in-out");
+                image.getElement().addEventListener("mouseover", e -> image.getElement().getStyle().set("transform", "scale(1.05)"));
+                image.getElement().addEventListener("mouseout", e -> image.getElement().getStyle().set("transform", "scale(1)"));
+
 
                 gallery.add(image);
             }
@@ -213,5 +227,23 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
             e.printStackTrace();
             return "Error loading map URL.";
         }
+    }
+
+    private void showEnlargedImage(String imagePath, String altText) {
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(true);
+
+        Image enlargedImage = new Image(imagePath, altText);
+        enlargedImage.setWidth("800px");
+        enlargedImage.getStyle().set("max-width", "100%");
+        enlargedImage.getStyle().set("height", "auto");
+
+        dialog.add(enlargedImage);
+
+        // Add click listener to close the dialog when the image is clicked
+        enlargedImage.addClickListener(e -> dialog.close());
+
+        dialog.open();
     }
 }
