@@ -12,6 +12,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import com.vaadin.flow.server.VaadinService;
 import org.jboss.logging.Logger;
 import software.xdev.vaadin.maps.leaflet.map.LMap;
 import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
@@ -112,16 +113,18 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         String basePath = poi.getImagePath().replace(".jpg", "");
         for (int i = 1; i <= 3; i++) {
             String imagePath = "/images/" + basePath + i + ".jpg";
-            Image image = new Image(imagePath, poi.getDisplayName());
+            if (VaadinService.getCurrent().getResourceAsStream(imagePath) != null) {
+                Image image = new Image(imagePath, poi.getDisplayName());
 
-            // Set width to 320px and height to 180px to maintain 16:9 aspect ratio
-            image.setWidth("320px");
-            image.setHeight("180px");
+                // Set width to 320px and height to 180px to maintain 16:9 aspect ratio
+                image.setWidth("320px");
+                image.setHeight("180px");
 
-            // Ensure the image covers the area without stretching
-            image.getStyle().set("object-fit", "cover");
+                // Ensure the image covers the area without stretching
+                image.getStyle().set("object-fit", "cover");
 
-            gallery.add(image);
+                gallery.add(image);
+            }
         }
 
         return gallery;
