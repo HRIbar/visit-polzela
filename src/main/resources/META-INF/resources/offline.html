@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Visit Polzela</title>
+    <link rel="stylesheet" href="styles/offline.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="main-layout">
+        <header>
+            <img src="images/logo.png" alt="Visit Polzela Logo" class="logo">
+            <h1>Visit Polzela</h1>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-item">Home</a></li>
+                <li><a href="#" class="nav-item">Attractions</a></li>
+                <li><a href="#" class="nav-item">Events</a></li>
+                <li><a href="#" class="nav-item">About</a></li>
+                <li><a href="#" class="nav-item">Contact</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="offline-message">
+                <h2>You're Offline</h2>
+                <p>Sorry, it seems you're not connected to the internet. Some features may be unavailable.</p>
+                <button onclick="window.location.reload()">Try to Reconnect</button>
+            </div>
+
+            <div class="content">
+                <h2>Welcome to Polzela</h2>
+                <p>Explore the beauty and history of Polzela, even when you're offline!</p>
+
+                <div class="attractions-grid">
+                    <div class="attraction-card">
+                        <img src="images/castle1.jpg" alt="Polzela Castle">
+                        <h3>Polzela Castle</h3>
+                        <p>A historic castle with beautiful architecture.</p>
+                    </div>
+                    <div class="attraction-card">
+                        <img src="images/park1.jpg" alt="Polzela Park">
+                        <h3>Polzela Park</h3>
+                        <p>A serene park perfect for relaxation.</p>
+                    </div>
+                    <!-- Add more attraction cards as needed -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2023 Visit Polzela. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="scripts/offline.js"></script>
+</body>
+</html>
