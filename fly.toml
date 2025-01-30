@@ -4,9 +4,10 @@
 #
 
 app = 'visit-polzela'
-primary_region = 'fra'
+primary_region = 'slo'
 
 [build]
+  command = "mvn package -Pproduction"
 
 [http_service]
   internal_port = 8080
