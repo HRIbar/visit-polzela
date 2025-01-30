@@ -2,10 +2,13 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEvent;
@@ -31,22 +34,26 @@ import java.util.Locale;
 
 @JavaScript("https://unpkg.com/leaflet@1.7.1/dist/leaflet.js")
 @StyleSheet("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css")
+@CssImport("./styles/poi-detail-view-styles.css")
 @Route("poi")
-public class POIDetailView extends VerticalLayout implements HasUrlParameter<String> {
+public class POIDetailView extends AppLayout implements HasUrlParameter<String> {
 
     private static final Logger LOG = Logger.getLogger(POIDetailView.class);
-
     private List<PointOfInterest> pointsOfInterest;
     private POIService poiService;
-
     private final LComponentManagementRegistry componentRegistry;
+
+    private VerticalLayout content;
 
     public POIDetailView(POIService poiService, LComponentManagementRegistry componentRegistry) {
         this.poiService = poiService;
         this.componentRegistry = componentRegistry;
-        setAlignItems(Alignment.CENTER);
-        setSpacing(true);
-        setPadding(true);
+
+        this.content = new VerticalLayout();
+        content.addClassName("poi-detail-content");
+        content.setAlignItems(FlexComponent.Alignment.CENTER);
+        content.setSpacing(true);
+        content.setPadding(true);
 
         pointsOfInterest = poiService.getPointsOfInterest();
     }
@@ -68,7 +75,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
 
     @Override
     public void setParameter(BeforeEvent event, String parameter) {
-        removeAll();
+        content.removeAll();
 
         PointOfInterest poi = pointsOfInterest.stream()
                 .filter(p -> p.getName().equals(parameter))
@@ -77,24 +84,22 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
 
         if (poi != null) {
             H2 title = new H2(poi.getDisplayName());
-            add(title);
+            title.addClassName("poi-title");
+            content.add(title);
 
             Image image = new Image(poi.getImageResource(), poi.getDisplayName());
-            image.setWidth("800px");
+            image.addClassName("poi-main-image");
 
-            // Load and display the detailed description
             String detailedDescription = loadDescription(poi);
             VerticalLayout description = displayDescription(detailedDescription);
 
-
-            // Image Gallery
             HorizontalLayout gallery = createImageGallery(poi);
 
-            // Open street Maps
             MapContainer map = createMap(poi);
+            map.addClassName("poi-map");
 
-            // "Take me there!" button
             Button navigateButton = new Button("Take me there!");
+            navigateButton.addClassName("navigate-button");
             navigateButton.addClickListener(e -> {
                 getUI().ifPresent(ui -> ui.getPage().executeJs(
                         "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
@@ -102,40 +107,26 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
                 ));
             });
 
-            add(title,image, description, gallery, map, navigateButton);
+            content.add(title, image, description, gallery, map, navigateButton);
         } else {
-            add(new H2("Point of Interest not found"));
+            content.add(new H2("Point of Interest not found"));
         }
+
+        setContent(content);
     }
 
     private HorizontalLayout createImageGallery(PointOfInterest poi) {
         HorizontalLayout gallery = new HorizontalLayout();
-        gallery.setSpacing(true);
-        gallery.setWidth("100%");
-        gallery.setJustifyContentMode(JustifyContentMode.CENTER);
+        gallery.addClassName("image-gallery");
 
         String basePath = poi.getImagePath().replace(".jpg", "");
         for (int i = 1; i <= 3; i++) {
             String imagePath = "/images/" + basePath + i + ".jpg";
             if (VaadinService.getCurrent().getResourceAsStream(imagePath) != null) {
                 Image image = new Image(imagePath, poi.getDisplayName());
+                image.addClassName("gallery-image");
 
-                // Set width to 320px and height to 180px to maintain 16:9 aspect ratio
-                image.setWidth("320px");
-                image.setHeight("180px");
-
-                // Ensure the image covers the area without stretching
-                image.getStyle().set("object-fit", "cover");
-
-                // Make the image clickable
                 image.getElement().addEventListener("click", e -> showEnlargedImage(imagePath, poi.getDisplayName()));
-
-                // Add a hover effect
-                image.getElement().getStyle().set("cursor", "pointer");
-                image.getElement().getStyle().set("transition", "transform 0.3s ease-in-out");
-                image.getElement().addEventListener("mouseover", e -> image.getElement().getStyle().set("transform", "scale(1.05)"));
-                image.getElement().addEventListener("mouseout", e -> image.getElement().getStyle().set("transform", "scale(1)"));
-
 
                 gallery.add(image);
             }
@@ -194,7 +185,7 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
         VerticalLayout descriptionLayout = new VerticalLayout();
         descriptionLayout.setSpacing(true);
         descriptionLayout.setPadding(false);
-        descriptionLayout.setAlignItems(Alignment.CENTER);
+        descriptionLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
         String[] paragraphs = description.split("\n\n");
         int totalParagraphs = paragraphs.length;
@@ -231,17 +222,15 @@ public class POIDetailView extends VerticalLayout implements HasUrlParameter<Str
 
     private void showEnlargedImage(String imagePath, String altText) {
         Dialog dialog = new Dialog();
+        dialog.addClassName("image-dialog");
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(true);
 
         Image enlargedImage = new Image(imagePath, altText);
-        enlargedImage.setWidth("800px");
-        enlargedImage.getStyle().set("max-width", "100%");
-        enlargedImage.getStyle().set("height", "auto");
+        enlargedImage.addClassName("enlarged-image");
 
         dialog.add(enlargedImage);
 
-        // Add click listener to close the dialog when the image is clicked
         enlargedImage.addClickListener(e -> dialog.close());
 
         dialog.open();

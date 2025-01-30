@@ -38,6 +38,7 @@ import com.vaadin.flow.theme.Theme;
                 // Styles
                 "styles/offline.css",
                 "styles/main.css",
+                "main-view-styles.css",
 
                 // Scripts
                 "scripts/offline.js",
