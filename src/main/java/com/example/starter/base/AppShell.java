@@ -3,8 +3,9 @@ package com.example.starter.base;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.material.Material;
 
-@Theme("starter-theme")
+@Theme(themeClass = Material.class)
 @PWA(
         name = "Visit Polzela Progressive Web Application",
         shortName = "Visit Polzela",
