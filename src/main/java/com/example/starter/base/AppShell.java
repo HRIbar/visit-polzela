@@ -7,13 +7,10 @@ import com.vaadin.flow.theme.material.Material;
 
 @Theme(themeClass = Material.class)
 @PWA(
-        name = "Visit Polzela",
+        name = "Visit Polzela Progressive Web Application",
         shortName = "Visit Polzela",
-        description = "Explore the beautiful town of Polzela",
-        themeColor = "#007bff",
-        backgroundColor = "#ffffff",
         manifestPath = "manifest.json",
-        iconPath = "icons/icon-192x192.png",
+        iconPath = "icons/icon-192x192.ico",
         offlinePath = "offline.html",
         offlineResources = {
                 // Images
@@ -56,7 +53,6 @@ import com.vaadin.flow.theme.material.Material;
                 "manifest.json",
                 "offline.html",
                 "index.html",
-                "sw.js"
 
                 // Add any other resources you want to be available offline
         }
