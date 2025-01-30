@@ -13,7 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
 
 import com.vaadin.flow.server.VaadinService;
@@ -37,7 +36,6 @@ import java.util.Locale;
 @StyleSheet("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css")
 @CssImport("./styles/poi-detail-view-styles.css")
 @Route("poi")
-@PreserveOnRefresh
 public class POIDetailView extends AppLayout implements HasUrlParameter<String> {
 
     private static final Logger LOG = Logger.getLogger(POIDetailView.class);
