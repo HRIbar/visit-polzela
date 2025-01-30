@@ -1,17 +1,19 @@
 package com.example.starter.base;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Meta;
+import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.material.Material;
 
 @Theme(themeClass = Material.class)
 @PWA(
-        name = "Visit Polzela Progressive Web Application",
+        name = "Visit Polzela",
         shortName = "Visit Polzela",
-        manifestPath = "manifest.json",
-        iconPath = "icons/icon-192x192.ico",
-        offlinePath = "offline.html",
+        description = "Explore the beautiful town of Polzela",
+        themeColor = "#233348",
+        backgroundColor = "#233348",
         offlineResources = {
                 // Images
                 "images/logo.png",
@@ -46,8 +48,8 @@ import com.vaadin.flow.theme.material.Material;
                 "scripts/main.js",
 
                 // Icons
-                "icons/icon-192x192.ico",
-                "icons/icon-512x512.ico",
+                "icons/icon-192x192.png",
+                "icons/icon-512x512.png",
 
                 // Other resources
                 "manifest.json",
@@ -57,6 +59,10 @@ import com.vaadin.flow.theme.material.Material;
                 // Add any other resources you want to be available offline
         }
 )
+@Meta(name = "apple-mobile-web-app-capable", content = "yes")
+@Meta(name = "apple-mobile-web-app-status-bar-style", content = "black")
+@Meta(name = "apple-mobile-web-app-title", content = "Visit Polzela")
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
 public class AppShell implements AppShellConfigurator {
     // You can add other configurations here if needed
 }
