@@ -46,8 +46,8 @@ import com.vaadin.flow.theme.material.Material;
                 "scripts/main.js",
 
                 // Icons
-                "icons/icon-192x192.ico",
-                "icons/icon-512x512.ico",
+                "icons/icon-192x192.png",
+                "icons/icon-512x512.png",
 
                 // Other resources
                 "manifest.json",
