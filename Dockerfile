@@ -7,7 +7,7 @@ RUN mvn package -Pproduction
 
 # Run stage
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.14
-COPY --from=build --chown=185 /app/target/quarkus-app/quarkus-run.jar /deployments/quarkus-run.jar
+COPY --from=build --chown=185 /app/target/visit-polzela-1.0-SNAPSHOT-runner.jar /deployments/visit-polzela-1.0-SNAPSHOT-runner.jar
 EXPOSE 8080
 USER 185
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
