@@ -2,18 +2,16 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
-import com.vaadin.flow.component.Tag;
+import com.example.starter.base.services.LazyLoadingImage;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.*;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -134,28 +132,6 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
 
         return gallery;
     }
-
-    @Tag("lazy-loading-image")
-    @NpmPackage(value = "@vaadin/vaadin-lumo-styles", version = "23.2.0-alpha2")
-    @JsModule("./src/components/lazy-loading-image.js")
-    public class LazyLoadingImage extends LitTemplate {
-        @Id("image")
-        private Image image;
-
-        public LazyLoadingImage(String src, String alt) {
-            image.setSrc(src);
-            image.setAlt(alt);
-        }
-
-        public void addClassName(String className) {
-            image.addClassName(className);
-        }
-
-        public void addEventListener(String eventType, com.vaadin.flow.dom.DomEventListener listener) {
-            image.getElement().addEventListener(eventType, listener);
-        }
-    }
-
 
 
     private MapContainer createMap(PointOfInterest poi) {

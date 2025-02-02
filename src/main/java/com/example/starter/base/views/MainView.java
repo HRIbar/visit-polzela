@@ -2,21 +2,17 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.example.starter.base.services.LazyLoadingImage;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.littemplate.LitTemplate;
-import com.vaadin.flow.component.template.Id;
 
 import java.util.List;
 
@@ -84,17 +80,5 @@ public class MainView extends AppLayout {
         link.add(container);
 
         return link;
-    }
-
-    @NpmPackage(value = "@vaadin/vaadin-lumo-styles", version = "23.2.0-alpha2")
-    @JsModule("./src/components/lazy-loading-image.js")
-    public class LazyLoadingImage extends LitTemplate {
-        @Id("image")
-        private Image image;
-
-        public LazyLoadingImage(String src, String alt) {
-            image.setSrc(src);
-            image.setAlt(alt);
-        }
     }
 }
