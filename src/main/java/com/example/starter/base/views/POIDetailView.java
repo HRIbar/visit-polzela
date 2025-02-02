@@ -2,15 +2,18 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.*;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -21,9 +24,6 @@ import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
 import software.xdev.vaadin.maps.leaflet.MapContainer;
 
 import com.vaadin.flow.component.dialog.Dialog;
-
-import com.vaadin.flow.component.dependency.JavaScript;
-import com.vaadin.flow.component.dependency.StyleSheet;
 
 import java.util.List;
 import java.io.IOException;
@@ -123,16 +123,37 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         for (int i = 1; i <= 3; i++) {
             String imagePath = "/images/" + basePath + i + ".jpg";
             if (VaadinService.getCurrent().getResourceAsStream(imagePath) != null) {
-                Image image = new Image(imagePath, poi.getDisplayName());
-                image.addClassName("gallery-image");
+                LazyLoadingImage lazyImage = new LazyLoadingImage(imagePath, poi.getDisplayName());
+                lazyImage.addClassName("gallery-image");
 
-                image.getElement().addEventListener("click", e -> showEnlargedImage(imagePath, poi.getDisplayName()));
+                lazyImage.addEventListener("click", e -> showEnlargedImage(imagePath, poi.getDisplayName()));
 
-                gallery.add(image);
+                gallery.add(lazyImage);
             }
         }
 
         return gallery;
+    }
+
+    @Tag("lazy-loading-image")
+    @NpmPackage(value = "@vaadin/vaadin-lumo-styles", version = "23.2.0-alpha2")
+    @JsModule("./src/components/lazy-loading-image.js")
+    public class LazyLoadingImage extends LitTemplate {
+        @Id("image")
+        private Image image;
+
+        public LazyLoadingImage(String src, String alt) {
+            image.setSrc(src);
+            image.setAlt(alt);
+        }
+
+        public void addClassName(String className) {
+            image.addClassName(className);
+        }
+
+        public void addEventListener(String eventType, com.vaadin.flow.dom.DomEventListener listener) {
+            image.getElement().addEventListener(eventType, listener);
+        }
     }
 
 
