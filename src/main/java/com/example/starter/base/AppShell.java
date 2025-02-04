@@ -51,7 +51,8 @@ import com.vaadin.flow.theme.material.Material;
 
                 // Other resources
                 "manifest.json",
-                "offline.html"
+                "offline.html",
+                "index.html",
 
                 // Add any other resources you want to be available offline
         }
