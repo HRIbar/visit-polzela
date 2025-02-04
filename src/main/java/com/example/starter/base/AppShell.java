@@ -15,26 +15,26 @@ import com.vaadin.flow.theme.material.Material;
         offlineResources = {
                 // Images
                 "images/logo.png",
-                "images/castle1.jpg", "images/castle2.jpg", "images/castle3.jpg",
-                "images/park1.jpg", "images/park2.jpg", "images/park3.jpg",
-                "images/icecream1.jpg", "images/icecream2.jpg", "images/icecream3.jpg",
-                "images/mountoljka1.jpg", "images/mountoljka2.jpg", "images/mountoljka3.jpg",
-                "images/maurerhouse1.jpg", "images/maurerhouse2.jpg", "images/maurerhouse3.jpg",
-                "images/romancamp1.jpg", "images/romancamp2.jpg", "images/romancamp3.jpg",
-                "images/tractormuseum1.jpg", "images/tractormuseum2.jpg", "images/tractormuseum3.jpg",
-                "images/cajhnhayrack1.jpg", "images/cajhnhayrack2.jpg", "images/cajhnhayrack3.jpg",
-                "images/clayfigurines1.jpg", "images/clayfigurines2.jpg", "images/clayfigurines3.jpg",
-                "images/noviklostermanor1.jpg", "images/noviklostermanor2.jpg", "images/noviklostermanor3.jpg",
-                "images/stmargharetachurch1.jpg", "images/stmargharetachurch2.jpg", "images/stmargharetachurch3.jpg",
-                "images/stnicholaschurch1.jpg", "images/stnicholaschurch2.jpg", "images/stnicholaschurch3.jpg",
-                "images/standrewchurch1.jpg", "images/standrewchurch2.jpg", "images/standrewchurch3.jpg",
-                "images/plaguememorial1.jpg", "images/plaguememorial2.jpg", "images/plaguememorial3.jpg",
-                "images/jelovsekgranary1.jpg", "images/jelovsekgranary2.jpg", "images/jelovsekgranary3.jpg",
-                "images/bolcinhouse1.jpg", "images/bolcinhouse2.jpg", "images/bolcinhouse3.jpg",
-                "images/stoberhouse1.jpg", "images/stoberhouse2.jpg", "images/stoberhouse3.jpg",
-                "images/barbankhouse1.jpg", "images/barbankhouse2.jpg", "images/barbankhouse3.jpg",
-                "images/mesicmill1.jpg", "images/mesicmill2.jpg", "images/mesicmill3.jpg",
-                "images/riverloznica1.jpg", "images/riverloznica2.jpg", "images/riverloznica3.jpg",
+                "images/castle1.webp", "images/castle2.webp", "images/castle3.webp",
+                "images/park1.webp", "images/park2.webp", "images/park3.webp",
+                "images/icecream1.webp", "images/icecream2.webp", "images/icecream3.webp",
+                "images/mountoljka1.webp", "images/mountoljka2.webp", "images/mountoljka3.webp",
+                "images/maurerhouse1.webp", "images/maurerhouse2.webp", "images/maurerhouse3.webp",
+                "images/romancamp1.webp", "images/romancamp2.webp", "images/romancamp3.webp",
+                "images/tractormuseum1.webp", "images/tractormuseum2.webp", "images/tractormuseum3.webp",
+                "images/cajhnhayrack1.webp", "images/cajhnhayrack2.webp", "images/cajhnhayrack3.webp",
+                "images/clayfigurines1.webp", "images/clayfigurines2.webp", "images/clayfigurines3.webp",
+                "images/noviklostermanor1.webp", "images/noviklostermanor2.webp", "images/noviklostermanor3.webp",
+                "images/stmargharetachurch1.webp", "images/stmargharetachurch2.webp", "images/stmargharetachurch3.webp",
+                "images/stnicholaschurch1.webp", "images/stnicholaschurch2.webp", "images/stnicholaschurch3.webp",
+                "images/standrewchurch1.webp", "images/standrewchurch2.webp", "images/standrewchurch3.webp",
+                "images/plaguememorial1.webp", "images/plaguememorial2.webp", "images/plaguememorial3.webp",
+                "images/jelovsekgranary1.webp", "images/jelovsekgranary2.webp", "images/jelovsekgranary3.webp",
+                "images/bolcinhouse1.webp", "images/bolcinhouse2.webp", "images/bolcinhouse3.webp",
+                "images/stoberhouse1.webp", "images/stoberhouse2.webp", "images/stoberhouse3.webp",
+                "images/barbankhouse1.webp", "images/barbankhouse2.webp", "images/barbankhouse3.webp",
+                "images/mesicmill1.webp", "images/mesicmill2.webp", "images/mesicmill3.webp",
+                "images/riverloznica1.webp", "images/riverloznica2.webp", "images/riverloznica3.webp",
 
                 // Styles
                 "styles/offline.css",
@@ -58,5 +58,5 @@ import com.vaadin.flow.theme.material.Material;
         }
 )
 public class AppShell implements AppShellConfigurator {
-    // You can add other configurations here if needed
+        // You can add other configurations here if needed
 }

@@ -121,9 +121,9 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         HorizontalLayout gallery = new HorizontalLayout();
         gallery.addClassName("image-gallery");
 
-        String basePath = poi.getImagePath().replace(".jpg", "");
+        String basePath = poi.getImagePath().replace(".webp", "");
         for (int i = 1; i <= 3; i++) {
-            String imagePath = "/images/" + basePath + i + ".jpg";
+            String imagePath = "/images/" + basePath + i + ".webp";
             if (VaadinService.getCurrent().getResourceAsStream(imagePath) != null) {
                 Image image = new Image(imagePath, poi.getDisplayName());
                 image.addClassName("gallery-image");

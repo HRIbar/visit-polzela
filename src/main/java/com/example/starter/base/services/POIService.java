@@ -30,7 +30,7 @@ public class POIService {
                             parts[0].trim(),  // name (1st argument in CSV)
                             parts[1].trim(),  // displayName (2nd argument in CSV)
                             parts[2].trim(),  // short description (3rd argument in CSV)
-                            parts[0].trim() + ".jpg",  // imagePath (1st argument + ".jpg")
+                            parts[0].trim() + ".webp",  // imagePath (1st argument + ".webp")
                             parts[3].trim(),  // mapUrl (4th argument in CSV)
                             parts[4].trim()   // navigationUrl (5th argument in CSV)
                     );
