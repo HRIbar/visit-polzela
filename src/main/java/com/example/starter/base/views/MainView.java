@@ -72,10 +72,22 @@ public class MainView extends AppLayout {
         H2 poiTitle = new H2(poi.getDisplayName());
         poiTitle.addClassName("poi-title");
 
-        Image image = new Image(poi.getImageResource(), poi.getDisplayName());
-        image.addClassName("poi-image");
+        // Create a placeholder image
+        Image placeholderImage = new Image("/META-INF/resources/images/placeholder.png", "Loading...");
+        placeholderImage.addClassName("poi-image");
 
-        container.add(poiTitle, image);
+        // Create the actual image with lazy loading
+        Image lazyImage = new Image(poi.getImageResource(), poi.getDisplayName());
+        lazyImage.addClassName("poi-image");
+        lazyImage.setVisible(false);
+
+        // Set up lazy loading
+        lazyImage.addAttachListener(event -> {
+            lazyImage.setVisible(true);
+            placeholderImage.setVisible(false);
+        });
+
+        container.add(poiTitle, placeholderImage, lazyImage);
         link.add(container);
 
         return link;
