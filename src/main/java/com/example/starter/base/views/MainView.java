@@ -44,7 +44,16 @@ public class MainView extends AppLayout {
         polzelaText.addClassName("polzela-text");
 
         titleDiv.add(welcomeText, polzelaText);
-        titleContainer.add(titleDiv);
+
+        // Create an image component
+        Image titleImage = new Image("/META-INF/resources/images/polzela.webp", "Polzela Logo");
+        titleImage.addClassName("title-image");
+
+        // Create a container for the image and title
+        Div titleImageContainer = new Div(titleImage, titleDiv);
+        titleImageContainer.addClassName("title-image-container");
+
+        titleContainer.add(titleImageContainer);
         content.add(titleContainer);
 
         FlexLayout poiContainer = new FlexLayout();
