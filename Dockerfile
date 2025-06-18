@@ -3,6 +3,7 @@ FROM maven:3.8.5-openjdk-17 as build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
+RUN mvn dependency:go-offline
 RUN mvn package -Pproduction
 
 # Run stage

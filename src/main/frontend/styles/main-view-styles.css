@@ -33,7 +33,7 @@
     padding: 10px;
     border-radius: 5px;
     text-align: left;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: transparent;
     max-width: 50%;
     position: absolute;
     top: 0;
@@ -87,6 +87,13 @@
     object-fit: cover;
 }
 
+.grb-image {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+    margin-left: 10px;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
     .title-container {
@@ -107,6 +114,10 @@
 
     .poi-item {
         width: calc(50% - 20px);
+    }
+
+    .grb-image {
+        height: 28px; /* Match the font-size in your media query */
     }
 }
 
@@ -129,5 +140,9 @@
 
     .poi-item {
         width: 100%;
+    }
+
+    .grb-image {
+        height: 24px; /* Match the font-size in your media query */
     }
 }

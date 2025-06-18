@@ -15,6 +15,33 @@ import com.vaadin.flow.theme.material.Material;
         offlineResources = {
                 // Images
                 "images/logo.png",
+                "images/polzela.webp",
+                "images/grbpolzela.webp",
+                "images/placeholder.png",
+                
+                // POI main images
+                "images/castle.webp",
+                "images/park.webp",
+                "images/icecream.webp",
+                "images/mountoljka.webp",
+                "images/maurerhouse.webp",
+                "images/romancamp.webp",
+                "images/tractormuseum.webp",
+                "images/cajhnhayrack.webp",
+                "images/clayfigurines.webp",
+                "images/noviklostermanor.webp",
+                "images/stmargharetachurch.webp",
+                "images/stnicholaschurch.webp",
+                "images/standrewchurch.webp",
+                "images/plaguememorial.webp",
+                "images/jelovsekgranary.webp",
+                "images/bolcinhouse.webp",
+                "images/stoberhouse.webp",
+                "images/barbankhouse.webp",
+                "images/mesicmill.webp",
+                "images/riverloznica.webp",
+                
+                // POI detail images
                 "images/castle1.webp", "images/castle2.webp", "images/castle3.webp",
                 "images/park1.webp", "images/park2.webp", "images/park3.webp",
                 "images/icecream1.webp", "images/icecream2.webp", "images/icecream3.webp",
@@ -35,26 +62,44 @@ import com.vaadin.flow.theme.material.Material;
                 "images/barbankhouse1.webp", "images/barbankhouse2.webp", "images/barbankhouse3.webp",
                 "images/mesicmill1.webp", "images/mesicmill2.webp", "images/mesicmill3.webp",
                 "images/riverloznica1.webp", "images/riverloznica2.webp", "images/riverloznica3.webp",
-
-                // Styles
-                "styles/offline.css",
-                "styles/main.css",
-                "main-view-styles.css",
-
-                // Scripts
-                "scripts/offline.js",
-                "scripts/main.js",
-
+                
                 // Icons
                 "icons/icon-192x192.ico",
                 "icons/icon-512x512.ico",
-
+                
+                // Styles
+                "styles/offline.css",
+                "styles/main.css",
+                "styles/main-view-styles.css",
+                "styles/poi-detail-view-styles.css",
+                
+                // POI descriptions
+                "poi-descriptions/castle.txt",
+                "poi-descriptions/park.txt",
+                "poi-descriptions/icecream.txt",
+                "poi-descriptions/mountoljka.txt",
+                "poi-descriptions/maurerhouse.txt",
+                "poi-descriptions/romancamp.txt",
+                "poi-descriptions/tractormuseum.txt",
+                "poi-descriptions/cajhnhayrack.txt",
+                "poi-descriptions/clayfigurines.txt",
+                "poi-descriptions/noviklostermanor.txt",
+                "poi-descriptions/stmargharetachurch.txt",
+                "poi-descriptions/stnicholaschurch.txt",
+                "poi-descriptions/standrewchurch.txt",
+                "poi-descriptions/plaguememorial.txt",
+                "poi-descriptions/jelovsekgranary.txt",
+                "poi-descriptions/bolcinhouse.txt",
+                "poi-descriptions/stoberhouse.txt",
+                "poi-descriptions/barbankhouse.txt",
+                "poi-descriptions/mesicmill.txt",
+                "poi-descriptions/riverloznica.txt",
+                
                 // Other resources
                 "manifest.json",
                 "offline.html",
                 "index.html",
-
-                // Add any other resources you want to be available offline
+                "pointsofinterest/pois.txt"
         }
 )
 public class AppShell implements AppShellConfigurator {

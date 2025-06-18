@@ -2,29 +2,38 @@ package com.example.starter.base.views;
 
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.dependency.CssImport;
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 
 import java.util.List;
 
 @Route("")
 @CssImport("./styles/main-view-styles.css")
+@JavaScript("./offline-store.js")
 public class MainView extends AppLayout {
-
-    private POIService poiService;
-
+    
+    private final POIService poiService;
+    
     public MainView(POIService poiService) {
         this.poiService = poiService;
-
+        
+        // Store POIs in IndexedDB for offline use
+        storePointsOfInterestForOffline();
+        
         VerticalLayout content = new VerticalLayout();
         content.addClassName("main-content");
         content.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -40,13 +49,17 @@ public class MainView extends AppLayout {
         H2 welcomeText = new H2("Welcome to");
         welcomeText.addClassName("welcome-text");
 
-        H1 polzelaText = new H1("Polzela");
-        polzelaText.addClassName("polzela-text");
+        Image grbImage = new Image("/images/grbpolzela.webp", "Polzela Coat of Arms");
+        grbImage.addClassName("grb-image");
 
-        titleDiv.add(welcomeText, polzelaText);
+        HorizontalLayout polzelaLayout = new HorizontalLayout(grbImage);
+        polzelaLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        polzelaLayout.addClassName("polzela-layout");
+
+        titleDiv.add(welcomeText, polzelaLayout);
 
         // Create an image component
-        Image titleImage = new Image("/META-INF/resources/images/polzela.webp", "Polzela Logo");
+        Image titleImage = new Image("/images/polzela.webp", "Polzela panorama");
         titleImage.addClassName("title-image");
 
         // Create a container for the image and title
@@ -68,6 +81,31 @@ public class MainView extends AppLayout {
 
         content.add(poiContainer);
         setContent(content);
+    }
+    
+    private void storePointsOfInterestForOffline() {
+        List<PointOfInterest> pois = poiService.getPointsOfInterest();
+        JsonArray poisArray = Json.createArray();
+        
+        for (int i = 0; i < pois.size(); i++) {
+            PointOfInterest poi = pois.get(i);
+            JsonObject poiJson = Json.createObject();
+            
+            poiJson.put("name", poi.getName());
+            poiJson.put("displayName", poi.getDisplayName());
+            poiJson.put("description", poi.getDescription());
+            poiJson.put("imagePath", poi.getImagePath());
+            poiJson.put("mapUrl", poi.getMapUrl());
+            poiJson.put("navigationUrl", poi.getNavigationUrl());
+            
+            poisArray.set(i, poiJson);
+        }
+        
+        // Execute JavaScript to store POIs in IndexedDB
+        UI.getCurrent().getPage().executeJs(
+            "if (window.offlineStore) { window.offlineStore.storePOIs($0); }",
+            poisArray
+        );
     }
 
     private RouterLink createPoiLink(PointOfInterest poi) {

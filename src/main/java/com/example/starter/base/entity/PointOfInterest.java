@@ -41,12 +41,9 @@ public class PointOfInterest {
     public String getDescription() { return description; }
     public StreamResource getImageResource() {
         return new StreamResource(getDisplayName(), () -> {
-            String fullPath = "/META-INF/resources/images/" + imagePath;
+            String fullPath = "/images/" + imagePath;
             System.out.println("Attempting to load resource from: " + fullPath);
-            InputStream inputStream = getClass().getResourceAsStream(fullPath);
-            if (inputStream == null) {
-                System.out.println("Resource not found: " + fullPath);
-            }
+            InputStream inputStream = getClass().getResourceAsStream("/META-INF/resources" + fullPath);
             if (inputStream == null) {
                 System.out.println("Resource not found: " + fullPath);
                 listResources("META-INF/resources");

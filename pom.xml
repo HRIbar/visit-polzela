@@ -70,23 +70,15 @@
             <artifactId>jboss-logmanager</artifactId>
             <version>3.0.6.Final</version>
         </dependency>
-
-        <!-- Uncomment the following if you are using any of the Pro components -->
-        <!--
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-jandex</artifactId>
-        </dependency>
-        -->
-
     </dependencies>
 
     <build>
         <defaultGoal>package quarkus:dev</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>io.quarkus.platform</groupId>
@@ -113,6 +105,21 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-frontend</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeAutoUpdate>true</nodeAutoUpdate>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -121,6 +128,11 @@
             <!-- Vaadin Production mode is activated using -Pproduction -->
             <id>production</id>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <groupId>com.vaadin</groupId>
