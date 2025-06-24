@@ -100,8 +100,9 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
             MapContainer map = createMap(poi);
             map.addClassName("poi-map");
 
-            Button navigateButton = new Button("Take me there!");
+            Image navigateButton = new Image("/images/navigationbutton.webp", "Navigate");
             navigateButton.addClassName("navigate-button");
+            navigateButton.getElement().getStyle().set("cursor", "pointer");
             navigateButton.addClickListener(e -> {
                 getUI().ifPresent(ui -> ui.getPage().executeJs(
                         "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
@@ -109,7 +110,7 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
                 ));
             });
 
-            content.add(title, image, description, gallery, map, navigateButton);
+            content.add(title, image, description, gallery, navigateButton, map);
         } else {
             content.add(new H2("Point of Interest not found"));
         }

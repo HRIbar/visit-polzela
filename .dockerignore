@@ -4,3 +4,10 @@
 .env
 Dockerfile
 fly.toml
+target/
+!target/quarkus-app/
+.git/
+.github/
+.idea/
+*.iml
+*.log
