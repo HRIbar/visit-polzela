@@ -31,7 +31,7 @@ public class MainView extends AppLayout {
     public MainView(POIService poiService) {
         this.poiService = poiService;
         
-        // Store POIs in IndexedDB for offline use
+
         storePointsOfInterestForOffline();
         
         VerticalLayout content = new VerticalLayout();
@@ -46,24 +46,36 @@ public class MainView extends AppLayout {
         Div titleDiv = new Div();
         titleDiv.addClassName("title-div");
 
+
         H2 welcomeText = new H2("Welcome to");
         welcomeText.addClassName("welcome-text");
 
         Image grbImage = new Image("/images/grbpolzela.webp", "Polzela Coat of Arms");
         grbImage.addClassName("grb-image");
 
-        HorizontalLayout polzelaLayout = new HorizontalLayout(grbImage);
-        polzelaLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        polzelaLayout.addClassName("polzela-layout");
 
-        titleDiv.add(welcomeText, polzelaLayout);
+        HorizontalLayout headerLayout = new HorizontalLayout(welcomeText, grbImage);
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        headerLayout.addClassName("header-layout");
 
-        // Create an image component
+        titleDiv.add(headerLayout);
+
+
+        Div welcomeContainer = new Div();
+        welcomeContainer.addClassName("welcome-container");
+        welcomeContainer.add(titleDiv);
+        content.add(welcomeContainer);
+
+
+        titleContainer = new Div();
+        titleContainer.addClassName("title-container");
+
+
         Image titleImage = new Image("/images/polzela.webp", "Polzela panorama");
         titleImage.addClassName("title-image");
 
-        // Create a container for the image and title
-        Div titleImageContainer = new Div(titleImage, titleDiv);
+
+        Div titleImageContainer = new Div(titleImage);
         titleImageContainer.addClassName("title-image-container");
 
         titleContainer.add(titleImageContainer);
