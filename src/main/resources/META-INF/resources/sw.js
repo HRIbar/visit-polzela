@@ -13,6 +13,27 @@ const resourcesToCache = [
   '/styles/offline.css',
   '/images/polzela.webp',
   '/images/grbpolzela.webp',
+  // Add main POI images
+  '/images/castle.webp',
+  '/images/park.webp',
+  '/images/icecream.webp',
+  '/images/mountoljka.webp',
+  '/images/maurerhouse.webp',
+  '/images/romancamp.webp',
+  '/images/tractormuseum.webp',
+  '/images/cajhnhayrack.webp',
+  '/images/clayfigurines.webp',
+  '/images/noviklostermanor.webp',
+  '/images/stmargharetachurch.webp',
+  '/images/stnicholaschurch.webp',
+  '/images/standrewchurch.webp',
+  '/images/plaguememorial.webp',
+  '/images/jelovsekgranary.webp',
+  '/images/bolcinhouse.webp',
+  '/images/stoberhouse.webp',
+  '/images/barbankhouse.webp',
+  '/images/mesicmill.webp',
+  '/images/riverloznica.webp',
   // Add all your images here
   '/images/castle1.webp', '/images/castle2.webp', '/images/castle3.webp',
   '/images/park1.webp', '/images/park2.webp', '/images/park3.webp',
@@ -82,11 +103,25 @@ workbox.routing.registerRoute(
     })
 );
 
+// Add this specific route for images
+workbox.routing.registerRoute(
+    ({request}) => request.destination === 'image',
+    new workbox.strategies.CacheFirst({
+        cacheName: 'images',
+        plugins: [
+            new workbox.expiration.ExpirationPlugin({
+                maxEntries: 60,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+            }),
+        ],
+    })
+);
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Service worker installed');
-      self.skipWaiting();
+      console.log('Caching app resources');
+      return cache.addAll(resourcesToCache);
     })
   );
 });
@@ -111,6 +146,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
+
+  // Log image requests
+  if (request.destination === 'image') {
+    console.log('Image fetch:', url.pathname);
+  }
 
   // For navigation requests (HTML pages)
   if (request.mode === 'navigate') {

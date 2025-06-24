@@ -97,25 +97,38 @@ public class MainView extends AppLayout {
     
     private void storePointsOfInterestForOffline() {
         List<PointOfInterest> pois = poiService.getPointsOfInterest();
-        JsonArray poisArray = Json.createArray();
         
-        for (int i = 0; i < pois.size(); i++) {
-            PointOfInterest poi = pois.get(i);
+        JsonArray poisArray = Json.createArray();
+        int index = 0;
+        
+        for (PointOfInterest poi : pois) {
             JsonObject poiJson = Json.createObject();
-            
+            poiJson.put("id", poi.getName()); // Use name as ID for routing
             poiJson.put("name", poi.getName());
             poiJson.put("displayName", poi.getDisplayName());
             poiJson.put("description", poi.getDescription());
-            poiJson.put("imagePath", poi.getImagePath());
+            
+            // Ensure image paths are absolute and match the cached resources
+            String imagePath = poi.getImagePath();
+            if (!imagePath.startsWith("/")) {
+                imagePath = "/images/" + imagePath;
+            }
+            poiJson.put("imagePath", imagePath);
+            
+            // Add short description
+            poiJson.put("shortDescription", "Historic site in Polzela.");
+            
             poiJson.put("mapUrl", poi.getMapUrl());
             poiJson.put("navigationUrl", poi.getNavigationUrl());
             
-            poisArray.set(i, poiJson);
+            poisArray.set(index++, poiJson);
         }
         
-        // Execute JavaScript to store POIs in IndexedDB
         UI.getCurrent().getPage().executeJs(
-            "if (window.offlineStore) { window.offlineStore.storePOIs($0); }",
+            "if (window.offlineStore) { " +
+            "  window.offlineStore.storePOIs($0); " +
+            "  window.offlineStore.setupOfflineNavigation(); " +
+            "}", 
             poisArray
         );
     }

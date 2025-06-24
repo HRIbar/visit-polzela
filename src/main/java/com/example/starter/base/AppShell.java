@@ -99,7 +99,9 @@ import com.vaadin.flow.theme.material.Material;
                 "manifest.json",
                 "offline.html",
                 "index.html",
-                "pointsofinterest/pois.txt"
+                "pointsofinterest/pois.txt",
+                "styles/offline.css",
+                "offline-store.js"
         }
 )
 public class AppShell implements AppShellConfigurator {
