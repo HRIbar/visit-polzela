@@ -61,6 +61,12 @@
             <artifactId>vaadin-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-server</artifactId>
+            <version>24.7.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>software.xdev</groupId>
             <artifactId>vaadin-maps-leaflet-flow</artifactId>
             <version>4.2.0</version>
