@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - Visit Polzela</title>
+    <title>Visit Polzela - Offline Mode</title>
     <link rel="stylesheet" href="styles/offline.css">
     <link rel="stylesheet" href="styles/main.css">
     <script src="./frontend/offline-store.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .offline-icon {
+            font-size: 64px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="main-layout">
@@ -40,6 +53,12 @@
             <p>&copy; 2023 Visit Polzela. All rights reserved.</p>
         </footer>
     </div>
+
+    <div class="offline-icon">📶</div>
+    <h1>You're offline</h1>
+    <p>The Visit Polzela app requires an internet connection to load new content.</p>
+    <p>Some previously viewed points of interest may be available.</p>
+    <button onclick="window.location.href='/'">Try Again</button>
 
     <script>
         // Load POIs from IndexedDB when page loads
@@ -75,6 +94,41 @@
                     '<p>Unable to load cached content. Please reconnect to the internet.</p>';
             }
         });
+    </script>
+
+    <script>
+        // Check if we have cached POIs
+        if ('indexedDB' in window) {
+            const dbPromise = indexedDB.open('visit-polzela-db', 1);
+            dbPromise.onsuccess = function(event) {
+                const db = event.target.result;
+                const tx = db.transaction('pois', 'readonly');
+                const store = tx.objectStore('pois');
+                const request = store.getAll();
+
+                request.onsuccess = function() {
+                    const pois = request.result;
+                    const container = document.getElementById('offline-pois');
+
+                    if (pois && pois.length > 0) {
+                        pois.forEach(poi => {
+                            const poiElement = document.createElement('div');
+                            poiElement.className = 'offline-poi';
+                            poiElement.innerHTML = `
+                                <img src="${poi.mainImagePath}" alt="${poi.name}">
+                                <h3>${poi.name}</h3>
+                            `;
+                            poiElement.addEventListener('click', () => {
+                                window.location.href = `/poi/${poi.id}`;
+                            });
+                            container.appendChild(poiElement);
+                        });
+                    } else {
+                        container.innerHTML = '<p>No points of interest available offline.</p>';
+                    }
+                };
+            };
+        }
     </script>
 
     <script src="scripts/offline.js"></script>

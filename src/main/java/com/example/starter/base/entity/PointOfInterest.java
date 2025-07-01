@@ -24,6 +24,9 @@ public class PointOfInterest {
         this.navigationUrl = navigationUrl;
     }
 
+    public PointOfInterest() {
+
+    }
 
 
     // Getters
