@@ -52,6 +52,22 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  if (event.request.url.includes('?v-r=uidl')) {
+      event.respondWith(
+        fetch(event.request).catch(() => {
+          // If the UIDL request fails, return a custom response
+          return new Response(JSON.stringify({
+            uiId: 0,
+            type: 'application',
+            appId: 'offline-app',
+            // Add any necessary offline UI structure here
+          }), {
+            headers: { 'Content-Type': 'application/json' }
+          });
+        })
+      );
+     }
+
   // Handle POI description requests specifically
   if (url.pathname.includes('/poi-descriptions/')) {
     event.respondWith(
@@ -150,23 +166,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Default fetch handler - network first, then cache
+  // For non-navigation requests, use a cache-first strategy
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // Cache successful responses
-        if (response.ok) {
-          const responseClone = response.clone();
-          caches.open(STATIC_CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // Try to get from cache if network fails
-        return caches.match(event.request);
-      })
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
   );
 });
 

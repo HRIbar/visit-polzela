@@ -24,5 +24,8 @@ public class AppShell implements AppShellConfigurator {
     public void configurePage(AppShellSettings settings) {
         // Add custom service worker registration
         settings.addInlineFromFile("META-INF/resources/sw-register.js", Inline.Wrapping.JAVASCRIPT);
+        settings.addInlineFromFile("META-INF/resources/frontend/offline-router.js", Inline.Wrapping.JAVASCRIPT);
+        settings.addInlineFromFile("META-INF/resources/frontend/offline-handler.js", Inline.Wrapping.JAVASCRIPT);
+
     }
 }

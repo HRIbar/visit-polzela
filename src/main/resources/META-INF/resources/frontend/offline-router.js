@@ -1,3 +1,4 @@
+// src/main/resources/META-INF/resources/frontend/offline-router.js
 /**
  * Offline router for Visit Polzela PWA
  * Handles navigation when the app is offline
@@ -29,6 +30,7 @@ class OfflineRouter {
       '/poi/mesicmill',
       '/poi/riverloznica'
     ];
+    this.originalVaadinNavigate = null;
   }
 
   /**
@@ -45,7 +47,44 @@ class OfflineRouter {
     // Set up navigation interception
     this.setupNavigationInterception();
 
-    console.log('Offline router initialized');
+    // Defer Vaadin interception until the client is loaded
+    window.addEventListener('vaadin-flow-client-loaded', () => {
+        this.interceptVaadinRouting();
+        console.log('Offline router initialized with Vaadin interception');
+    });
+  }
+
+  interceptVaadinRouting() {
+    if (window.Vaadin && window.Vaadin.Flow && window.Vaadin.Flow.clients && window.Vaadin.Flow.clients.TypeScript) {
+      // Store the original navigate function
+      this.originalVaadinNavigate = window.Vaadin.Flow.clients.TypeScript.prototype.navigate;
+
+      // Override Vaadin's navigate function
+      window.Vaadin.Flow.clients.TypeScript.prototype.navigate = (event, href) => {
+        if (this.isOffline) {
+          // Handle offline navigation
+          this.handleOfflineNavigation(href);
+        } else {
+          // Proceed with normal navigation when online
+          this.originalVaadinNavigate.call(window.Vaadin.Flow.clients.TypeScript.prototype, event, href);
+        }
+      };
+    } else {
+        console.error('Could not intercept Vaadin routing: Vaadin client not found.');
+    }
+  }
+
+  handleOfflineNavigation(href) {
+    const url = new URL(href, window.location.origin);
+    const path = url.pathname;
+
+    if (path.startsWith('/poi/')) {
+      this.navigateToPOI(path.split('/').pop());
+    } else if (this.isOfflineRoute(path)) {
+      this.navigateToOfflinePage(path);
+    } else {
+      this.showOfflineMessage('This page is not available offline');
+    }
   }
 
   /**
@@ -157,9 +196,26 @@ class OfflineRouter {
       } else {
         this.showOfflineMessage(`The content for "${poiId}" is not available offline`);
       }
+      this.notifyVaadinNavigation(`/poi/${poiId}`);
     } catch (error) {
       console.error('Error navigating to POI:', error);
       this.showOfflineMessage('Failed to load offline content');
+    }
+  }
+
+  notifyVaadinNavigation(path) {
+    if (window.Vaadin && window.Vaadin.Flow && window.Vaadin.Flow.clients && window.Vaadin.Flow.clients.TypeScript) {
+      // Create a mock navigation event
+      const navigationEvent = {
+        preventDefault: () => {},
+        detail: {
+            location: new URL(path, window.location.origin),
+            source: 'popstate'
+        }
+      };
+
+      // Notify Vaadin's router about the navigation
+      window.Vaadin.Flow.clients.TypeScript.prototype.serverConnected.call(window.Vaadin.Flow.clients.TypeScript.prototype, navigationEvent);
     }
   }
 
