@@ -18,22 +18,45 @@ import com.vaadin.flow.component.dependency.CssImport;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-
 import java.util.List;
+
 
 @Route("")
 @CssImport("./styles/main-view-styles.css")
 @JavaScript("./offline-store.js")
 public class MainView extends AppLayout {
-    
+
     private final POIService poiService;
-    
+
     public MainView(POIService poiService) {
         this.poiService = poiService;
-        
+
 
         storePointsOfInterestForOffline();
-        
+
+        HorizontalLayout flagLayout = new HorizontalLayout();
+        flagLayout.addClassName("flag-layout");
+        flagLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        flagLayout.setSpacing(true);
+        flagLayout.setPadding(true);
+
+        // Add flags to the flagLayout
+        Image siFlag = new Image("/images/siflag.webp", "SI Flag");
+        siFlag.addClassName("small-flag");
+        flagLayout.add(siFlag);
+
+        Image ukFlag = new Image("/images/ukflag.webp", "UK Flag");
+        ukFlag.addClassName("small-flag");
+        flagLayout.add(ukFlag);
+
+        Image deFlag = new Image("/images/deflag.webp", "DE Flag");
+        deFlag.addClassName("small-flag");
+        flagLayout.add(deFlag);
+
+        Image nlFlag = new Image("/images/nlflag.webp", "NL Flag");
+        nlFlag.addClassName("small-flag");
+        flagLayout.add(nlFlag);
+
         VerticalLayout content = new VerticalLayout();
         content.addClassName("main-content");
         content.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -64,7 +87,7 @@ public class MainView extends AppLayout {
         Div welcomeContainer = new Div();
         welcomeContainer.addClassName("welcome-container");
         welcomeContainer.add(titleDiv);
-        content.add(welcomeContainer);
+        content.add(flagLayout, welcomeContainer);
 
 
         titleContainer = new Div();
@@ -94,25 +117,25 @@ public class MainView extends AppLayout {
         content.add(poiContainer);
         setContent(content);
     }
-    
+
     private void storePointsOfInterestForOffline() {
         List<PointOfInterest> pois = poiService.getPointsOfInterest();
         JsonArray poisArray = Json.createArray();
-        
+
         for (int i = 0; i < pois.size(); i++) {
             PointOfInterest poi = pois.get(i);
             JsonObject poiJson = Json.createObject();
-            
+
             poiJson.put("name", poi.getName());
             poiJson.put("displayName", poi.getDisplayName());
             poiJson.put("description", poi.getDescription());
             poiJson.put("imagePath", poi.getImagePath());
             poiJson.put("mapUrl", poi.getMapUrl());
             poiJson.put("navigationUrl", poi.getNavigationUrl());
-            
+
             poisArray.set(i, poiJson);
         }
-        
+
         // Execute JavaScript to store POIs in IndexedDB
         UI.getCurrent().getPage().executeJs(
             "if (window.offlineStore) { window.offlineStore.storePOIs($0); }",
