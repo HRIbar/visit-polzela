@@ -29,15 +29,16 @@ public class POIService {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 5) {
+                String[] parts = line.split(";");
+                if (parts.length >= 6) {
                     PointOfInterest poi = new PointOfInterest(
                             parts[0].trim(),  // name (1st argument in CSV)
                             parts[1].trim(),  // displayName (2nd argument in CSV)
                             parts[2].trim(),  // short description (3rd argument in CSV)
                             parts[0].trim() + ".webp",  // imagePath (1st argument + ".webp")
                             parts[3].trim(),  // mapUrl (4th argument in CSV)
-                            parts[4].trim()   // navigationUrl (5th argument in CSV)
+                            parts[4].trim(),  // navigationUrl (5th argument in CSV)
+                            parts[5].trim()   // appleNavigationUrl (6th argument in CSV)
                     );
                     pointsOfInterest.add(poi);
                 }
@@ -79,7 +80,7 @@ public class POIService {
                     future.complete(List.of());
                     return;
                 }
-                
+
                 poisResult.then(result -> {
                     if (result instanceof JsonArray) {
                         List<PointOfInterest> pois = convertJsonArrayToPOIs((JsonArray) result);
@@ -116,6 +117,9 @@ public class POIService {
             poi.setDisplayName(obj.getString("displayName"));
             poi.setMapUrl(obj.getString("mapUrl"));
             poi.setNavigationUrl(obj.getString("navigationUrl"));
+            if (obj.hasKey("appleNavigationUrl")) {
+                poi.setAppleNavigationUrl(obj.getString("appleNavigationUrl"));
+            }
             pois.add(poi);
         }
 

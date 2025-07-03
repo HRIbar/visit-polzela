@@ -13,15 +13,17 @@ public class PointOfInterest {
     private String description;
     private String imagePath;
     private String mapUrl;
-    String navigationUrl;
+    private String navigationUrl;
+    private String appleNavigationUrl;
 
-    public PointOfInterest(String name, String displayName, String description, String imagePath, String mapUrl, String navigationUrl) {
+    public PointOfInterest(String name, String displayName, String description, String imagePath, String mapUrl, String navigationUrl, String appleNavigationUrl) {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
         this.imagePath = imagePath;
         this.mapUrl = mapUrl;
         this.navigationUrl = navigationUrl;
+        this.appleNavigationUrl = appleNavigationUrl;
     }
 
     public PointOfInterest() {
@@ -101,5 +103,13 @@ public class PointOfInterest {
 
     public void setNavigationUrl(String navigationUrl) {
         this.navigationUrl = navigationUrl;
+    }
+
+    public String getAppleNavigationUrl() {
+        return appleNavigationUrl;
+    }
+
+    public void setAppleNavigationUrl(String appleNavigationUrl) {
+        this.appleNavigationUrl = appleNavigationUrl;
     }
 }

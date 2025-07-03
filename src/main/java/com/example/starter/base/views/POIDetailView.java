@@ -3,7 +3,6 @@ package com.example.starter.base.views;
 import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
@@ -100,17 +99,25 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
             MapContainer map = createMap(poi);
             map.addClassName("poi-map");
 
-            Image navigateButton = new Image("/images/navigationbutton.webp", "Navigate");
+            Image navigateButton = new Image("/images/navigationbutton.webp", "Navigate with Google Maps");
             navigateButton.addClassName("navigate-button");
             navigateButton.getElement().getStyle().set("cursor", "pointer");
             navigateButton.addClickListener(e -> {
                 getUI().ifPresent(ui -> ui.getPage().executeJs(
-                        "window.open('https://www.google.com/maps/dir/?api=1&destination=" +
-                                poi.getDisplayName().replace(" ", "+") + "', '_blank');"
+                        "window.open($0, '_blank');", poi.getNavigationUrl()
                 ));
             });
 
-            content.add(title, image, description, gallery, navigateButton, map);
+            Image appleNavigateButton = new Image("/images/applenavigationbutton.webp", "Navigate with Apple Maps");
+            appleNavigateButton.addClassName("navigate-button");
+            appleNavigateButton.getElement().getStyle().set("cursor", "pointer");
+            appleNavigateButton.addClickListener(e -> {
+                getUI().ifPresent(ui -> ui.getPage().executeJs(
+                        "window.open($0, '_blank');", poi.getAppleNavigationUrl()
+                ));
+            });
+
+            content.add(title, image, description, gallery, navigateButton,appleNavigateButton, map);
         } else {
             content.add(new H2("Point of Interest not found"));
         }

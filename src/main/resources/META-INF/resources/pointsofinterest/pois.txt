@@ -1,20 +1,20 @@
-castle,Polzela Castle,Historic castle in Polzela.,https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601,https://maps.app.goo.gl/jp9xW42AM45nbu2F8
-park,Park Šenek,A serene park perfect for relaxation.,https://www.openstreetmap.org/way/326921620#map=19/46.283478/15.074862,https://maps.app.goo.gl/1vjKHXKhh8Rs4gUu9
-icecream,Medo's ice cream,Delicious local ice cream.,https://www.openstreetmap.org/search?lat=46.280175&lon=15.076860#map=19/46.280176/15.076860,https://www.openstreetmap.org/search?lat=46.280175&lon=15.076860#map=19/46.280176/15.076860
-mountoljka,Mount Oljka and the Mountaineering Lodge,Short hike to Polzela's most visited landmark,https://www.openstreetmap.org/search?lat=46.325665&lon=15.058919#map=19/46.325664/15.058921,https://maps.app.goo.gl/XbGDZRxJdSeSL3n86
-maurerhouse,Neža Maurer’s Birthplace,Birthplace of a poem writer Neža Maurer,https://www.openstreetmap.org/search?lat=46.303530&lon=15.064819#map=18/46.303532/15.064817,https://maps.app.goo.gl/Cs8csw725NywoUKUA
-romancamp,Roman Legionary Camp,A signboard showing where Roman legion camp once stood,https://www.openstreetmap.org/search?lat=46.267967&lon=15.094945#map=17/46.267963/15.094952,https://maps.app.goo.gl/LEhbwiPJXoZGVGdZ9
-tractormuseum,Museum of Vintage Tractors,A nice collection of vintage tractors,https://www.openstreetmap.org/search?lat=46.282075&lon=15.074620#map=19/46.282076/15.074620,https://maps.app.goo.gl/EVyaBP29oDWiE1Uc7
-cajhnhayrack,Cajhn's Hayrack,Traditional Slovenian haystack,url1,url2
-clayfigurines,Whimsical Clay Figurines,Funny clay figures produced by a local,url1,url2
-noviklostermanor,Novi Klošter Manor,A mysterious mannor on the outskirst of Polzela,https://www.openstreetmap.org/search?query=Polzela%20konferen%C4%8Dni%20center#map=19/46.286712/15.103786,https://maps.app.goo.gl/tdk9kA1YPc9f64Ys6
-stmargharetachurch,Church of St. Margaret,Polzela's main church,https://www.openstreetmap.org/search?lat=46.278870&lon=15.078349#map=19/46.278869/15.078350,https://maps.app.goo.gl/faBLZwF8cnh8Teoq6
-stnicholaschurch,Church of St. Nicholas in Vimperk,A chuch with a bench of love and a nice viewpoint,https://www.openstreetmap.org/search?lat=46.292051&lon=15.065366#map=17/46.292055/15.065373,https://maps.app.goo.gl/nwmAGctFrEVTvaT58
-standrewchurch,Church of St. Andrew,Originaly build in 1229,url1,url2
-plaguememorial,Plague Memorial in Dobrič,Memorial of terible plague some say victims are burried below,https://www.openstreetmap.org/search?query=gora%20oljka#map=17/46.308736/15.057664,https://maps.app.goo.gl/zX3UpDpCv2LfQG2E7
-jelovsekgranary,Jelovšek Granary,Traditional Granary,url1,url2
-bolcinhouse,Bolčin House,One of the oldest houses arround,url1,url2
-stoberhouse,Štober House,Grand house from the 19th century,url1,url2
-barbankhouse,Barbank House,Traditional countryside house,url1,url2
-mesicmill,Mešič Mill,The most famous mill in Polzela,url1,url2
-riverloznica,River Ložnica and Its Floodplain,Local river with distinct fauna and flora,https://www.openstreetmap.org/search?query=reka%20lo%C5%BEnica#map=16/46.27884/15.11596,https://maps.app.goo.gl/pontX5isAMapiiWX7
+castle;Polzela Castle;Historic castle in Polzela.;https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601;https://maps.app.goo.gl/jp9xW42AM45nbu2F8;https://maps.apple.com/?daddr=46.280336,15.072601&dirflg=d
+park;Park Šenek;A serene park perfect for relaxation.;https://www.openstreetmap.org/way/326921620#map=19/46.283478/15.074862;https://maps.app.goo.gl/1vjKHXKhh8Rs4gUu9;https://maps.apple.com/?daddr=46.283478,15.074862&dirflg=d
+icecream;Medo's ice cream;Delicious local ice cream.;https://www.openstreetmap.org/#map=19/46.280175/15.076860;https://maps.app.goo.gl/gY4a8Z7X6Z9Y7Z7Y7;https://maps.apple.com/?daddr=46.280175,15.076860&dirflg=d
+mountoljka;Mount Oljka and the Mountaineering Lodge;Short hike to Polzela's most visited landmark;https://www.openstreetmap.org/#map=19/46.325665/15.058919;https://maps.app.goo.gl/XbGDZRxJdSeSL3n86;https://maps.apple.com/?daddr=46.325665,15.058919&dirflg=d
+maurerhouse;Neža Maurer’s Birthplace;Birthplace of a poem writer Neža Maurer;https://www.openstreetmap.org/#map=18/46.303530/15.064819;https://maps.app.goo.gl/Cs8csw725NywoUKUA;https://maps.apple.com/?daddr=46.303530,15.064819&dirflg=d
+romancamp;Roman Legionary Camp;A signboard showing where Roman legion camp once stood;https://www.openstreetmap.org/#map=17/46.267967/15.094945;https://maps.app.goo.gl/LEhbwiPJXoZGVGdZ9;https://maps.apple.com/?daddr=46.267967,15.094945&dirflg=d
+tractormuseum;Museum of Vintage Tractors;A nice collection of vintage tractors;https://www.openstreetmap.org/#map=19/46.282075/15.074620;https://maps.app.goo.gl/EVyaBP29oDWiE1Uc7;https://maps.apple.com/?daddr=46.282075,15.074620&dirflg=d
+cajhnhayrack;Cajhn's Hayrack;Traditional Slovenian haystack;url1;url2;url3
+clayfigurines;Whimsical Clay Figurines;Funny clay figures produced by a local;url1;url2;url3
+noviklostermanor;Novi Klošter Manor;A mysterious mannor on the outskirst of Polzela;https://www.openstreetmap.org/#map=19/46.286712/15.103786;https://maps.app.goo.gl/tdk9kA1YPc9f64Ys6;https://maps.apple.com/?daddr=46.286712,15.103786&dirflg=d
+stmargharetachurch;Church of St. Margaret;Polzela's main church;https://www.openstreetmap.org/#map=19/46.278870/15.078349;https://maps.app.goo.gl/faBLZwF8cnh8Teoq6;https://maps.apple.com/?daddr=46.278870;15.078349&dirflg=d
+stnicholaschurch;Church of St. Nicholas in Vimperk;A chuch with a bench of love and a nice viewpoint;https://www.openstreetmap.org/#map=17/46.292051/15.065366;https://maps.app.goo.gl/nwmAGctFrEVTvaT58;https://maps.apple.com/?daddr=46.292051,15.065366&dirflg=d
+standrewchurch;Church of St. Andrew;Originaly build in 1229;url1;url2;url3
+plaguememorial;Plague Memorial in Dobrič;Memorial of terible plague some say victims are burried below;https://www.openstreetmap.org/#map=17/46.308736/15.057664;https://maps.app.goo.gl/zX3UpDpCv2LfQG2E7;https://maps.apple.com/?daddr=46.308736,15.057664&dirflg=d
+jelovsekgranary;Jelovšek Granary;Traditional Granary;url1;url2;url3
+bolcinhouse;Bolčin House;One of the oldest houses arround;url1;url2;url3
+stoberhouse;Štober House;Grand house from the 19th century;url1;url2;url3
+barbankhouse;Barbank House;Traditional countryside house;url1;url2;url3
+mesicmill;Mešič Mill;The most famous mill in Polzela;url1;url2;url3
+riverloznica;River Ložnica and Its Floodplain;Local river with distinct fauna and flora;https://www.openstreetmap.org/#map=16/46.27884/15.11596;https://maps.app.goo.gl/pontX5isAMapiiWX7;https://maps.apple.com/?daddr=46.27884,15.11596&dirflg=d
