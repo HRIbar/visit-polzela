@@ -7,12 +7,77 @@ const STATIC_CACHE_NAME = 'visit-polzela-static-cache-v1';
 const PRECACHE_RESOURCES = [
   '/',
   '/index.html',
-  '/offline.html',
   '/styles/main.css',
-  '/styles/offline.css',
-  '/frontend/offline-store.js',
-  '/frontend/offline-router.js',
-  '/images/logo.png'
+  '/images/applenavigationbutton.webp',
+  '/images/barbankhouse.webp',
+  '/images/bolcinhouse.webp',
+  '/images/cajhnhayrack.webp',
+  '/images/castle.webp',
+  '/images/castle1.webp',
+  '/images/castle2.webp',
+  '/images/castle3.webp',
+  '/images/clayfigurines.webp',
+  '/images/deflag.webp',
+  '/images/grbpolzela.webp',
+  '/images/icecream.webp',
+  '/images/icecream1.webp',
+  '/images/icecream2.webp',
+  '/images/jelovsekgranary.webp',
+  '/images/maurerhouse.webp',
+  '/images/maurerhouse1.webp',
+  '/images/maurerhouse2.webp',
+  '/images/maurerhouse3.webp',
+  '/images/mesicmill.webp',
+  '/images/mountoljka.webp',
+  '/images/mountoljka1.webp',
+  '/images/mountoljka2.webp',
+  '/images/mountoljka3.webp',
+  '/images/navigationbutton.webp',
+  '/images/nlflag.webp',
+  '/images/noviklostermanor.webp',
+  '/images/park.webp',
+  '/images/park1.webp',
+  '/images/park2.webp',
+  '/images/park3.webp',
+  '/images/placeholder.png',
+  '/images/plaguememorial.webp',
+  '/images/polzela.webp',
+  '/images/riverloznica.webp',
+  '/images/romancamp.webp',
+  '/images/romancamp1.webp',
+  '/images/romancamp2.webp',
+  '/images/siflag.webp',
+  '/images/standrewchurch.webp',
+  '/images/standrewchurch1.webp',
+  '/images/standrewchurch2.webp',
+  '/images/stmargharetachurch.webp',
+  '/images/stmargharetachurch1.webp',
+  '/images/stnicholaschurch.webp',
+  '/images/stnicholaschurch1.webp',
+  '/images/stnicholaschurch2.webp',
+  '/images/stoberhouse.webp',
+  '/images/tractormuseum.webp',
+  '/images/ukflag.webp'
+  '/poi-descriptions/barbankhouse.txt',
+  '/poi-descriptions/bolcinhouse.txt',
+  '/poi-descriptions/cajhnhayrack.txt',
+  '/poi-descriptions/castle.txt',
+  '/poi-descriptions/clayfigurines.txt',
+  '/poi-descriptions/icecream.txt',
+  '/poi-descriptions/jelovsekgranary.txt',
+  '/poi-descriptions/maurerhouse.txt',
+  '/poi-descriptions/mesicmill.txt',
+  '/poi-descriptions/mountoljka.txt',
+  '/poi-descriptions/noviklostermanor.txt',
+  '/poi-descriptions/park.txt',
+  '/poi-descriptions/plaguememorial.txt',
+  '/poi-descriptions/riverloznica.txt',
+  '/poi-descriptions/romancamp.txt',
+  '/poi-descriptions/standrewchurch.txt',
+  '/poi-descriptions/stmargharetachurch.txt',
+  '/poi-descriptions/stnicholaschurch.txt',
+  '/poi-descriptions/stoberhouse.txt',
+  '/poi-descriptions/tractormuseum.txt'
 ];
 
 // Install event - cache critical resources
@@ -27,151 +92,6 @@ self.addEventListener('install', event => {
   );
   // Force the waiting service worker to become the active service worker
   self.skipWaiting();
-});
-
-// Add event listener for the fetch event
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Handle navigation requests (HTML pages)
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          console.log('Navigation fetch failed, falling back to cache');
-          // If offline and navigating, check if it's a POI route
-          if (url.pathname.startsWith('/poi/')) {
-            // Return the main page and let the offline-router.js handle the routing
-            return caches.match('/');
-          }
-
-          // For other navigation failures, serve the offline page
-          return caches.match('/offline.html') || caches.match('/');
-        })
-    );
-    return;
-  }
-
-  if (event.request.url.includes('?v-r=uidl')) {
-      event.respondWith(
-        fetch(event.request).catch(() => {
-          // If the UIDL request fails, return a custom response
-          return new Response(JSON.stringify({
-            uiId: 0,
-            type: 'application',
-            appId: 'offline-app',
-            // Add any necessary offline UI structure here
-          }), {
-            headers: { 'Content-Type': 'application/json' }
-          });
-        })
-      );
-     }
-
-  // Handle POI description requests specifically
-  if (url.pathname.includes('/poi-descriptions/')) {
-    event.respondWith(
-      caches.open(DATA_CACHE_NAME).then(cache => {
-        return fetch(event.request)
-          .then(response => {
-            // If online, update the cache
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            // If offline, try to return cached data
-            return cache.match(event.request);
-          });
-      })
-    );
-    return;
-  }
-
-  // Handle pointsofinterest/pois.txt specifically
-  if (url.pathname.includes('/pointsofinterest/pois.txt')) {
-    event.respondWith(
-      caches.open(DATA_CACHE_NAME).then(cache => {
-        return fetch(event.request)
-          .then(response => {
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            return cache.match(event.request);
-          });
-      })
-    );
-    return;
-  }
-
-  // Handle image requests
-  if (url.pathname.endsWith('.webp') || url.pathname.endsWith('.png') ||
-      url.pathname.endsWith('.jpg') || url.pathname.endsWith('.jpeg')) {
-    event.respondWith(
-      caches.open(STATIC_CACHE_NAME).then(cache => {
-        return fetch(event.request)
-          .then(response => {
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            return cache.match(event.request);
-          });
-      })
-    );
-    return;
-  }
-
-  // Handle JavaScript files
-  if (url.pathname.endsWith('.js')) {
-    event.respondWith(
-      caches.open(STATIC_CACHE_NAME).then(cache => {
-        return fetch(event.request)
-          .then(response => {
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            return cache.match(event.request);
-          });
-      })
-    );
-    return;
-  }
-
-  // Handle CSS files
-  if (url.pathname.endsWith('.css')) {
-    event.respondWith(
-      caches.open(STATIC_CACHE_NAME).then(cache => {
-        return fetch(event.request)
-          .then(response => {
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            return cache.match(event.request);
-          });
-      })
-    );
-    return;
-  }
-
-  // For non-navigation requests, use a cache-first strategy
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
 });
 
 // Add an activate event to clean up old caches
@@ -194,19 +114,30 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
-// Handle offline/online status changes
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'OFFLINE_STATUS_CHANGE') {
-    // Notify all clients about the offline status change
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'OFFLINE_STATUS_UPDATE',
-          offline: event.data.offline
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', event => {
+  // We only want to cache GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  event.respondWith(
+    caches.open(STATIC_CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(response => {
+        // Return response from cache if found
+        if (response) {
+          return response;
+        }
+
+        // Otherwise, fetch from network
+        return fetch(event.request).then(networkResponse => {
+          // Add the new resource to the cache
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
         });
       });
-    });
-  }
+    })
+  );
 });
 
 console.log('Service Worker loaded');
