@@ -16,6 +16,7 @@ import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
 
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinSession;
 import org.jboss.logging.Logger;
 import software.xdev.vaadin.maps.leaflet.registry.LComponentManagementRegistry;
 import software.xdev.vaadin.maps.leaflet.MapContainer;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 
 @JavaScript("https://unpkg.com/leaflet@1.7.1/dist/leaflet.js")
@@ -67,7 +69,19 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
             if (is == null) {
                 return "Description not available.";
             }
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            String fullDescription = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            Locale locale = VaadinSession.getCurrent().getLocale();
+            String lang = locale != null ? locale.getLanguage().toUpperCase() : "EN";
+
+            return Stream.of(fullDescription.split("\n"))
+                    .filter(line -> line.startsWith(lang + ":"))
+                    .map(line -> line.substring(lang.length() + 1).trim())
+                    .findFirst()
+                    .orElseGet(() -> Stream.of(fullDescription.split("\n")) // Fallback to EN
+                            .filter(line -> line.startsWith("EN:"))
+                            .map(line -> line.substring(3).trim())
+                            .findFirst()
+                            .orElse("Description not available in the selected language."));
         } catch (IOException e) {
             e.printStackTrace();
             return "Error loading description.";

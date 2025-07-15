@@ -20,6 +20,7 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import java.util.List;
+import java.util.Locale;
 
 
 @Route("")
@@ -42,20 +43,16 @@ public class MainView extends AppLayout {
         flagLayout.setPadding(true);
 
         // Add flags to the flagLayout
-        Image siFlag = new Image("/images/siflag.webp", "SI Flag");
-        siFlag.addClassName("small-flag");
+        Image siFlag = createFlagButton("/images/siflag.webp", "SI Flag", "SL");
         flagLayout.add(siFlag);
 
-        Image ukFlag = new Image("/images/ukflag.webp", "UK Flag");
-        ukFlag.addClassName("small-flag");
+        Image ukFlag = createFlagButton("/images/ukflag.webp", "UK Flag", "EN");
         flagLayout.add(ukFlag);
 
-        Image deFlag = new Image("/images/deflag.webp", "DE Flag");
-        deFlag.addClassName("small-flag");
+        Image deFlag = createFlagButton("/images/deflag.webp", "DE Flag", "DE");
         flagLayout.add(deFlag);
 
-        Image nlFlag = new Image("/images/nlflag.webp", "NL Flag");
-        nlFlag.addClassName("small-flag");
+        Image nlFlag = createFlagButton("/images/nlflag.webp", "NL Flag", "NL");
         flagLayout.add(nlFlag);
 
         Button installButton = new Button("Install App");
@@ -139,6 +136,18 @@ public class MainView extends AppLayout {
         setContent(content);
     }
 
+    private Image createFlagButton(String imagePath, String altText, String languageCode) {
+        Image flag = new Image(imagePath, altText);
+        flag.addClassName("small-flag");
+        flag.getStyle().set("cursor", "pointer");
+        flag.addClickListener(event -> {
+            UI.getCurrent().getSession().setLocale(new Locale(languageCode));
+            // Optionally, you can reload the page to see changes immediately
+            // UI.getCurrent().getPage().reload();
+        });
+        return flag;
+    }
+
     private void storePointsOfInterestForOffline() {
         List<PointOfInterest> pois = poiService.getPointsOfInterest();
         JsonArray poisArray = Json.createArray();
@@ -159,8 +168,8 @@ public class MainView extends AppLayout {
 
         // Execute JavaScript to store POIs in IndexedDB
         UI.getCurrent().getPage().executeJs(
-            "if (window.offlineStore) { window.offlineStore.storePOIs($0); }",
-            poisArray
+                "if (window.offlineStore) { window.offlineStore.storePOIs($0); }",
+                poisArray
         );
     }
 
