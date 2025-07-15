@@ -4,6 +4,7 @@ import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
@@ -56,6 +57,26 @@ public class MainView extends AppLayout {
         Image nlFlag = new Image("/images/nlflag.webp", "NL Flag");
         nlFlag.addClassName("small-flag");
         flagLayout.add(nlFlag);
+
+        Button installButton = new Button("Install App");
+        installButton.setVisible(true);
+        installButton.addClickListener(e -> {
+            UI.getCurrent().getPage().executeJs("window.pwaInstall();");
+        });
+
+        // Listen for the custom event from sw-register.js to show the button
+        UI.getCurrent().getElement().executeJs(
+                "document.body.addEventListener('vaadin-pwa-installable', () => $0.$server.showInstallButton());",
+                getElement()
+        );
+
+        // Listen for the custom event to hide the button after installation
+        UI.getCurrent().getElement().executeJs(
+                "document.body.addEventListener('vaadin-pwa-installed', () => $0.$server.hideInstallButton());",
+                getElement()
+        );
+
+        flagLayout.add(installButton);
 
         VerticalLayout content = new VerticalLayout();
         content.addClassName("main-content");
