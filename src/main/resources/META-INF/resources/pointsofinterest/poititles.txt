@@ -1,0 +1,21 @@
+castle;EN:Polzela Castle;SL:Polzelski grad;DE:Polzela Schloss;NL:Kasteel Polzela
+park;EN:Park Šenek;SL:Park Šenek;DE:Park Šenek;NL:Park Šenek
+icecream;EN:Medo's ice cream;SL:Medo sladoled;DE:Medos Eiscreme;NL:Medo's IJs
+mountoljka;EN:Mount Oljka and the Mountaineering Lodge;SL:Oljka in planinska koča;DE:Oljka und die Berghütte;NL:Mount Oljka en de Berghut
+maurerhouse;EN:Neža Maurer’s Birthplace;SL:Rojstna hiša Neže Maurer;DE:Neža Maurers Geburtsort;NL:Neža Maurers Geboortehuis
+romancamp;EN:Roman Legionary Camp;SL:Rimski legijski tabor;DE:Römisches Legionärslager;NL:Romeins Legioenkamp
+tractormuseum;EN:Museum of Vintage Tractors;SL:Muzej starodobnih traktorjev;DE:Museum für Oldtimer-Traktoren;NL:Oldtimer Tractor Museum
+cajhnhayrack;Cajhn's Hayrack;SL:Cajhnova kozolec;DE:Cajhns Heuhaufen;NL:Cajhns Hooiberg
+clayfigurines;EN:Whimsical Clay Figurines;SL:Humoristične glinene figurice;DE:Witzige Tonfiguren;NL:Grappige Klei Figuren
+noviklostermanor;EN:Novi Klošter Manor;SL:Novi Klošter;DE:Novi Klošter;NL:Novi Klošter
+stmargharetachurch;EN:Church of St. Margaret;SL:Cerkev sv. Margarete;DE:Kirche St. Margarete;NL:Kerk van St. Margareta
+stnicholaschurch;EN:Church of St. Nicholas in Vimperk;SL:Cerkev sv. Nikolaja v Vimperku;DE:Kirche St. Nikolaus in Vimperk;NL:Kerk van St. Nikolaas in Vimperk
+standrewchurch;EN:Church of St. Andrew;SL:Cerkev sv. Andreja;DE:Kirche St. Andreas;NL:Kerk van St. Andreas
+plaguememorial;EN:Plague Memorial in Dobrič;SL:Spomenik kužnim žrtvam v Dobriču;DE:Seuchenopferdenkmal in Dobrič;NL:Pestmonument in Dobrič
+jelovsekgranary;EN:Jelovšek Granary;SL:Jelovškov kozolec;DE:Jelovšek Scheune;NL:Jelovšek Graanschuur
+bolcinhouse;EN:Bolčin House;SL:Bolčinova hiša;DE:Bolčin Haus;NL:Bolčin Huis
+stoberhouse;EN:Štober House;SL:Štoberjeva hiša;DE:Štober Haus;NL:Štober Huis
+barbankhouse;EN:Barbank House;SL:Barbankova hiša;DE:Barbank Haus;NL:Barbank Huis
+mesicmill;EN:Mešič Mill;SL:Mešičev mlin;DE:Mešič Mühle;NL:Mešič Molen
+riverloznica;EN:River Ložnica and Its Floodplain;SL:Reka Ložnica in njena poplavna ravnica;DE:Fluss Ložnica und ihre Aue;NL:Rivier Ložnica en zijn Overstromingsvlakte
+takeme;EN:Take me there!;SL:Pelji me tja!;DE:Nehmt mich dorthin!;NL:Neem me daarheen!

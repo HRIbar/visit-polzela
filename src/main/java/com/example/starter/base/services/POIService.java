@@ -1,7 +1,6 @@
 package com.example.starter.base.services;
 
 import com.example.starter.base.entity.PointOfInterest;
-import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.BufferedReader;
@@ -10,9 +9,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import elemental.json.JsonArray;
+import java.util.Locale;
+import java.util.Map;
+
 
 @ApplicationScoped
 public class POIService {
@@ -20,9 +21,18 @@ public class POIService {
     @Inject
     private OfflineStorageService offlineStorage;
 
+    private Map<String, Map<String, String>> titlesCache = new HashMap<>();
+
     public List<PointOfInterest> getPointsOfInterest() {
+        return getPointsOfInterest(Locale.ENGLISH); // Default to English
+    }
+
+    public List<PointOfInterest> getPointsOfInterest(Locale locale) {
         List<PointOfInterest> pointsOfInterest = new ArrayList<>();
         String resourcePath = "/META-INF/resources/pointsofinterest/pois.txt";
+
+        // Load titles for the specified locale
+        Map<String, String> localizedTitles = loadLocalizedTitles(locale);
 
         try (InputStream is = getClass().getResourceAsStream(resourcePath);
              BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -31,11 +41,14 @@ public class POIService {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length >= 6) {
+                    String name = parts[0].trim();
+                    String displayName = localizedTitles.getOrDefault(name, parts[1].trim());
+
                     PointOfInterest poi = new PointOfInterest(
-                            parts[0].trim(),  // name (1st argument in CSV)
-                            parts[1].trim(),  // displayName (2nd argument in CSV)
+                            name,  // name (1st argument in CSV)
+                            displayName,  // localized displayName from poititles.txt
                             parts[2].trim(),  // short description (3rd argument in CSV)
-                            parts[0].trim() + ".webp",  // imagePath (1st argument + ".webp")
+                            name + ".webp",  // imagePath (1st argument + ".webp")
                             parts[3].trim(),  // mapUrl (4th argument in CSV)
                             parts[4].trim(),  // navigationUrl (5th argument in CSV)
                             parts[5].trim()   // appleNavigationUrl (6th argument in CSV)
@@ -51,82 +64,44 @@ public class POIService {
         return pointsOfInterest;
     }
 
-    /**
-     * Gets POIs with offline support
-     */
-    public CompletableFuture<List<PointOfInterest>> getPOIsWithOfflineSupport() {
-        CompletableFuture<List<PointOfInterest>> future = new CompletableFuture<>();
+    private Map<String, String> loadLocalizedTitles(Locale locale) {
+        String languageCode = locale.getLanguage().toUpperCase();
 
-        PendingJavaScriptResult onlineCheckResult = offlineStorage.isOnline();
-        if (onlineCheckResult == null) {
-            // If we can't check online status, assume we're online
-            List<PointOfInterest> pois = getAllPOIs();
-            future.complete(pois);
-            return future;
+        // Check cache first
+        if (titlesCache.containsKey(languageCode)) {
+            return titlesCache.get(languageCode);
         }
 
-        onlineCheckResult.then(Boolean.class, online -> {
-            if (online) {
-                // We're online, load from your normal source
-                List<PointOfInterest> pois = getAllPOIs();
+        Map<String, String> titles = new HashMap<>();
+        String resourcePath = "/META-INF/resources/pointsofinterest/poititles.txt";
 
-                // Store for offline use
-                offlineStorage.storePOIs(pois);
-                future.complete(pois);
-            } else {
-                // We're offline, try to load from IndexedDB
-                PendingJavaScriptResult poisResult = offlineStorage.getPOIs();
-                if (poisResult == null) {
-                    future.complete(List.of());
-                    return;
-                }
+        try (InputStream is = getClass().getResourceAsStream(resourcePath);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
-                poisResult.then(result -> {
-                    if (result instanceof JsonArray) {
-                        List<PointOfInterest> pois = convertJsonArrayToPOIs((JsonArray) result);
-                        future.complete(pois);
-                    } else {
-                        // This handles the case where the result is not a JsonArray
-                        System.err.println("Error retrieving POIs from IndexedDB: unexpected result type");
-                        future.complete(List.of());
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length >= 2) {
+                    String name = parts[0].trim();
+
+                    // Find the title for the requested language
+                    for (int i = 1; i < parts.length; i++) {
+                        String titlePart = parts[i].trim();
+                        if (titlePart.startsWith(languageCode + ":")) {
+                            String title = titlePart.substring(languageCode.length() + 1);
+                            titles.put(name, title);
+                            break;
+                        }
                     }
-                }, error -> {
-                    // This handles JavaScript errors
-                    System.err.println("Error retrieving POIs from IndexedDB: " + error);
-                    future.complete(List.of());
-                });
+                }
             }
-        });
-
-        return future;
-    }
-
-    /**
-     * Converts JSON array from IndexedDB back to POI objects
-     */
-    private List<PointOfInterest> convertJsonArrayToPOIs(JsonArray array) {
-        List<PointOfInterest> pois = new ArrayList<>();
-
-        for (int i = 0; i < array.length(); i++) {
-            elemental.json.JsonObject obj = array.getObject(i);
-
-            PointOfInterest poi = new PointOfInterest();
-            poi.setName(obj.getString("name"));
-            poi.setDescription(obj.getString("description"));
-            poi.setImagePath(obj.getString("mainImagePath"));
-            poi.setDisplayName(obj.getString("displayName"));
-            poi.setMapUrl(obj.getString("mapUrl"));
-            poi.setNavigationUrl(obj.getString("navigationUrl"));
-            if (obj.hasKey("appleNavigationUrl")) {
-                poi.setAppleNavigationUrl(obj.getString("appleNavigationUrl"));
-            }
-            pois.add(poi);
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            System.err.println("Error reading localized titles from file");
         }
 
-        return pois;
-    }
-
-    private List<PointOfInterest> getAllPOIs() {
-        return getPointsOfInterest();
+        // Cache the result
+        titlesCache.put(languageCode, titles);
+        return titles;
     }
 }
