@@ -33,7 +33,6 @@ public class MainView extends AppLayout {
     public MainView(POIService poiService) {
         this.poiService = poiService;
 
-
         storePointsOfInterestForOffline();
 
         HorizontalLayout flagLayout = new HorizontalLayout();
@@ -122,10 +121,25 @@ public class MainView extends AppLayout {
         titleContainer.add(titleImageContainer);
         content.add(titleContainer);
 
+        // Create POI container and populate it
+        refreshPOIContainer(content);
+
+        setContent(content);
+    }
+
+    private void refreshPOIContainer(VerticalLayout content) {
+        // Remove existing POI container if it exists
+        content.getChildren()
+                .filter(component -> component.getClass().equals(FlexLayout.class))
+                .findFirst()
+                .ifPresent(content::remove);
+
         FlexLayout poiContainer = new FlexLayout();
         poiContainer.addClassName("poi-container");
 
-        List<PointOfInterest> pointsOfInterest = poiService.getPointsOfInterest();
+        // Get current locale from session
+        Locale currentLocale = UI.getCurrent().getSession().getLocale();
+        List<PointOfInterest> pointsOfInterest = poiService.getPointsOfInterest(currentLocale);
 
         for (PointOfInterest poi : pointsOfInterest) {
             RouterLink poiLink = createPoiLink(poi);
@@ -133,7 +147,6 @@ public class MainView extends AppLayout {
         }
 
         content.add(poiContainer);
-        setContent(content);
     }
 
     private Image createFlagButton(String imagePath, String altText, String languageCode) {
@@ -142,14 +155,17 @@ public class MainView extends AppLayout {
         flag.getStyle().set("cursor", "pointer");
         flag.addClickListener(event -> {
             UI.getCurrent().getSession().setLocale(new Locale(languageCode));
-            // Optionally, you can reload the page to see changes immediately
-            // UI.getCurrent().getPage().reload();
+            // Refresh the POI container to show localized titles
+            VerticalLayout content = (VerticalLayout) getContent();
+            refreshPOIContainer(content);
         });
         return flag;
     }
 
     private void storePointsOfInterestForOffline() {
-        List<PointOfInterest> pois = poiService.getPointsOfInterest();
+        // Get current locale from session
+        Locale currentLocale = UI.getCurrent().getSession().getLocale();
+        List<PointOfInterest> pois = poiService.getPointsOfInterest(currentLocale);
         JsonArray poisArray = Json.createArray();
 
         for (int i = 0; i < pois.size(); i++) {
@@ -205,3 +221,4 @@ public class MainView extends AppLayout {
         return link;
     }
 }
+
