@@ -5,20 +5,22 @@ import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.dependency.CssImport;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +31,7 @@ import java.util.Locale;
 public class MainView extends AppLayout {
 
     private final POIService poiService;
+    private Image activeFlag;
 
     public MainView(POIService poiService) {
         this.poiService = poiService;
@@ -47,6 +50,8 @@ public class MainView extends AppLayout {
 
         Image ukFlag = createFlagButton("/images/ukflag.webp", "UK Flag", "EN");
         flagLayout.add(ukFlag);
+        // Set English flag as default active
+        setActiveFlag(ukFlag);
 
         Image deFlag = createFlagButton("/images/deflag.webp", "DE Flag", "DE");
         flagLayout.add(deFlag);
@@ -149,18 +154,34 @@ public class MainView extends AppLayout {
         content.add(poiContainer);
     }
 
+    private void setActiveFlag(Image flag) {
+        // Remove active class from current active flag
+        if (activeFlag != null) {
+            activeFlag.removeClassName("active-flag");
+        }
+
+        // Set new active flag
+        activeFlag = flag;
+        activeFlag.addClassName("active-flag");
+    }
+
     private Image createFlagButton(String imagePath, String altText, String languageCode) {
         Image flag = new Image(imagePath, altText);
         flag.addClassName("small-flag");
         flag.getStyle().set("cursor", "pointer");
         flag.addClickListener(event -> {
             UI.getCurrent().getSession().setLocale(new Locale(languageCode));
+
+            // Set this flag as active
+            setActiveFlag(flag);
+
             // Refresh the POI container to show localized titles
             VerticalLayout content = (VerticalLayout) getContent();
             refreshPOIContainer(content);
         });
         return flag;
     }
+
 
     private void storePointsOfInterestForOffline() {
         // Get current locale from session
@@ -221,4 +242,3 @@ public class MainView extends AppLayout {
         return link;
     }
 }
-
