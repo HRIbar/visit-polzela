@@ -77,7 +77,9 @@ const PRECACHE_RESOURCES = [
   '/poi-descriptions/stmargharetachurch.txt',
   '/poi-descriptions/stnicholaschurch.txt',
   '/poi-descriptions/stoberhouse.txt',
-  '/poi-descriptions/tractormuseum.txt'
+  '/poi-descriptions/tractormuseum.txt',
+  '/pointsofinterest/pois.txt',
+  '/pointsofinterest/poititles.txt'
 ];
 
 // Install event - cache critical resources

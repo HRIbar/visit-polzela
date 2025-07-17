@@ -4,6 +4,7 @@ import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
@@ -29,6 +30,8 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -58,7 +61,9 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         content.setSpacing(true);
         content.setPadding(true);
 
-        pointsOfInterest = poiService.getPointsOfInterest();
+        // Get POIs with current locale instead of default
+        Locale currentLocale = VaadinSession.getCurrent().getLocale();
+        pointsOfInterest = poiService.getPointsOfInterest(currentLocale);
     }
 
     private String loadDescription(PointOfInterest poi) {
@@ -92,12 +97,17 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
     public void setParameter(BeforeEvent event, String parameter) {
         content.removeAll();
 
+        // Refresh POI data with current locale to ensure we have the latest translations
+        Locale currentLocale = VaadinSession.getCurrent().getLocale();
+        pointsOfInterest = poiService.getPointsOfInterest(currentLocale);
+
         PointOfInterest poi = pointsOfInterest.stream()
                 .filter(p -> p.getName().equals(parameter))
                 .findFirst()
                 .orElse(null);
 
         if (poi != null) {
+            // The poi.getDisplayName() now contains the localized title from poititles.txt
             H2 title = new H2(poi.getDisplayName());
             title.addClassName("poi-title");
             content.add(title);
@@ -113,30 +123,97 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
             MapContainer map = createMap(poi);
             map.addClassName("poi-map");
 
-            Image navigateButton = new Image("/images/navigationbutton.webp", "Navigate with Google Maps");
-            navigateButton.addClassName("navigate-button");
-            navigateButton.getElement().getStyle().set("cursor", "pointer");
-            navigateButton.addClickListener(e -> {
-                getUI().ifPresent(ui -> ui.getPage().executeJs(
-                        "window.open($0, '_blank');", poi.getNavigationUrl()
-                ));
-            });
+            // Get localized "Take me there!" text
+            String takeMeText = getLocalizedTakeMeText(currentLocale);
 
-            Image appleNavigateButton = new Image("/images/applenavigationbutton.webp", "Navigate with Apple Maps");
-            appleNavigateButton.addClassName("navigate-button");
-            appleNavigateButton.getElement().getStyle().set("cursor", "pointer");
-            appleNavigateButton.addClickListener(e -> {
-                getUI().ifPresent(ui -> ui.getPage().executeJs(
-                        "window.open($0, '_blank');", poi.getAppleNavigationUrl()
-                ));
-            });
+            Div navigateButtonContainer = createNavigationButton(
+                "/images/navigationbutton.webp",
+                "Navigate with Google Maps",
+                takeMeText,
+                poi.getNavigationUrl()
+            );
 
-            content.add(title, image, description, gallery, navigateButton,appleNavigateButton, map);
+            Div appleNavigateButtonContainer = createNavigationButton(
+                "/images/applenavigationbutton.webp",
+                "Navigate with Apple Maps",
+                takeMeText,
+                poi.getAppleNavigationUrl()
+            );
+
+            content.add(title, image, description, gallery, navigateButtonContainer, appleNavigateButtonContainer, map);
         } else {
             content.add(new H2("Point of Interest not found"));
         }
 
         setContent(content);
+    }
+
+    private String getLocalizedTakeMeText(Locale locale) {
+        String languageCode = locale.getLanguage().toUpperCase();
+        String resourcePath = "/META-INF/resources/pointsofinterest/poititles.txt";
+
+        try (InputStream is = getClass().getResourceAsStream(resourcePath);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("takeme;")) {
+                    String[] parts = line.split(";");
+                    for (int i = 1; i < parts.length; i++) {
+                        String part = parts[i].trim();
+                        if (part.startsWith(languageCode + ":")) {
+                            return part.substring(languageCode.length() + 1);
+                        }
+                    }
+                    // Fallback to English if language not found
+                    for (int i = 1; i < parts.length; i++) {
+                        String part = parts[i].trim();
+                        if (part.startsWith("EN:")) {
+                            return part.substring(3);
+                        }
+                    }
+                }
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return "Take me there!"; // Default fallback
+    }
+
+    private Div createNavigationButton(String imagePath, String altText, String overlayText, String url) {
+        Div buttonContainer = new Div();
+        buttonContainer.addClassName("navigation-button-container");
+        buttonContainer.getStyle().set("position", "relative");
+        buttonContainer.getStyle().set("display", "inline-block");
+        buttonContainer.getStyle().set("cursor", "pointer");
+
+        Image buttonImage = new Image(imagePath, altText);
+        buttonImage.addClassName("navigate-button");
+
+        H2 overlayTextElement = new H2(overlayText);
+        overlayTextElement.addClassName("navigation-overlay-text");
+        overlayTextElement.getStyle().set("position", "absolute");
+        overlayTextElement.getStyle().set("top", "50%");
+        overlayTextElement.getStyle().set("left", "50%");
+        overlayTextElement.getStyle().set("transform", "translate(-50%, -50%)");
+        overlayTextElement.getStyle().set("margin", "0");
+        overlayTextElement.getStyle().set("color", "black");
+        overlayTextElement.getStyle().set("font-weight", "bold");
+        //overlayTextElement.getStyle().set("text-shadow", "2px 2px 4px rgba(0,0,0,0.8)");
+        overlayTextElement.getStyle().set("pointer-events", "none");
+        overlayTextElement.getStyle().set("font-size", "2.5em");
+        overlayTextElement.getStyle().set("text-align", "center");
+
+        buttonContainer.add(buttonImage, overlayTextElement);
+
+        buttonContainer.addClickListener(e -> {
+            getUI().ifPresent(ui -> ui.getPage().executeJs(
+                    "window.open($0, '_blank');", url
+            ));
+        });
+
+        return buttonContainer;
     }
 
     private HorizontalLayout createImageGallery(PointOfInterest poi) {
@@ -260,3 +337,4 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         dialog.open();
     }
 }
+
