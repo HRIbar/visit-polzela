@@ -4,10 +4,11 @@ import com.example.starter.base.entity.PointOfInterest;
 import com.example.starter.base.services.POIService;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
+
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -126,14 +127,14 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
             // Get localized "Take me there!" text
             String takeMeText = getLocalizedTakeMeText(currentLocale);
 
-            Div navigateButtonContainer = createNavigationButton(
+            Anchor navigateButtonContainer = createNavigationButton(
                 "/images/navigationbutton.webp",
                 "Navigate with Google Maps",
                 takeMeText,
                 poi.getNavigationUrl()
             );
 
-            Div appleNavigateButtonContainer = createNavigationButton(
+            Anchor appleNavigateButtonContainer = createNavigationButton(
                 "/images/applenavigationbutton.webp",
                 "Navigate with Apple Maps",
                 takeMeText,
@@ -181,12 +182,17 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         return "Take me there!"; // Default fallback
     }
 
-    private Div createNavigationButton(String imagePath, String altText, String overlayText, String url) {
-        Div buttonContainer = new Div();
-        buttonContainer.addClassName("navigation-button-container");
-        buttonContainer.getStyle().set("position", "relative");
-        buttonContainer.getStyle().set("display", "inline-block");
-        buttonContainer.getStyle().set("cursor", "pointer");
+    private Anchor createNavigationButton(String imagePath, String altText, String overlayText, String url) {
+        // Use an Anchor so the browser handles the navigation directly (preserves user gesture on iOS)
+        Anchor anchor = new Anchor(url, "");
+        anchor.addClassName("navigation-button-container");
+        anchor.getStyle().set("position", "relative");
+        anchor.getStyle().set("display", "inline-block");
+        anchor.getStyle().set("cursor", "pointer");
+
+        // Do not set target to _blank on iOS because opening a new tab may get blocked; let the default
+        // navigation happen in the same tab which reliably opens native map apps.
+        // If you want a new tab on desktop, consider conditionally setting target based on user agent.
 
         Image buttonImage = new Image(imagePath, altText);
         buttonImage.addClassName("navigate-button");
@@ -205,15 +211,9 @@ public class POIDetailView extends AppLayout implements HasUrlParameter<String> 
         overlayTextElement.getStyle().set("font-size", "2.5em");
         overlayTextElement.getStyle().set("text-align", "center");
 
-        buttonContainer.add(buttonImage, overlayTextElement);
+        anchor.add(buttonImage, overlayTextElement);
 
-        buttonContainer.addClickListener(e -> {
-            getUI().ifPresent(ui -> ui.getPage().executeJs(
-                    "window.open($0, '_blank');", url
-            ));
-        });
-
-        return buttonContainer;
+        return anchor;
     }
 
     private HorizontalLayout createImageGallery(PointOfInterest poi) {
