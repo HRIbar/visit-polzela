@@ -1,0 +1,30 @@
+[
+  {
+    "name": "castle",
+    "displayName": "Polzela Castle",
+    "description": "Historic castle in Polzela.",
+    "imagePath": "/images/castle.webp",
+    "mapUrl": "https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601",
+    "navigationUrl": "https://maps.app.goo.gl/jp9xW42AM45nbu2F8",
+    "appleNavigationUrl": "https://maps.apple.com/?daddr=46.280336,15.072601&dirflg=d"
+  },
+  {
+    "name": "park",
+    "displayName": "Park Šenek",
+    "description": "A serene park perfect for relaxation.",
+    "imagePath": "/images/park.webp",
+    "mapUrl": "https://www.openstreetmap.org/way/326921620#map=19/46.283478/15.074862",
+    "navigationUrl": "https://maps.app.goo.gl/1vjKHXKhh8Rs4gUu9",
+    "appleNavigationUrl": "https://maps.apple.com/?daddr=46.283478,15.074862&dirflg=d"
+  },
+  {
+    "name": "icecream",
+    "displayName": "Medo's ice cream",
+    "description": "Delicious local ice cream.",
+    "imagePath": "/images/icecream.webp",
+    "mapUrl": "https://www.openstreetmap.org/#map=19/46.280175/15.076860",
+    "navigationUrl": "https://maps.app.goo.gl/gY4a8Z7X6Z9Y7Z7Y7",
+    "appleNavigationUrl": "https://maps.apple.com/?daddr=46.280175,15.076860&dirflg=d"
+  }
+]
+
