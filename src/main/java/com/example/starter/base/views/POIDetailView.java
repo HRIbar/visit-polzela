@@ -41,7 +41,8 @@ import java.util.stream.Stream;
 @JavaScript("https://unpkg.com/leaflet@1.7.1/dist/leaflet.js")
 @StyleSheet("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css")
 @CssImport("./styles/poi-detail-view-styles.css")
-@Route("poi")
+// Disabled - Using React/Hilla POIDetailView.tsx instead (kept for history)
+// @Route("poi")
 @PreserveOnRefresh
 public class POIDetailView extends AppLayout implements HasUrlParameter<String> {
 

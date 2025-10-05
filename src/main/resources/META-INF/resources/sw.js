@@ -1,4 +1,4 @@
-const CACHE_NAME = 'visit-polzela-v4'; // Increment version to force update
+const CACHE_NAME = 'visit-polzela-v5'; // Increment version to force update
 const urlsToCache = [
   '/',
   '/index.html',
@@ -28,6 +28,14 @@ const urlsToCache = [
   '/poi-descriptions/stnicholaschurch.txt',
   '/poi-descriptions/stoberhouse.txt',
   '/poi-descriptions/tractormuseum.txt',
+  // Offline scripts
+  '/frontend/offline-handler.js',
+  '/frontend/offline-router.js',
+  '/frontend/offline-store.js',
+  '/js/offline-store.js',
+  // Manifest and icons
+  '/manifest.webmanifest',
+  '/favicon.ico',
   // Flag images
   '/images/siflag.webp',
   '/images/ukflag.webp',
@@ -86,25 +94,40 @@ const urlsToCache = [
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting()) // Force activation
+      .then((cache) => {
+        console.log('[SW] Caching static resources');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        console.log('[SW] Skip waiting to activate immediately');
+        return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('[SW] Installation failed:', error);
+      })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log('[SW] Claiming clients');
+      return self.clients.claim();
+    })
   );
 });
 
@@ -113,48 +136,89 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // For navigation requests (page loads), serve index.html from cache
+  // Skip non-http(s) requests (e.g., chrome-extension://)
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // For navigation requests (page loads), always serve index.html from cache
   // This allows React Router to handle routing client-side when offline
   if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match('/index.html')
+      fetch(request)
         .then((response) => {
-          if (response) {
+          // If online and successful, return the response
+          if (response && response.ok) {
             return response;
           }
-          return fetch(request).catch(() => {
-            return caches.match('/index.html');
-          });
+          // If failed, serve cached index.html
+          return caches.match('/index.html');
+        })
+        .catch(() => {
+          // If offline, serve cached index.html
+          console.log('[SW] Offline - serving cached index.html for navigation');
+          return caches.match('/index.html');
         })
     );
     return;
   }
 
-  // For all other requests, try cache first, then network
+  // For all other requests, use cache-first strategy with runtime caching
   event.respondWith(
     caches.match(request)
-      .then((response) => {
-        if (response) {
-          return response;
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          console.log('[SW] Serving from cache:', url.pathname);
+          return cachedResponse;
         }
 
-        return fetch(request).then((networkResponse) => {
-          // Cache valid responses for future use
-          if (networkResponse && networkResponse.status === 200) {
+        // If not in cache, try network and cache the response
+        return fetch(request)
+          .then((networkResponse) => {
+            // Don't cache non-successful responses or non-GET requests
+            if (!networkResponse || networkResponse.status !== 200 || request.method !== 'GET') {
+              return networkResponse;
+            }
+
+            // Clone the response before caching
             const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
+
+            // Cache JavaScript, CSS, images, and JSON responses
+            const contentType = networkResponse.headers.get('content-type') || '';
+            if (
+              contentType.includes('javascript') ||
+              contentType.includes('css') ||
+              contentType.includes('image') ||
+              contentType.includes('json') ||
+              url.pathname.endsWith('.js') ||
+              url.pathname.endsWith('.css') ||
+              url.pathname.endsWith('.webp') ||
+              url.pathname.endsWith('.png') ||
+              url.pathname.endsWith('.jpg') ||
+              url.pathname.endsWith('.json')
+            ) {
+              caches.open(CACHE_NAME).then((cache) => {
+                console.log('[SW] Runtime caching:', url.pathname);
+                cache.put(request, responseToCache);
+              });
+            }
+
+            return networkResponse;
+          })
+          .catch((error) => {
+            console.error('[SW] Fetch failed for:', url.pathname, error);
+            // Return a meaningful offline response for failed requests
+            if (url.pathname.endsWith('.html')) {
+              return caches.match('/index.html');
+            }
+            return new Response('Offline - resource not available', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain'
+              })
             });
-          }
-          return networkResponse;
-        });
-      })
-      .catch(() => {
-        // Return a fallback for failed requests if needed
-        return new Response('Offline - resource not available', {
-          status: 503,
-          statusText: 'Service Unavailable'
-        });
+          });
       })
   );
 });
