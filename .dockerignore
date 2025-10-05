@@ -1,13 +1,41 @@
-/.git
-/node_modules
-.dockerignore
-.env
-Dockerfile
-fly.toml
+# Ignore build outputs and caches to reduce build context size
 target/
-!target/quarkus-app/
-.git/
-.github/
+node_modules/
+.npm/
+.node_repl_history
+
+# Ignore IDE files
+.vscode/
 .idea/
 *.iml
+*.ipr
+*.iws
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore temporary files
+*.tmp
 *.log
+*.bak
+
+# Ignore development files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore Docker files
+Dockerfile*
+.dockerignore
+
+# Ignore documentation
+README.md
+LICENSE
+*.md
