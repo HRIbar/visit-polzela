@@ -121,8 +121,68 @@
     box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
 }
 
+.flag-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+.flags-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.install-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #1a0080;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.install-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.install-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
+    .flag-layout {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .flags-container {
+        justify-content: center;
+    }
+
+    .install-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .install-icon {
+        width: 20px;
+        height: 20px;
+    }
+
     .title-container {
         height: 150px;
     }
@@ -154,6 +214,16 @@
 }
 
 @media screen and (max-width: 480px) {
+    .install-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .install-icon {
+        width: 18px;
+        height: 18px;
+    }
+
     .title-container {
         height: 120px;
     }

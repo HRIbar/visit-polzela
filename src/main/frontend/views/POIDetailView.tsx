@@ -196,7 +196,6 @@ export default function POIDetailView() {
   if (loading) {
     return (
       <div className="poi-detail-content">
-        <Link to="/">← Back</Link>
         <div>Loading...</div>
       </div>
     );
@@ -205,7 +204,6 @@ export default function POIDetailView() {
   if (!poi) {
     return (
       <div className="poi-detail-content">
-        <Link to="/">← Back</Link>
         <h2>Point of Interest not found</h2>
       </div>
     );
@@ -213,8 +211,6 @@ export default function POIDetailView() {
 
   return (
     <div className="poi-detail-content">
-      <Link to="/">← Back</Link>
-
       <h2 className="poi-title">{poi.displayName}</h2>
 
       <img

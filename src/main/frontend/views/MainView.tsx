@@ -68,32 +68,35 @@ export default function MainView() {
     <div className="main-content">
       {/* Language flags and install button */}
       <div className="flag-layout">
-        <img
-          src="/images/siflag.webp"
-          alt="SI Flag"
-          className={`small-flag ${language === 'SL' ? 'active-flag' : ''}`}
-          onClick={() => handleLanguageChange('SL')}
-        />
-        <img
-          src="/images/ukflag.webp"
-          alt="UK Flag"
-          className={`small-flag ${language === 'EN' ? 'active-flag' : ''}`}
-          onClick={() => handleLanguageChange('EN')}
-        />
-        <img
-          src="/images/deflag.webp"
-          alt="DE Flag"
-          className={`small-flag ${language === 'DE' ? 'active-flag' : ''}`}
-          onClick={() => handleLanguageChange('DE')}
-        />
-        <img
-          src="/images/nlflag.webp"
-          alt="NL Flag"
-          className={`small-flag ${language === 'NL' ? 'active-flag' : ''}`}
-          onClick={() => handleLanguageChange('NL')}
-        />
+        <div className="flags-container">
+          <img
+            src="/images/siflag.webp"
+            alt="SI Flag"
+            className={`small-flag ${language === 'SL' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('SL')}
+          />
+          <img
+            src="/images/ukflag.webp"
+            alt="UK Flag"
+            className={`small-flag ${language === 'EN' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('EN')}
+          />
+          <img
+            src="/images/deflag.webp"
+            alt="DE Flag"
+            className={`small-flag ${language === 'DE' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('DE')}
+          />
+          <img
+            src="/images/nlflag.webp"
+            alt="NL Flag"
+            className={`small-flag ${language === 'NL' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('NL')}
+          />
+        </div>
         <button onClick={installPWA} className="install-button">
-          Install App
+          <img src="/icons/icon-192x192.ico" alt="Install" className="install-icon" />
+          Install Application
         </button>
       </div>
 
