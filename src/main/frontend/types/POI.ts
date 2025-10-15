@@ -6,6 +6,7 @@ export interface POI {
   mapUrl: string;
   navigationUrl: string;
   appleNavigationUrl: string;
+  order: number;
 }
 
 export interface POITitle {

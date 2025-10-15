@@ -126,42 +126,6 @@
     "appleNavigationUrl": "https://maps.apple.com/?daddr=46.308736,15.057664&dirflg=d"
   },
   {
-    "name": "jelovsekgranary",
-    "displayName": "Jelovšek Granary",
-    "description": "Traditional Granary",
-    "imagePath": "/images/jelovsekgranary.webp",
-    "mapUrl": "url1",
-    "navigationUrl": "url2",
-    "appleNavigationUrl": "url3"
-  },
-  {
-    "name": "bolcinhouse",
-    "displayName": "Bolčin House",
-    "description": "One of the oldest houses around",
-    "imagePath": "/images/bolcinhouse.webp",
-    "mapUrl": "url1",
-    "navigationUrl": "url2",
-    "appleNavigationUrl": "url3"
-  },
-  {
-    "name": "stoberhouse",
-    "displayName": "Štober House",
-    "description": "Grand house from the 19th century",
-    "imagePath": "/images/stoberhouse.webp",
-    "mapUrl": "url1",
-    "navigationUrl": "url2",
-    "appleNavigationUrl": "url3"
-  },
-  {
-    "name": "barbankhouse",
-    "displayName": "Barbank House",
-    "description": "Traditional countryside house",
-    "imagePath": "/images/barbankhouse.webp",
-    "mapUrl": "url1",
-    "navigationUrl": "url2",
-    "appleNavigationUrl": "url3"
-  },
-  {
     "name": "mesicmill",
     "displayName": "Mešič Mill",
     "description": "The most famous mill in Polzela",

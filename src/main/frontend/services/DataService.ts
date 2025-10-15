@@ -40,7 +40,7 @@ export class DataService {
       const text = await response.text();
       const lines = text.trim().split('\n');
 
-      const pois: POI[] = lines.map(line => {
+      const pois: POI[] = lines.map((line, index) => {
         const parts = line.split(';');
         return {
           name: parts[0],
@@ -49,7 +49,8 @@ export class DataService {
           imagePath: `/images/${parts[0]}.webp`,
           mapUrl: parts[3],
           navigationUrl: parts[4],
-          appleNavigationUrl: parts[5] || parts[4]
+          appleNavigationUrl: parts[5] || parts[4],
+          order: index
         };
       });
 
@@ -139,17 +140,19 @@ export class DataService {
       this.getTitlesFromDB()
     ]);
 
-    return pois.map(poi => {
-      const title = titles.find(t => t.name === poi.name);
-      if (title) {
-        const langKey = language.toLowerCase() as keyof Omit<POITitle, 'name'>;
-        return {
-          ...poi,
-          displayName: title[langKey] || title.en || poi.displayName
-        };
-      }
-      return poi;
-    });
+    return pois
+      .sort((a, b) => a.order - b.order)
+      .map(poi => {
+        const title = titles.find(t => t.name === poi.name);
+        if (title) {
+          const langKey = language.toLowerCase() as keyof Omit<POITitle, 'name'>;
+          return {
+            ...poi,
+            displayName: title[langKey] || title.en || poi.displayName
+          };
+        }
+        return poi;
+      });
   }
 
   async getLocalizedText(key: string, language: Language): Promise<string> {

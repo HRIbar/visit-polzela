@@ -12,10 +12,6 @@ stmargharetachurch;EN:Church of St. Margaret;SL:Cerkev sv. Margarete;DE:Kirche S
 stnicholaschurch;EN:Church of St. Nicholas in Vimperk;SL:Cerkev sv. Nikolaja v Vimperku;DE:Kirche St. Nikolaus in Vimperk;NL:Kerk van St. Nikolaas in Vimperk
 standrewchurch;EN:Church of St. Andrew;SL:Cerkev sv. Andreja;DE:Kirche St. Andreas;NL:Kerk van St. Andreas
 plaguememorial;EN:Plague Memorial in Dobrič;SL:Spomenik kužnim žrtvam v Dobriču;DE:Seuchenopferdenkmal in Dobrič;NL:Pestmonument in Dobrič
-jelovsekgranary;EN:Jelovšek Granary;SL:Jelovškov kozolec;DE:Jelovšek Scheune;NL:Jelovšek Graanschuur
-bolcinhouse;EN:Bolčin House;SL:Bolčinova hiša;DE:Bolčin Haus;NL:Bolčin Huis
-stoberhouse;EN:Štober House;SL:Štoberjeva hiša;DE:Štober Haus;NL:Štober Huis
-barbankhouse;EN:Barbank House;SL:Barbankova hiša;DE:Barbank Haus;NL:Barbank Huis
 mesicmill;EN:Mešič Mill;SL:Mešičev mlin;DE:Mešič Mühle;NL:Mešič Molen
 riverloznica;EN:River Ložnica and Its Floodplain;SL:Reka Ložnica in njena poplavna ravnica;DE:Fluss Ložnica und ihre Aue;NL:Rivier Ložnica en zijn Overstromingsvlakte
 takeme;EN:Take me there!;SL:Pelji me tja!;DE:Nehmt mich dorthin!;NL:Neem me daarheen!
