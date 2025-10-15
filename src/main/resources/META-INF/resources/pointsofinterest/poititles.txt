@@ -15,3 +15,4 @@ plaguememorial;EN:Plague Memorial in Dobrič;SL:Spomenik kužnim žrtvam v Dobri
 mesicmill;EN:Mešič Mill;SL:Mešičev mlin;DE:Mešič Mühle;NL:Mešič Molen
 riverloznica;EN:River Ložnica and Its Floodplain;SL:Reka Ložnica in njena poplavna ravnica;DE:Fluss Ložnica und ihre Aue;NL:Rivier Ložnica en zijn Overstromingsvlakte
 takeme;EN:Take me there!;SL:Pelji me tja!;DE:Nehmt mich dorthin!;NL:Neem me daarheen!
+welcome;EN:Welcome to ;SL:Dobrodošli v ;DE:Willkommen in ;NL:Welkom in

@@ -8,6 +8,7 @@ export default function MainView() {
   const [pois, setPois] = useState<POI[]>([]);
   const [language, setLanguage] = useState<Language>('EN');
   const [loading, setLoading] = useState(true);
+  const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
   const dataService = DataService.getInstance();
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function MainView() {
   useEffect(() => {
     if (!loading) {
       loadPOIs();
+      loadWelcomeText();
     }
   }, [language, loading]);
 
@@ -36,6 +38,15 @@ export default function MainView() {
       setPois(localizedPOIs);
     } catch (error) {
       console.error('Error loading POIs:', error);
+    }
+  };
+
+  const loadWelcomeText = async () => {
+    try {
+      const text = await dataService.getLocalizedText('welcome', language);
+      setWelcomeText(text);
+    } catch (error) {
+      console.error('Error loading welcome text:', error);
     }
   };
 
@@ -90,7 +101,7 @@ export default function MainView() {
       <div className="welcome-container">
         <div className="title-div">
           <div className="header-layout">
-            <h2 className="welcome-text">Welcome to</h2>
+            <h2 className="welcome-text">{welcomeText}</h2>
             <img src="/images/grbpolzela.webp" alt="Polzela Coat of Arms" className="grb-image" />
           </div>
         </div>

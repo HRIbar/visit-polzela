@@ -169,14 +169,14 @@ export class DataService {
 
   async initializeData(): Promise<void> {
     try {
-      // Check if data exists in IndexedDB
+      // Always reload titles to ensure we have the latest translations
+      await this.loadTitlesFromStatic();
+
+      // Check if POI data exists in IndexedDB
       const pois = await this.getPOIsFromDB();
       if (pois.length === 0) {
-        // Load data from static files if not in IndexedDB
-        await Promise.all([
-          this.loadPOIsFromStatic(),
-          this.loadTitlesFromStatic()
-        ]);
+        // Load POI data from static files if not in IndexedDB
+        await this.loadPOIsFromStatic();
       }
     } catch (error) {
       console.error('Error initializing data:', error);
