@@ -257,17 +257,77 @@ Users can install the app by:
 - **Dynamic content**: Network-first with cache fallback
 - **Images**: Cache-first for performance
 
-## 🗺️ Map Integration
+## 📱 Android App Deployment
 
-### OpenStreetMap
-- Free, open-source mapping
-- Leaflet.js library for rendering
-- Custom markers for each POI
+### Capacitor Integration
 
-### Navigation
-- **Google Maps**: Android and web users
-- **Apple Maps**: iOS users
-- Direct deep-linking with coordinates
+This project now includes **Capacitor by Ionic** for building native Android apps and deploying to Google Play Store.
+
+#### Quick Build for Android
+
+```bash
+# Build web assets and sync to Android
+npm run build:mobile
+
+# Open in Android Studio
+npm run cap:open
+
+# Build release bundle for Play Store
+npm run deploy:prepare
+```
+
+#### Available NPM Scripts
+
+- `npm run cap:sync` - Sync web assets to Android platform
+- `npm run cap:open` - Open project in Android Studio
+- `npm run build:mobile` - Build web assets + sync to Android
+- `npm run deploy:prepare` - Complete build ready for Play Store (creates AAB)
+- `npm run android:bundle` - Build Android App Bundle (AAB)
+- `npm run android:build` - Build release APK
+- `npm run android:clean` - Clean Android build
+
+#### App Configuration
+
+- **App ID**: `com.polzela.tourism`
+- **App Name**: Visit Polzela
+- **Package Format**: Android App Bundle (AAB) for Play Store
+
+#### Documentation
+
+For complete Android deployment instructions, see:
+- **[ANDROID_DEPLOYMENT.md](ANDROID_DEPLOYMENT.md)** - Complete guide with Play Store setup, signing, and deployment
+- **[QUICKSTART_ANDROID.md](QUICKSTART_ANDROID.md)** - Quick reference for building and deploying
+
+#### Prerequisites for Android Build
+
+1. **Android Studio** - [Download here](https://developer.android.com/studio)
+2. **Java JDK 17** - Already installed for Quarkus
+3. **Keystore** - For signing release builds (instructions in deployment guide)
+
+#### First-time Setup
+
+```bash
+# Capacitor is already initialized. Just sync your web assets:
+npm run cap:sync
+
+# Then open in Android Studio to build
+npm run cap:open
+```
+
+#### Google Play Store
+
+To deploy to Google Play Store:
+1. Create a Google Play Developer account ($25 one-time fee)
+2. Generate a signing keystore (see ANDROID_DEPLOYMENT.md)
+3. Build release bundle: `npm run deploy:prepare`
+4. Upload AAB to Play Console
+5. Complete store listing (screenshots, description, privacy policy)
+6. Submit for review
+
+Output locations:
+- **Release AAB**: `android/app/build/outputs/bundle/release/app-release.aab`
+- **Release APK**: `android/app/build/outputs/apk/release/app-release.apk`
+- **Debug APK**: `android/app/build/outputs/apk/debug/app-debug.apk`
 
 ## 🚧 Development Tips
 
@@ -320,4 +380,3 @@ For issues or questions about the app, please open an issue in the GitHub reposi
 **Visit Polzela** - Discover the hidden gems of Polzela, Slovenia 🇸🇮
 
 Made with ❤️ using Vaadin, Quarkus, and React
-

@@ -1,8 +1,21 @@
 {
-  "name": "no-name",
+  "name": "visit-polzela",
   "license": "UNLICENSED",
   "type": "module",
+  "scripts": {
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "cap:copy": "npx cap copy android",
+    "android:build": "cd android && gradlew assembleRelease",
+    "android:bundle": "cd android && gradlew bundleRelease",
+    "android:clean": "cd android && gradlew clean",
+    "build:mobile": "mvnw.cmd clean package -Pproduction -DskipTests && npm run cap:sync",
+    "deploy:prepare": "npm run build:mobile && npm run android:bundle"
+  },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
     "@polymer/polymer": "3.5.2",
     "@vaadin/bundles": "24.7.7",
     "@vaadin/common-frontend": "0.0.19",
@@ -85,7 +98,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "b9dba017080408dd979ea62fa84c00a5117c87dbe96fcfba8864c6adae162b0d"
+    "hash": "9371e39e23e0241da417e924e01a41ffe3019a94a21e8cfcb27e3f1efa72f0e1"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -107,6 +120,9 @@
     "idb": "$idb",
     "react-router-dom": "$react-router-dom",
     "vite-plugin-pwa": "$vite-plugin-pwa",
-    "workbox-webpack-plugin": "$workbox-webpack-plugin"
+    "workbox-webpack-plugin": "$workbox-webpack-plugin",
+    "@capacitor/android": "$@capacitor/android",
+    "@capacitor/cli": "$@capacitor/cli",
+    "@capacitor/core": "$@capacitor/core"
   }
 }
