@@ -190,7 +190,7 @@ export default function POIDetailView() {
       };
     }, [lat, lng, poi.displayName]);
 
-    return <div ref={mapRef} className="poi-map" style={{ height: '400px', width: '80%' }} />;
+    return <div ref={mapRef} className="poi-map" />;
   };
 
   if (loading) {

@@ -2,17 +2,30 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
 }
 
 .poi-title {
     font-size: 2.5em;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .poi-main-image {
     width: 100%;
     max-width: 800px;
     height: auto;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.poi-description {
+    width: 100%;
+    max-width: 800px;
+    text-align: justify;
     margin-bottom: 20px;
 }
 
@@ -22,6 +35,8 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 800px;
 }
 
 .gallery-image {
@@ -36,6 +51,16 @@
     transform: scale(1.05);
 }
 
+.navigation-button-container {
+    margin-bottom: 20px;
+}
+
+.navigate-button {
+    max-width: 800px;
+    width: 100%;
+    height: auto;
+}
+
 .poi-map {
     width: 100%;
     max-width: 800px;
@@ -43,20 +68,27 @@
     margin-bottom: 20px;
 }
 
-.navigate-button {
-    margin-top: 20px;
-}
 
 .image-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
+    cursor: pointer;
 }
 
 .enlarged-image {
-    max-width: 90vw;
+    width: 80%;
+    max-width: 80vw;
     max-height: 90vh;
     object-fit: contain;
+    border-radius: 8px;
 }
 
 /* Responsive styles */
