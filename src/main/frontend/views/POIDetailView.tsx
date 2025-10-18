@@ -3,7 +3,22 @@ import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
 import { useLanguage } from '../contexts/LanguageContext';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import '../styles/poi-detail-view-styles.css';
+
+// Fix Leaflet default marker icon issue in bundled apps
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function POIDetailView() {
   const { name } = useParams<{ name: string }>();
@@ -168,30 +183,80 @@ export default function POIDetailView() {
 
   const MapComponent = ({ poi }: { poi: POI }) => {
     const mapRef = React.useRef<HTMLDivElement>(null);
+    const mapInstanceRef = React.useRef<L.Map | null>(null);
     const { lat, lng } = parseCoordinates(poi.mapUrl);
 
     useEffect(() => {
-      let map: any;
+      // Wait for DOM to be ready
+      const initMap = () => {
+        if (!mapRef.current) {
+          return;
+        }
 
-      if (mapRef.current && (window as any).L) {
-        const L = (window as any).L;
-        map = L.map(mapRef.current).setView([lat, lng], 15);
+        // Clean up existing map instance
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+          mapInstanceRef.current = null;
+        }
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        try {
+          // Create map with mobile-specific options
+          const map = L.map(mapRef.current, {
+            center: [lat, lng],
+            zoom: 15,
+            zoomControl: true,
+            attributionControl: true,
+            // Mobile-specific options
+            tap: true,
+            dragging: true,
+            touchZoom: true,
+            scrollWheelZoom: false
+          });
 
-        L.marker([lat, lng]).addTo(map).bindPopup(poi.displayName).openPopup();
-      }
+          // Add tile layer with error handling
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+            crossOrigin: true
+          }).addTo(map);
+
+          // Add marker
+          L.marker([lat, lng]).addTo(map).bindPopup(poi.displayName).openPopup();
+
+          // Force map to recalculate size (critical for mobile)
+          setTimeout(() => {
+            map.invalidateSize();
+          }, 100);
+
+          mapInstanceRef.current = map;
+        } catch (error) {
+          console.error('Error initializing map:', error);
+        }
+      };
+
+      // Delay initialization to ensure DOM is ready
+      const timer = setTimeout(initMap, 250);
 
       return () => {
-        if (map) {
-          map.remove();
+        clearTimeout(timer);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+          mapInstanceRef.current = null;
         }
       };
     }, [lat, lng, poi.displayName]);
 
-    return <div ref={mapRef} className="poi-map" />;
+    return (
+      <div
+        ref={mapRef}
+        className="poi-map"
+        style={{
+          width: '100%',
+          height: '400px',
+          zIndex: 0
+        }}
+      />
+    );
   };
 
   if (loading) {

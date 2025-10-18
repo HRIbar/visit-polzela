@@ -26,9 +26,19 @@ if (window.Capacitor?.isNativePlatform()) {
       CapacitorApp.minimizeApp();
     }
   });
+
+  // Unregister any existing service workers in Capacitor
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+        console.log('Service worker unregistered for native app');
+      });
+    });
+  }
 }
 
-// Register service worker for PWA functionality (disabled for Capacitor)
+// Register service worker for PWA functionality (only for web browsers, NOT Capacitor)
 if ('serviceWorker' in navigator && !window.Capacitor) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
