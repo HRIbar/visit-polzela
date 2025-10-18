@@ -3,12 +3,17 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { App as CapacitorApp } from '@capacitor/app';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 // Initialize the React app - use 'root' to match index.html
 const container = document.getElementById('root') || document.getElementById('outlet') || document.body;
 const root = createRoot(container);
 
-root.render(<RouterProvider router={router} />);
+root.render(
+  <LanguageProvider>
+    <RouterProvider router={router} />
+  </LanguageProvider>
+);
 
 // Handle Android back button
 if (window.Capacitor?.isNativePlatform()) {

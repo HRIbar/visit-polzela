@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/main-view-styles.css';
 
 export default function MainView() {
   const [pois, setPois] = useState<POI[]>([]);
-  const [language, setLanguage] = useState<Language>('EN');
+  const { language, setLanguage } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
   const dataService = DataService.getInstance();

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/poi-detail-view-styles.css';
 
 export default function POIDetailView() {
   const { name } = useParams<{ name: string }>();
   const [poi, setPoi] = useState<POI | null>(null);
-  const [language, setLanguage] = useState<Language>('EN');
+  const { language } = useLanguage();
   const [description, setDescription] = useState<string>('');
   const [takeMeText, setTakeMeText] = useState<string>('Take me there!');
   const [loading, setLoading] = useState(true);
