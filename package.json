@@ -9,7 +9,8 @@
     "android:build": "cd android && gradlew assembleRelease",
     "android:bundle": "cd android && gradlew bundleRelease",
     "android:clean": "cd android && gradlew clean",
-    "build:mobile": "mvnw.cmd clean package -Pproduction -DskipTests && npm run cap:sync",
+    "build:frontend": "vite build --config vite.mobile.config.ts",
+    "build:mobile": "npm run build:frontend && npm run cap:sync",
     "deploy:prepare": "npm run build:mobile && npm run android:bundle"
   },
   "dependencies": {

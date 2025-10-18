@@ -153,6 +153,10 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                            <resourceOutputDirectory>${project.build.outputDirectory}/META-INF/resources/</resourceOutputDirectory>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

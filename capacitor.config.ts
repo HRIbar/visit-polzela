@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.polzela.tourism',
   appName: 'Visit Polzela',
-  webDir: 'target/dev-bundle/webapp',
+  webDir: 'target/classes/META-INF/resources',
   server: {
     androidScheme: 'https',
     cleartext: true

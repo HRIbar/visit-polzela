@@ -54,19 +54,13 @@ export default function MainView() {
     setLanguage(newLanguage);
   };
 
-  const installPWA = () => {
-    if ((window as any).deferredPrompt) {
-      (window as any).deferredPrompt.prompt();
-    }
-  };
-
   if (loading) {
     return <div className="main-content">Loading...</div>;
   }
 
   return (
     <div className="main-content">
-      {/* Language flags and install button */}
+      {/* Language flags */}
       <div className="flag-layout">
         <div className="flags-container">
           <img
@@ -94,10 +88,6 @@ export default function MainView() {
             onClick={() => handleLanguageChange('NL')}
           />
         </div>
-        <button onClick={installPWA} className="install-button">
-          <img src="/icons/icon-192x192.ico" alt="Install" className="install-icon" />
-          Install Application
-        </button>
       </div>
 
       {/* Welcome section */}
