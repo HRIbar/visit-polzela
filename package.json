@@ -76,6 +76,7 @@
       "@vaadin/vaadin-usage-statistics": "2.1.3",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
+      "leaflet": "1.9.4",
       "lit": "3.3.0",
       "react": "18.3.1",
       "react-dom": "18.3.1",
@@ -102,7 +103,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "9371e39e23e0241da417e924e01a41ffe3019a94a21e8cfcb27e3f1efa72f0e1"
+    "hash": "43bcf10b430a3b1ab85e8a43f980fed905cdda27028d6113ce0819290801a94f"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -127,6 +128,9 @@
     "workbox-webpack-plugin": "$workbox-webpack-plugin",
     "@capacitor/android": "$@capacitor/android",
     "@capacitor/cli": "$@capacitor/cli",
-    "@capacitor/core": "$@capacitor/core"
+    "@capacitor/core": "$@capacitor/core",
+    "@capacitor/app": "$@capacitor/app",
+    "@types/leaflet": "$@types/leaflet",
+    "leaflet": "$leaflet"
   }
 }
