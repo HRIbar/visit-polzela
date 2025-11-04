@@ -9,26 +9,26 @@ export default function MainView() {
   const [language, setLanguage] = useState<Language>('EN');
   const [loading, setLoading] = useState(true);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
-  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [showInstallButton, setShowInstallButton] = useState(true);
   const dataService = DataService.getInstance();
 
   useEffect(() => {
     initializeApp();
 
-    // Check if install prompt is available
-    if ((window as any).deferredPrompt) {
-      setShowInstallButton(true);
+    // Check if app is already in standalone mode (already installed)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallButton(false);
     }
 
-    // Listen for the beforeinstallprompt event
-    const handleBeforeInstall = () => {
-      setShowInstallButton(true);
+    // Listen for the appinstalled event to hide button after installation
+    const handleAppInstalled = () => {
+      setShowInstallButton(false);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -75,9 +75,26 @@ export default function MainView() {
     const deferredPrompt = (window as any).deferredPrompt;
 
     if (!deferredPrompt) {
-      console.log('Install prompt not available');
-      // App is likely already installed or browser doesn't support it
-      alert('App is already installed or your browser does not support installation.');
+      // Check if already in standalone mode
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        alert('App is already installed!');
+        setShowInstallButton(false);
+        return;
+      }
+
+      // Provide platform-specific instructions
+      const userAgent = navigator.userAgent.toLowerCase();
+      let message = 'To install this app:\n\n';
+
+      if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+        message += 'On iOS:\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"';
+      } else if (userAgent.includes('android')) {
+        message += 'On Android:\n1. Tap the menu (⋮)\n2. Tap "Install app" or "Add to Home screen"';
+      } else {
+        message += 'Look for the install button in your browser\'s address bar or menu.';
+      }
+
+      alert(message);
       return;
     }
 
@@ -96,7 +113,6 @@ export default function MainView() {
 
     // Clear the deferredPrompt so it can only be used once
     (window as any).deferredPrompt = null;
-    setShowInstallButton(false);
   };
 
   if (loading) {
