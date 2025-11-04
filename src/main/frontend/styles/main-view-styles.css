@@ -2,6 +2,7 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    overflow-x: hidden;
 }
 
 .welcome-container {
@@ -11,6 +12,7 @@
     margin-bottom: 0;
     display: flex;
     justify-content: center;
+    overflow-x: hidden;
 }
 
 .title-container {
@@ -68,11 +70,15 @@
 .poi-container {
     display: flex;
     flex-wrap: wrap;
+    padding: 0 10px;
+    width: 100%;
+    box-sizing: border-box;
     justify-content: center;
     gap: 20px;
 }
 
 .poi-link {
+    max-width: 100%;
     text-decoration: none;
     color: inherit;
 }
@@ -83,6 +89,8 @@
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
+    max-width: 100%;
+    box-sizing: border-box;
     transition: box-shadow 0.3s;
     width: 300px;
 }
@@ -121,57 +129,104 @@
     box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
 }
 
+.flag-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+.flags-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.install-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #1a0080;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    white-space: nowrap;
+}
+
+.install-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.install-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
+    .main-content {
+        padding: 0 5px;
+    }
+
+    .flag-layout {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .flags-container {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .install-button {
+        font-size: 14px;
+        padding: 8px 16px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .install-icon {
+        width: 20px;
+        height: 20px;
+    }
+
     .title-container {
         height: 150px;
     }
 
     .title-div {
-        max-width: 70%;
+        max-width: 90%;
+        padding: 5px;
     }
 
     .welcome-text {
-        font-size: 50px;
-    }
-
-    .polzela-text {
         font-size: 28px;
     }
 
-    .poi-item {
-        width: calc(50% - 20px);
+    .header-layout {
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
-    .grb-image {
-        height: 70px;
-    }
-
-      .small-flag {
-            width: 50px;
-            height: 50px;
-        }
-}
-
-@media screen and (max-width: 480px) {
-    .title-container {
-        height: 120px;
-    }
-
-    .title-div {
-        max-width: 90%;
-    }
-
-    .welcome-text {
-        font-size: 31px;
-    }
-
-    .polzela-text {
-        font-size: 24px;
+    .poi-container {
+        gap: 10px;
+        padding: 0 5px;
     }
 
     .poi-item {
-        width: 100%;
+        width: calc(50% - 10px);
+        min-width: 140px;
     }
 
     .grb-image {
@@ -179,7 +234,52 @@
     }
 
     .small-flag {
-            width: 40px;
-            height: 40px;
-        }
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .install-button {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .install-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .title-container {
+        height: 120px;
+    }
+
+    .title-div {
+        max-width: 95%;
+        padding: 5px;
+    }
+
+    .welcome-text {
+        font-size: 24px;
+    }
+
+    .header-layout {
+        gap: 8px;
+    }
+
+    .poi-item {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .grb-image {
+        height: 50px;
+    }
+
+    .small-flag {
+        height: 30px;
+        width: 30px;
+    }
 }

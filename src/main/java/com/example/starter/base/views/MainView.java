@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Locale;
 
 
-@Route("")
+// Disabled - Using React/Hilla MainView.tsx instead (kept for history)
+// @Route("")
 @CssImport("./styles/main-view-styles.css")
 @JavaScript("./offline-store.js")
 public class MainView extends AppLayout {

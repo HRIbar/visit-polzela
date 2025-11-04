@@ -12,9 +12,5 @@ stmargharetachurch;Church of St. Margaret;Polzela's main church;https://www.open
 stnicholaschurch;Church of St. Nicholas in Vimperk;A chuch with a bench of love and a nice viewpoint;https://www.openstreetmap.org/#map=17/46.292051/15.065366;https://maps.app.goo.gl/nwmAGctFrEVTvaT58;https://maps.apple.com/?daddr=46.292051,15.065366&dirflg=d
 standrewchurch;Church of St. Andrew;Originaly build in 1229;url1;url2;url3
 plaguememorial;Plague Memorial in Dobrič;Memorial of terible plague some say victims are burried below;https://www.openstreetmap.org/#map=17/46.308736/15.057664;https://maps.app.goo.gl/zX3UpDpCv2LfQG2E7;https://maps.apple.com/?daddr=46.308736,15.057664&dirflg=d
-jelovsekgranary;Jelovšek Granary;Traditional Granary;url1;url2;url3
-bolcinhouse;Bolčin House;One of the oldest houses arround;url1;url2;url3
-stoberhouse;Štober House;Grand house from the 19th century;url1;url2;url3
-barbankhouse;Barbank House;Traditional countryside house;url1;url2;url3
 mesicmill;Mešič Mill;The most famous mill in Polzela;url1;url2;url3
 riverloznica;River Ložnica and Its Floodplain;Local river with distinct fauna and flora;https://www.openstreetmap.org/#map=16/46.27884/15.11596;https://maps.app.goo.gl/pontX5isAMapiiWX7;https://maps.apple.com/?daddr=46.27884,15.11596&dirflg=d

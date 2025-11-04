@@ -15,10 +15,14 @@
     "@vaadin/vaadin-usage-statistics": "2.1.3",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
+    "idb": "^8.0.3",
     "lit": "3.3.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-router": "7.5.2"
+    "react-router": "7.5.2",
+    "react-router-dom": "^7.9.3",
+    "vite-plugin-pwa": "^1.0.3",
+    "workbox-webpack-plugin": "^7.3.0"
   },
   "devDependencies": {
     "@babel/preset-react": "7.26.3",
@@ -81,7 +85,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "58f97797d89eae94a30adea87c89d3e925a1f51ec3802f64ebba3400b3a4c363"
+    "hash": "b9dba017080408dd979ea62fa84c00a5117c87dbe96fcfba8864c6adae162b0d"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -99,6 +103,10 @@
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
     "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
-    "react-router": "$react-router"
+    "react-router": "$react-router",
+    "idb": "$idb",
+    "react-router-dom": "$react-router-dom",
+    "vite-plugin-pwa": "$vite-plugin-pwa",
+    "workbox-webpack-plugin": "$workbox-webpack-plugin"
   }
 }
