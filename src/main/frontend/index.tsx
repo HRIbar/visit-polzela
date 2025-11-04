@@ -2,44 +2,33 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
-import { App as CapacitorApp } from '@capacitor/app';
-import { LanguageProvider } from './contexts/LanguageContext';
 
-// Initialize the React app - use 'root' to match index.html
-const container = document.getElementById('root') || document.getElementById('outlet') || document.body;
+// Initialize the React app
+const container = document.getElementById('outlet') || document.body;
 const root = createRoot(container);
 
-root.render(
-  <LanguageProvider>
-    <RouterProvider router={router} />
-  </LanguageProvider>
-);
+root.render(<RouterProvider router={router} />);
 
-// Handle Android back button
-if (window.Capacitor?.isNativePlatform()) {
-  CapacitorApp.addListener('backButton', ({ canGoBack }) => {
-    if (canGoBack) {
-      // If we can go back in the browser history, do so
-      window.history.back();
-    } else {
-      // If we're at the root, minimize the app instead of closing it
-      CapacitorApp.minimizeApp();
-    }
-  });
+// Capture the beforeinstallprompt event for PWA installation
+let deferredPrompt: any;
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the mini-infobar from appearing on mobile
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  (window as any).deferredPrompt = deferredPrompt;
+  console.log('beforeinstallprompt event captured');
+});
 
-  // Unregister any existing service workers in Capacitor
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      registrations.forEach(registration => {
-        registration.unregister();
-        console.log('Service worker unregistered for native app');
-      });
-    });
-  }
-}
+// Listen for the app installed event
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed');
+  deferredPrompt = null;
+  (window as any).deferredPrompt = null;
+});
 
-// Register service worker for PWA functionality (only for web browsers, NOT Capacitor)
-if ('serviceWorker' in navigator && !window.Capacitor) {
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'visit-polzela-v5'; // Increment version to force update
+const CACHE_NAME = 'visit-polzela-v6'; // Increment version to force update
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,8 +8,6 @@ const urlsToCache = [
   '/pointsofinterest/pois.json',
   '/pointsofinterest/pois-complete.json',
   // POI description files
-  '/poi-descriptions/barbankhouse.txt',
-  '/poi-descriptions/bolcinhouse.txt',
   '/poi-descriptions/cajhnhayrack.txt',
   '/poi-descriptions/castle.txt',
   '/poi-descriptions/clayfigurines.txt',
@@ -26,7 +24,6 @@ const urlsToCache = [
   '/poi-descriptions/standrewchurch.txt',
   '/poi-descriptions/stmargharetachurch.txt',
   '/poi-descriptions/stnicholaschurch.txt',
-  '/poi-descriptions/stoberhouse.txt',
   '/poi-descriptions/tractormuseum.txt',
   // Offline scripts
   '/frontend/offline-handler.js',
@@ -49,8 +46,6 @@ const urlsToCache = [
   '/images/applenavigationbutton.png',
   '/images/placeholder.png',
   // POI images
-  '/images/barbankhouse.webp',
-  '/images/bolcinhouse.webp',
   '/images/cajhnhayrack.webp',
   '/images/castle.webp',
   '/images/castle1.webp',
@@ -88,7 +83,6 @@ const urlsToCache = [
   '/images/stnicholaschurch.webp',
   '/images/stnicholaschurch1.webp',
   '/images/stnicholaschurch2.webp',
-  '/images/stoberhouse.webp',
   '/images/tractormuseum.webp'
 ];
 

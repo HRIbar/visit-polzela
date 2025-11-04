@@ -24,9 +24,6 @@ class OfflineRouter {
       '/poi/standrewchurch',
       '/poi/plaguememorial',
       '/poi/jelovsekgranary',
-      '/poi/bolcinhouse',
-      '/poi/stoberhouse',
-      '/poi/barbankhouse',
       '/poi/mesicmill',
       '/poi/riverloznica'
     ];
