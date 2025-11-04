@@ -15,6 +15,12 @@ export default function MainView() {
   useEffect(() => {
     initializeApp();
 
+    // Load saved language from localStorage
+    const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+
     // Check if app is already in standalone mode (already installed)
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setShowInstallButton(false);
@@ -69,6 +75,8 @@ export default function MainView() {
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
+    // Save language selection to localStorage
+    localStorage.setItem('selectedLanguage', newLanguage);
   };
 
   const installPWA = async () => {
