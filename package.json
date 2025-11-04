@@ -3,14 +3,16 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
+    "clean": "rimraf target/classes/META-INF/resources/assets target/classes/META-INF/resources/index.html",
+    "prebuild:frontend": "npm run clean",
+    "build:frontend": "vite build --config vite.mobile.config.ts --mode production",
+    "build:mobile": "npm run build:frontend && npm run cap:sync",
     "cap:sync": "npx cap sync android",
     "cap:open": "npx cap open android",
     "cap:copy": "npx cap copy android",
     "android:build": "cd android && gradlew assembleRelease",
     "android:bundle": "cd android && gradlew bundleRelease",
     "android:clean": "cd android && gradlew clean",
-    "build:frontend": "vite build --config vite.mobile.config.ts",
-    "build:mobile": "npm run build:frontend && npm run cap:sync",
     "deploy:prepare": "npm run build:mobile && npm run android:bundle"
   },
   "dependencies": {
@@ -51,6 +53,7 @@
     "@vitejs/plugin-react": "4.4.1",
     "async": "3.2.6",
     "glob": "11.0.2",
+    "rimraf": "^6.0.1",
     "rollup-plugin-brotli": "3.1.0",
     "rollup-plugin-visualizer": "5.14.0",
     "strip-css-comments": "5.0.0",

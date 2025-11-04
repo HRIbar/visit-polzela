@@ -2,6 +2,15 @@
 
 ## 🚀 Quick Start - Building for Android
 
+### First Time Setup
+
+Before building, install all dependencies:
+```bash
+npm install
+```
+
+This will install all required packages including `rimraf` for cross-platform file deletion (works on Windows, Mac, Linux).
+
 ### Complete Build Process
 ```bash
 # Build the React frontend and sync to Android
@@ -9,8 +18,11 @@ npm run build:mobile
 ```
 
 This single command will:
-1. Build your React app with Vite (`npm run build:frontend`)
-2. Sync the compiled files to Android project (`npm run cap:sync`)
+1. Clean previous build artifacts
+2. Build your React app with Vite using standalone config (`vite.mobile.config.ts`)
+3. Sync the compiled files to Android project (`npm run cap:sync`)
+
+**Important**: This build uses a **standalone Vite configuration** (`vite.mobile.config.ts`) that is completely independent from Vaadin's build system.
 
 ### Open in Android Studio
 ```bash
@@ -33,27 +45,27 @@ npm run build:mobile
 
 Then run the app again in Android Studio.
 
-### 2. Making Backend Changes (Java, Quarkus)
+### 2. Testing the Build Locally
 
-If you modify Java code or backend logic:
+To verify your build before syncing to Android:
 
 ```bash
-mvnw.cmd clean package -Pproduction -DskipTests
-npm run cap:sync
+npm run build:frontend
 ```
 
-### 3. Adding New Dependencies
+Check that `target/classes/META-INF/resources/` contains:
+- `index.html` (updated with asset references)
+- `assets/index-*.js` (your React app bundle)
+- `assets/index-*.css` (your styles)
+- All static files from `src/main/resources/META-INF/resources/`
 
-**Frontend (npm packages):**
+### 3. Clean Build
+
+If you encounter build issues:
+
 ```bash
-npm install <package-name>
+npm run clean
 npm run build:mobile
-```
-
-**Backend (Maven dependencies):**
-Edit `pom.xml`, then:
-```bash
-mvnw.cmd clean compile
 ```
 
 ---
@@ -62,8 +74,9 @@ mvnw.cmd clean compile
 
 | Command | Description |
 |---------|-------------|
-| `npm run build:frontend` | Build React app with Vite |
-| `npm run build:mobile` | Build frontend + sync to Android |
+| `npm run clean` | Remove previous build artifacts |
+| `npm run build:frontend` | Build React app with standalone Vite config |
+| `npm run build:mobile` | Clean + Build frontend + sync to Android |
 | `npm run cap:sync` | Sync web assets to Android project |
 | `npm run cap:open` | Open Android Studio |
 | `npm run cap:copy` | Copy web assets only (no sync) |
@@ -81,15 +94,19 @@ Your app has a **hybrid architecture**:
 - **Frontend**: Pure React app (built with Vite)
   - Source: `src/main/frontend/`
   - Output: `target/classes/META-INF/resources/`
-  - Entry: `index.tsx`
+  - Entry: `index.html` → `index.tsx`
+  - Build Config: `vite.mobile.config.ts` (standalone, no Vaadin)
 
-- **Backend**: Vaadin + Quarkus (for server-side if needed)
-  - Source: `src/main/java/`
-  - Currently not used in mobile app (pure client-side)
+- **Static Resources**: Images, data files, etc.
+  - Source: `src/main/resources/META-INF/resources/`
+  - Copied to output during build via Vite's `publicDir`
 
 - **Mobile**: Capacitor wraps the React app
   - Android project: `android/`
   - Config: `capacitor.config.ts`
+  - Web dir: `target/classes/META-INF/resources/`
+
+**Important**: The build system uses `vite.mobile.config.ts` which is **completely independent** from Vaadin's `vite.config.ts` and `vite.generated.ts`. This ensures clean builds without Vaadin dependencies.
 
 ---
 
@@ -109,7 +126,7 @@ Your app has a **hybrid architecture**:
 
 ```bash
 # Clean build to verify everything works
-mvnw.cmd clean package -Pproduction -DskipTests
+npm run clean
 npm run build:mobile
 ```
 
@@ -128,36 +145,47 @@ This creates an Android App Bundle (AAB) in:
 
 ### "Unable to open asset URL" errors
 
-Your app is trying to load TypeScript source files. Solution:
+Your app is trying to load source files that weren't bundled. Solution:
 ```bash
-npm run build:frontend && npm run cap:sync
+npm run clean
+npm run build:mobile
 ```
 
 ### "Loading Visit Polzela..." stuck at startup
 
-The JavaScript bundles weren't generated. Solution:
+The JavaScript bundles weren't generated properly. Solution:
 ```bash
-# Rebuild everything
-npm run build:mobile
+# Force clean rebuild
+npm run clean
+npm run build:frontend
 ```
 
-Verify that `target/classes/META-INF/resources/assets/` contains:
-- `index-*.js` (your React app)
-- `index-*.css` (your styles)
+Verify that `target/classes/META-INF/resources/` contains:
+- `index.html` with updated script references
+- `assets/index-*.js` (your React app)
+- `assets/index-*.css` (your styles)
+- `assets/vendor-*.js` (React, React-DOM, React-Router)
 
-### Build fails with Vaadin errors
+### Build uses wrong Vite config
 
-The Vaadin build system can be ignored for mobile builds. Use:
+Make sure you're using the mobile build script:
 ```bash
-npm run build:mobile
+npm run build:frontend
 ```
 
-This uses the standalone Vite configuration (`vite.mobile.config.ts`) instead.
+This explicitly uses `vite.mobile.config.ts` which is independent from Vaadin.
+
+**DO NOT** run `vite build` directly or `mvnw` commands for mobile builds.
+
+### Service Worker not registering
+
+The SW registration is intentionally wrapped in a try-catch for mobile builds. Check browser/WebView console for errors.
 
 ### Android Studio sync issues
 
 ```bash
 npm run android:clean
+npm run clean
 npm run build:mobile
 ```
 
@@ -169,27 +197,30 @@ Then rebuild in Android Studio: `Build > Clean Project` > `Build > Rebuild Proje
 
 | File | Purpose |
 |------|---------|
-| `vite.mobile.config.ts` | Vite config for building React app |
+| `vite.mobile.config.ts` | **Standalone** Vite config for mobile (no Vaadin) |
 | `capacitor.config.ts` | Capacitor configuration |
 | `src/main/frontend/index.html` | App entry point HTML |
 | `src/main/frontend/index.tsx` | React app entry point |
 | `src/main/frontend/routes.tsx` | React Router configuration |
 | `package.json` | NPM scripts and dependencies |
-| `pom.xml` | Maven configuration (backend) |
+| `vite.config.ts` | Vaadin's Vite config (NOT used for mobile) |
+| `vite.generated.ts` | Vaadin generated config (NOT used for mobile) |
 
 ---
 
 ## 💡 Tips
 
-1. **Always build before testing**: Run `npm run build:mobile` after any frontend changes
+1. **Always use `npm run build:mobile`**: Don't run Maven commands for mobile builds
 
-2. **Use Android Studio's Logcat**: Filter by "Capacitor" to see app logs and errors
+2. **The mobile build is Vaadin-free**: We use a standalone Vite config that doesn't import or depend on Vaadin's build system
 
-3. **Hot reload doesn't work**: You need to rebuild and re-run the app after changes
+3. **Check the console**: Use Android Studio's Logcat filtered by "Capacitor" or "chromium" to see app logs
 
-4. **Static assets** (images, JSON): Place in `src/main/resources/META-INF/resources/`
+4. **Static assets** (images, JSON, txt files): Place in `src/main/resources/META-INF/resources/`
 
-5. **Check the assets folder**: After building, verify `target/classes/META-INF/resources/assets/` contains your JS/CSS bundles
+5. **Verify build output**: After building, check `target/classes/META-INF/resources/assets/` contains JS/CSS bundles
+
+6. **Clean builds are your friend**: When in doubt, `npm run clean && npm run build:mobile`
 
 ---
 
@@ -197,11 +228,14 @@ Then rebuild in Android Studio: `Build > Clean Project` > `Build > Rebuild Proje
 
 After building, verify:
 
-- [ ] `target/classes/META-INF/resources/assets/index-*.js` exists
-- [ ] `target/classes/META-INF/resources/assets/index-*.css` exists
-- [ ] `target/classes/META-INF/resources/index.html` has been updated
+- [ ] `target/classes/META-INF/resources/index.html` exists and has script tags
+- [ ] `target/classes/META-INF/resources/assets/index-*.js` exists (main bundle)
+- [ ] `target/classes/META-INF/resources/assets/index-*.css` exists (styles)
+- [ ] `target/classes/META-INF/resources/assets/vendor-*.js` exists (React libs)
+- [ ] Static files copied from `src/main/resources/META-INF/resources/`
 - [ ] `android/app/src/main/assets/public/` contains the synced files
 - [ ] App runs without "Unable to open asset URL" errors
+- [ ] No references to Vaadin classes in browser console
 
 ---
 
@@ -215,7 +249,8 @@ npm run build:mobile
 
 ### Full Clean Build
 ```bash
-mvnw.cmd clean
+npm run clean
+npm run android:clean
 npm run build:mobile
 # Clean + Rebuild in Android Studio
 ```
@@ -226,6 +261,27 @@ npm run deploy:prepare
 # Upload AAB to Google Play Console
 ```
 
+### Debug Build Issues
+```bash
+# Check what was built
+ls -la target/classes/META-INF/resources/
+ls -la target/classes/META-INF/resources/assets/
+
+# Verify Capacitor can see the files
+npm run cap:copy
+ls -la android/app/src/main/assets/public/
+```
+
+---
+
+## 🚫 What NOT to Do
+
+❌ Don't run `mvnw` commands for mobile builds  
+❌ Don't run `vite build` directly (always use `npm run build:frontend`)  
+❌ Don't modify `vite.generated.ts` (it's not used for mobile)  
+❌ Don't try to use Vaadin components in the mobile app  
+❌ Don't forget to run `npm run cap:sync` after building  
+
 ---
 
 ## 📞 Need Help?
@@ -234,11 +290,46 @@ If you encounter issues:
 
 1. Check this guide's Troubleshooting section
 2. Verify all files in the "Verification Checklist"
-3. Try a clean build: `mvnw.cmd clean && npm run build:mobile`
+3. Try a clean build: `npm run clean && npm run build:mobile`
 4. Check Android Studio's Logcat for error messages
+5. Verify `vite.mobile.config.ts` is being used (not `vite.config.ts`)
 
 ---
 
-**Last Updated**: October 18, 2025
-**Build System**: Vite + Capacitor + Vaadin/Quarkus
+## 🔧 Build System Details
+
+### Why Two Vite Configs?
+
+- `vite.config.ts` + `vite.generated.ts`: Used by Vaadin for web builds
+- `vite.mobile.config.ts`: **Standalone** config for Capacitor mobile builds
+
+The mobile config:
+- ✅ No Vaadin dependencies
+- ✅ No Flow integration
+- ✅ Pure React + Capacitor
+- ✅ Optimized for mobile bundle size
+- ✅ Copies static resources correctly
+
+### Build Output Structure
+
+```
+target/classes/META-INF/resources/
+├── index.html (entry point)
+├── assets/
+│   ├── index-[hash].js (main React app)
+│   ├── index-[hash].css (styles)
+│   ├── vendor-[hash].js (React, ReactDOM, Router)
+│   ├── leaflet-[hash].js (Leaflet library)
+│   └── idb-[hash].js (IndexedDB wrapper)
+├── images/ (copied from resources)
+├── poi-descriptions/ (copied from resources)
+├── pointsofinterest/ (copied from resources)
+└── ... (other static files)
+```
+
+---
+
+**Last Updated**: November 4, 2025  
+**Build System**: Vite (Standalone) + Capacitor + React  
+**No Vaadin Dependencies in Mobile Build**
 

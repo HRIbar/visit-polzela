@@ -60,6 +60,8 @@
       border-radius: 4px;
       cursor: pointer;
       margin-left: 10px;
+      /* Hidden for Android build */
+      display: none !important;
     }
 
     .install-button:hover {
@@ -69,13 +71,14 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
     }
   </script>
-  <!-- index.ts is included here automatically (either by the dev server or during the build) -->
 </head>
 <body>
   <!-- This outlet div is where the views are rendered -->
   <div id="outlet"></div>
+  <!-- Vite will inject the script here -->
+  <script type="module" src="/index.tsx"></script>
 </body>
 </html>

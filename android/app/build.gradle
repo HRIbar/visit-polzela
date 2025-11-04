@@ -43,6 +43,17 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 repositories {
