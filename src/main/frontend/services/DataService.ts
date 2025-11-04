@@ -4,6 +4,8 @@ import { POI, POITitle, Language } from '../types/POI';
 const DB_NAME = 'visit-polzela';
 const POI_STORE = 'pois';
 const TITLES_STORE = 'titles';
+const DATA_VERSION = 6; // Increment this to force reload of POIs
+const VERSION_KEY = 'data-version';
 
 export class DataService {
   private static instance: DataService;
@@ -172,11 +174,18 @@ export class DataService {
       // Always reload titles to ensure we have the latest translations
       await this.loadTitlesFromStatic();
 
-      // Check if POI data exists in IndexedDB
+      // Check version in localStorage
+      const storedVersion = localStorage.getItem(VERSION_KEY);
+      const currentVersion = DATA_VERSION.toString();
+
+      // Force reload if version changed or POIs are empty
       const pois = await this.getPOIsFromDB();
-      if (pois.length === 0) {
-        // Load POI data from static files if not in IndexedDB
+      if (storedVersion !== currentVersion || pois.length === 0) {
+        console.log('[DataService] Reloading POIs due to version change or empty cache');
+        // Load POI data from static files
         await this.loadPOIsFromStatic();
+        // Update stored version
+        localStorage.setItem(VERSION_KEY, currentVersion);
       }
     } catch (error) {
       console.error('Error initializing data:', error);

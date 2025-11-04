@@ -9,10 +9,27 @@ export default function MainView() {
   const [language, setLanguage] = useState<Language>('EN');
   const [loading, setLoading] = useState(true);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
+  const [showInstallButton, setShowInstallButton] = useState(false);
   const dataService = DataService.getInstance();
 
   useEffect(() => {
     initializeApp();
+
+    // Check if install prompt is available
+    if ((window as any).deferredPrompt) {
+      setShowInstallButton(true);
+    }
+
+    // Listen for the beforeinstallprompt event
+    const handleBeforeInstall = () => {
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    };
   }, []);
 
   useEffect(() => {
@@ -54,10 +71,32 @@ export default function MainView() {
     setLanguage(newLanguage);
   };
 
-  const installPWA = () => {
-    if ((window as any).deferredPrompt) {
-      (window as any).deferredPrompt.prompt();
+  const installPWA = async () => {
+    const deferredPrompt = (window as any).deferredPrompt;
+
+    if (!deferredPrompt) {
+      console.log('Install prompt not available');
+      // App is likely already installed or browser doesn't support it
+      alert('App is already installed or your browser does not support installation.');
+      return;
     }
+
+    // Show the install prompt
+    deferredPrompt.prompt();
+
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+
+    // Clear the deferredPrompt so it can only be used once
+    (window as any).deferredPrompt = null;
+    setShowInstallButton(false);
   };
 
   if (loading) {
@@ -94,10 +133,12 @@ export default function MainView() {
             onClick={() => handleLanguageChange('NL')}
           />
         </div>
-        <button onClick={installPWA} className="install-button">
-          <img src="/icons/icon-192x192.ico" alt="Install" className="install-icon" />
-          Install Application
-        </button>
+        {showInstallButton && (
+          <button onClick={installPWA} className="install-button">
+            <img src="/icons/icon-192x192.ico" alt="Install" className="install-icon" />
+            Install Application
+          </button>
+        )}
       </div>
 
       {/* Welcome section */}
