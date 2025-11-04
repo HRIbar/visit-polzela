@@ -6,6 +6,8 @@
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .back-button {
@@ -19,6 +21,7 @@
     font-size: 16px;
     display: inline-block;
     transition: background-color 0.3s;
+    white-space: nowrap;
 }
 
 .back-button:hover {
@@ -34,11 +37,13 @@
     width: 100%;
     max-width: 800px;
     margin-bottom: 20px;
+    box-sizing: border-box;
 }
 
 .flags-container {
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 .small-flag {
@@ -47,6 +52,7 @@
     width: auto;
     border: 2px solid transparent;
     border-radius: 3px;
+    max-width: 40px;
 }
 
 .small-flag.active-flag {
@@ -57,6 +63,11 @@
     font-size: 2.5em;
     margin-bottom: 20px;
     text-align: center;
+    width: 100%;
+    max-width: 800px;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    padding: 0 10px;
 }
 
 .poi-main-image {
@@ -65,6 +76,7 @@
     height: auto;
     margin-bottom: 20px;
     display: block;
+    box-sizing: border-box;
 }
 
 .poi-description {
@@ -72,6 +84,10 @@
     max-width: 800px;
     text-align: justify;
     margin-bottom: 20px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .image-gallery {
@@ -82,14 +98,18 @@
     margin-bottom: 20px;
     width: 100%;
     max-width: 800px;
+    box-sizing: border-box;
+    padding: 0 10px;
 }
 
 .gallery-image {
     width: 320px;
+    max-width: 100%;
     height: 180px;
     object-fit: cover;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
+    box-sizing: border-box;
 }
 
 .gallery-image:hover {
@@ -98,12 +118,16 @@
 
 .navigation-button-container {
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
 }
 
 .navigate-button {
     max-width: 800px;
     width: 100%;
     height: auto;
+    box-sizing: border-box;
 }
 
 .poi-map {
@@ -111,6 +135,7 @@
     max-width: 800px;
     height: 400px;
     margin-bottom: 20px;
+    box-sizing: border-box;
 }
 
 
@@ -138,17 +163,79 @@
 
 /* Responsive styles */
 @media screen and (max-width: 768px) {
+    .poi-detail-content {
+        padding: 10px;
+    }
+
     .poi-title {
-        font-size: 2em;
+        font-size: 1.8em;
+        padding: 0 5px;
     }
 
     .poi-main-image {
         max-width: 100%;
+        padding: 0 5px;
+    }
+
+    .poi-description {
+        padding: 0 10px;
+        text-align: left;
     }
 
     .gallery-image {
-        width: calc(50% - 5px);
+        width: calc(50% - 10px);
         height: auto;
+        aspect-ratio: 16/9;
+    }
+
+    .flag-layout {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 5px;
+    }
+
+    .flags-container {
+        justify-content: center;
+    }
+
+    .back-button {
+        width: 100%;
+        max-width: 200px;
+        text-align: center;
+    }
+
+    .poi-map {
+        height: 300px;
+    }
+
+    .navigation-button-container {
+        padding: 0 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .poi-detail-content {
+        padding: 5px;
+    }
+
+    .poi-title {
+        font-size: 1.5em;
+    }
+
+    .gallery-image {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .poi-map {
+        height: 250px;
+    }
+
+    .small-flag {
+        height: 25px;
+        max-width: 35px;
+    }
+}
     }
 
     .poi-map {

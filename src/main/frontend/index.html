@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Visit Polzela</title>
   <meta name="description" content="Explore Polzela even when offline" />
   <meta name="theme-color" content="#3f51b5" />
@@ -14,6 +14,17 @@
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body, #outlet {
       height: 100vh;
       width: 100%;

@@ -2,6 +2,7 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    overflow-x: hidden;
 }
 
 .welcome-container {
@@ -11,6 +12,7 @@
     margin-bottom: 0;
     display: flex;
     justify-content: center;
+    overflow-x: hidden;
 }
 
 .title-container {
@@ -68,11 +70,15 @@
 .poi-container {
     display: flex;
     flex-wrap: wrap;
+    padding: 0 10px;
+    width: 100%;
+    box-sizing: border-box;
     justify-content: center;
     gap: 20px;
 }
 
 .poi-link {
+    max-width: 100%;
     text-decoration: none;
     color: inherit;
 }
@@ -83,6 +89,8 @@
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
+    max-width: 100%;
+    box-sizing: border-box;
     transition: box-shadow 0.3s;
     width: 300px;
 }
@@ -164,18 +172,28 @@
 
 /* Responsive styles */
 @media screen and (max-width: 768px) {
+    .main-content {
+        padding: 0 5px;
+    }
+
     .flag-layout {
         flex-direction: column;
         gap: 15px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .flags-container {
         justify-content: center;
+        flex-wrap: wrap;
     }
 
     .install-button {
         font-size: 14px;
         padding: 8px 16px;
+        width: 100%;
+        max-width: 300px;
     }
 
     .install-icon {
@@ -188,35 +206,45 @@
     }
 
     .title-div {
-        max-width: 70%;
+        max-width: 90%;
+        padding: 5px;
     }
 
     .welcome-text {
-        font-size: 50px;
-    }
-
-    .polzela-text {
         font-size: 28px;
     }
 
+    .header-layout {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .poi-container {
+        gap: 10px;
+        padding: 0 5px;
+    }
+
     .poi-item {
-        width: calc(50% - 20px);
+        width: calc(50% - 10px);
+        min-width: 140px;
     }
 
     .grb-image {
-        height: 70px;
+        height: 60px;
     }
 
-      .small-flag {
-            width: 50px;
-            height: 50px;
-        }
+    .small-flag {
+        width: 35px;
+        height: 35px;
+    }
 }
 
 @media screen and (max-width: 480px) {
     .install-button {
         font-size: 12px;
         padding: 6px 12px;
+        width: 100%;
+        max-width: 250px;
     }
 
     .install-icon {
@@ -229,27 +257,29 @@
     }
 
     .title-div {
-        max-width: 90%;
+        max-width: 95%;
+        padding: 5px;
     }
 
     .welcome-text {
-        font-size: 31px;
+        font-size: 24px;
     }
 
-    .polzela-text {
-        font-size: 24px;
+    .header-layout {
+        gap: 8px;
     }
 
     .poi-item {
         width: 100%;
+        max-width: 300px;
     }
 
     .grb-image {
-        height: 60px;
+        height: 50px;
     }
 
     .small-flag {
-            width: 40px;
-            height: 40px;
-        }
+        height: 30px;
+        width: 30px;
+    }
 }
