@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
-import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/poi-detail-view-styles.css';
 
 export default function POIDetailView() {
   const { name } = useParams<{ name: string }>();
   const [poi, setPoi] = useState<POI | null>(null);
-  const { language } = useLanguage();
+  const [language, setLanguage] = useState<Language>(() => {
+    // Load language from localStorage, default to 'EN' if not set
+    const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
+    return savedLanguage || 'EN';
+  });
   const [description, setDescription] = useState<string>('');
   const [takeMeText, setTakeMeText] = useState<string>('Take me there!');
   const [loading, setLoading] = useState(true);
@@ -75,6 +78,12 @@ export default function POIDetailView() {
       console.error('Error loading description:', error);
       return 'Error loading description.';
     }
+  };
+
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage);
+    // Save language selection to localStorage
+    localStorage.setItem('selectedLanguage', newLanguage);
   };
 
   const parseCoordinates = (mapUrl: string): { lat: number; lng: number } => {
@@ -185,10 +194,8 @@ export default function POIDetailView() {
       }
 
       return () => {
-        clearTimeout(timer);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.remove();
-          mapInstanceRef.current = null;
+        if (map) {
+          map.remove();
         }
       };
     }, [lat, lng, poi.displayName]);
@@ -214,6 +221,37 @@ export default function POIDetailView() {
 
   return (
     <div className="poi-detail-content">
+      {/* Language flags and back button */}
+      <div className="flag-layout">
+        <Link to="/" className="back-button">← Back</Link>
+        <div className="flags-container">
+          <img
+            src="/images/siflag.webp"
+            alt="SI Flag"
+            className={`small-flag ${language === 'SL' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('SL')}
+          />
+          <img
+            src="/images/ukflag.webp"
+            alt="UK Flag"
+            className={`small-flag ${language === 'EN' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('EN')}
+          />
+          <img
+            src="/images/deflag.webp"
+            alt="DE Flag"
+            className={`small-flag ${language === 'DE' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('DE')}
+          />
+          <img
+            src="/images/nlflag.webp"
+            alt="NL Flag"
+            className={`small-flag ${language === 'NL' ? 'active-flag' : ''}`}
+            onClick={() => handleLanguageChange('NL')}
+          />
+        </div>
+      </div>
+
       <h2 className="poi-title">{poi.displayName}</h2>
 
       <img
