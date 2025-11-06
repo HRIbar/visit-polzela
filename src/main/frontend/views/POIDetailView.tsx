@@ -114,29 +114,9 @@ export default function POIDetailView() {
     <a
       href={url}
       className="navigation-button-container"
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        cursor: 'pointer',
-        textDecoration: 'none'
-      }}
     >
       <img src={imagePath} alt={altText} className="navigate-button" />
-      <h2
-        className="navigation-overlay-text"
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: '0',
-          color: 'black',
-          fontWeight: 'bold',
-          pointerEvents: 'none',
-          fontSize: '2.5em',
-          textAlign: 'center'
-        }}
-      >
+      <h2 className="navigation-overlay-text">
         {takeMeText}
       </h2>
     </a>
