@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { SEO } from '../components/SEO';
+import { generatePOISchema, generateBreadcrumbSchema } from '../utils/seoHelpers';
 import '../styles/poi-detail-view-styles.css';
 
 export default function POIDetailView() {
@@ -219,8 +221,43 @@ export default function POIDetailView() {
     );
   }
 
+  // Generate SEO content
+  const seoTitle = `${poi.displayName} - Visit Polzela`;
+  const seoDescription = description || poi.description;
+  const canonicalUrl = `/poi/${encodeURIComponent(poi.name)}`;
+
+  const localeMap = {
+    EN: 'en_US',
+    SL: 'sl_SI',
+    DE: 'de_DE',
+    NL: 'nl_NL'
+  };
+
+  const alternateLocales = Object.values(localeMap).filter(loc => loc !== localeMap[language]);
+
+  // Generate structured data
+  const poiSchema = generatePOISchema(poi, description, language);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: poi.displayName, url: canonicalUrl }
+  ]);
+  const combinedSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [poiSchema, breadcrumbSchema]
+  };
+
   return (
     <div className="poi-detail-content">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        image={poi.imagePath}
+        type="place"
+        locale={localeMap[language]}
+        alternateLocales={alternateLocales}
+        structuredData={combinedSchema}
+      />
       {/* Language flags and back button */}
       <div className="flag-layout">
         <Link to="/" className="back-button">← Back</Link>

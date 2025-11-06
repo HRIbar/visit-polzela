@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://visit-polzela.com/</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://visit-polzela.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="sl" href="https://visit-polzela.com/?lang=sl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://visit-polzela.com/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://visit-polzela.com/?lang=nl"/>
+  </url>
+
+  <!-- POI: Polzela Castle -->
+  <url>
+    <loc>https://visit-polzela.com/poi/castle</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/castle.webp</image:loc>
+      <image:title>Polzela Castle</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Park Šenek -->
+  <url>
+    <loc>https://visit-polzela.com/poi/park</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/park.webp</image:loc>
+      <image:title>Park Šenek</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Medo's ice cream -->
+  <url>
+    <loc>https://visit-polzela.com/poi/icecream</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/icecream.webp</image:loc>
+      <image:title>Medo's ice cream</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Mount Oljka -->
+  <url>
+    <loc>https://visit-polzela.com/poi/mountoljka</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/mountoljka.webp</image:loc>
+      <image:title>Mount Oljka and the Mountaineering Lodge</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Neža Maurer's Birthplace -->
+  <url>
+    <loc>https://visit-polzela.com/poi/maurerhouse</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/maurerhouse.webp</image:loc>
+      <image:title>Neža Maurer's Birthplace</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Roman Legionary Camp -->
+  <url>
+    <loc>https://visit-polzela.com/poi/romancamp</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/romancamp.webp</image:loc>
+      <image:title>Roman Legionary Camp</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Museum of Vintage Tractors -->
+  <url>
+    <loc>https://visit-polzela.com/poi/tractormuseum</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/tractormuseum.webp</image:loc>
+      <image:title>Museum of Vintage Tractors</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Cajhn's Hayrack -->
+  <url>
+    <loc>https://visit-polzela.com/poi/cajhnhayrack</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/cajhnhayrack.webp</image:loc>
+      <image:title>Cajhn's Hayrack</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Whimsical Clay Figurines -->
+  <url>
+    <loc>https://visit-polzela.com/poi/clayfigurines</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/clayfigurines.webp</image:loc>
+      <image:title>Whimsical Clay Figurines</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Novi Klošter Manor -->
+  <url>
+    <loc>https://visit-polzela.com/poi/noviklostermanor</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/noviklostermanor.webp</image:loc>
+      <image:title>Novi Klošter Manor</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Church of St. Margaret -->
+  <url>
+    <loc>https://visit-polzela.com/poi/stmargharetachurch</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/stmargharetachurch.webp</image:loc>
+      <image:title>Church of St. Margaret</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Church of St. Nicholas in Vimperk -->
+  <url>
+    <loc>https://visit-polzela.com/poi/stnicholaschurch</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/stnicholaschurch.webp</image:loc>
+      <image:title>Church of St. Nicholas in Vimperk</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Church of St. Andrew -->
+  <url>
+    <loc>https://visit-polzela.com/poi/standrewchurch</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/standrewchurch.webp</image:loc>
+      <image:title>Church of St. Andrew</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Plague Memorial in Dobrič -->
+  <url>
+    <loc>https://visit-polzela.com/poi/plaguememorial</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/plaguememorial.webp</image:loc>
+      <image:title>Plague Memorial in Dobrič</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: Mešič Mill -->
+  <url>
+    <loc>https://visit-polzela.com/poi/mesicmill</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/mesicmill.webp</image:loc>
+      <image:title>Mešič Mill</image:title>
+    </image:image>
+  </url>
+
+  <!-- POI: River Ložnica -->
+  <url>
+    <loc>https://visit-polzela.com/poi/riverloznica</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://visit-polzela.com/images/riverloznica.webp</image:loc>
+      <image:title>River Ložnica and Its Floodplain</image:title>
+    </image:image>
+  </url>
+
+</urlset>
+
