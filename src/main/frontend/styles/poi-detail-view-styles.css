@@ -121,12 +121,38 @@
     width: 100%;
     max-width: 800px;
     box-sizing: border-box;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .navigate-button {
     max-width: 800px;
     width: 100%;
     height: auto;
+    box-sizing: border-box;
+    display: block;
+}
+
+.navigation-overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: black;
+    font-weight: bold;
+    pointer-events: none;
+    text-align: center;
+    width: 90%;
+    max-width: 90%;
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    padding: 0 10px;
     box-sizing: border-box;
 }
 
@@ -211,6 +237,12 @@
     .navigation-button-container {
         padding: 0 10px;
     }
+
+    .navigation-overlay-text {
+        font-size: clamp(1rem, 3.5vw, 2rem);
+        width: 85%;
+        max-width: 85%;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -235,24 +267,21 @@
         height: 25px;
         max-width: 35px;
     }
+
+    .navigation-overlay-text {
+        font-size: clamp(0.9rem, 3vw, 1.5rem);
+        width: 80%;
+        max-width: 80%;
+        padding: 0 5px;
+    }
 }
-    }
 
-    .poi-map {
-        height: 300px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .poi-title {
-        font-size: 1.5em;
-    }
-
-    .gallery-image {
-        width: 100%;
-    }
-
-    .poi-map {
-        height: 250px;
+/* High-resolution mobile devices (like 1080x2400) */
+@media screen and (min-width: 360px) and (max-width: 430px) and (min-resolution: 2dppx) {
+    .navigation-overlay-text {
+        font-size: clamp(0.95rem, 3.2vw, 1.6rem);
+        width: 82%;
+        max-width: 82%;
+        letter-spacing: -0.5px;
     }
 }
