@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { SEO } from '../components/SEO';
+import { generateOrganizationSchema, generatePOIListSchema } from '../utils/seoHelpers';
 import '../styles/main-view-styles.css';
 
 export default function MainView() {
@@ -127,8 +129,49 @@ export default function MainView() {
     return <div className="main-content">Loading...</div>;
   }
 
+  // Generate SEO content based on selected language
+  const seoTitles = {
+    EN: 'Visit Polzela - Discover Slovenia Tourist Attractions & Points of Interest',
+    SL: 'Obiščite Polzelo - Odkrijte turistične znamenitosti Slovenije',
+    DE: 'Besuchen Sie Polzela - Entdecken Sie Touristenattraktionen in Slowenien',
+    NL: 'Bezoek Polzela - Ontdek toeristische attracties in Slovenië'
+  };
+
+  const seoDescriptions = {
+    EN: 'Explore Polzela, Slovenia - your offline guide to historic castles, churches, museums, and natural attractions. Download the app for offline access to maps and directions.',
+    SL: 'Raziščite Polzelo, Slovenija - vaš vodnik za zgodovinske gradove, cerkve, muzeje in naravne znamenitosti. Prenesite aplikacijo za dostop brez povezave.',
+    DE: 'Erkunden Sie Polzela, Slowenien - Ihr Offline-Reiseführer zu historischen Burgen, Kirchen, Museen und Naturattraktionen.',
+    NL: 'Verken Polzela, Slovenië - uw offline gids voor historische kastelen, kerken, musea en natuurlijke attracties.'
+  };
+
+  const localeMap = {
+    EN: 'en_US',
+    SL: 'sl_SI',
+    DE: 'de_DE',
+    NL: 'nl_NL'
+  };
+
+  const alternateLocales = Object.values(localeMap).filter(loc => loc !== localeMap[language]);
+
+  // Generate structured data
+  const organizationSchema = generateOrganizationSchema();
+  const poiListSchema = generatePOIListSchema(pois);
+  const combinedSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [organizationSchema, poiListSchema]
+  };
+
   return (
     <div className="main-content">
+      <SEO
+        title={seoTitles[language]}
+        description={seoDescriptions[language]}
+        canonicalUrl="/"
+        locale={localeMap[language]}
+        alternateLocales={alternateLocales}
+        structuredData={combinedSchema}
+        image="/images/polzela.webp"
+      />
       {/* Language flags and install button */}
       <div className="flag-layout">
         <div className="flags-container">
