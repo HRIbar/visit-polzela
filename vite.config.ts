@@ -27,10 +27,8 @@ const disableStatsPlugin = (): PluginOption => ({
 
 const customConfig: UserConfigFn = (env) => ({
   // Configure for both development and production builds
-  base: './',
   build: {
     sourcemap: env.command === 'serve',
-    outDir: 'target/classes/META-INF/resources',
     emptyOutDir: false,
     // Increase chunk size warning limit for mobile apps
     chunkSizeWarningLimit: 1000,
