@@ -1,4 +1,4 @@
-const CACHE_NAME = 'visit-polzela-v6'; // Increment version to force update
+const CACHE_NAME = 'visit-polzela-v7'; // Increment version to force update
 const urlsToCache = [
   '/',
   '/index.html',
@@ -25,6 +25,7 @@ const urlsToCache = [
   '/poi-descriptions/stmargharetachurch.txt',
   '/poi-descriptions/stnicholaschurch.txt',
   '/poi-descriptions/tractormuseum.txt',
+  '/poi-descriptions/fortesa.txt',
   // Offline scripts
   '/frontend/offline-handler.js',
   '/frontend/offline-router.js',
@@ -83,7 +84,10 @@ const urlsToCache = [
   '/images/stnicholaschurch.webp',
   '/images/stnicholaschurch1.webp',
   '/images/stnicholaschurch2.webp',
-  '/images/tractormuseum.webp'
+  '/images/tractormuseum.webp',
+  '/images/fortesa.webp',
+  '/images/fortesa1.webp',
+  '/images/fortesa2.webp'
 ];
 
 // Install event - cache resources

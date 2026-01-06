@@ -4,7 +4,7 @@ import { POI, POITitle, Language } from '../types/POI';
 const DB_NAME = 'visit-polzela';
 const POI_STORE = 'pois';
 const TITLES_STORE = 'titles';
-const DATA_VERSION = 6; // Increment this to force reload of POIs
+const DATA_VERSION = 7; // Increment this to force reload of POIs
 const VERSION_KEY = 'data-version';
 
 export class DataService {
