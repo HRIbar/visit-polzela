@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { SEO } from '../components/SEO';
+import { generatePOISchema, generateBreadcrumbSchema } from '../utils/seoHelpers';
 import '../styles/poi-detail-view-styles.css';
 
 export default function POIDetailView() {
@@ -112,29 +114,9 @@ export default function POIDetailView() {
     <a
       href={url}
       className="navigation-button-container"
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        cursor: 'pointer',
-        textDecoration: 'none'
-      }}
     >
       <img src={imagePath} alt={altText} className="navigate-button" />
-      <h2
-        className="navigation-overlay-text"
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: '0',
-          color: 'black',
-          fontWeight: 'bold',
-          pointerEvents: 'none',
-          fontSize: '2.5em',
-          textAlign: 'center'
-        }}
-      >
+      <h2 className="navigation-overlay-text">
         {takeMeText}
       </h2>
     </a>
@@ -219,8 +201,43 @@ export default function POIDetailView() {
     );
   }
 
+  // Generate SEO content
+  const seoTitle = `${poi.displayName} - Visit Polzela`;
+  const seoDescription = description || poi.description;
+  const canonicalUrl = `/poi/${encodeURIComponent(poi.name)}`;
+
+  const localeMap = {
+    EN: 'en_US',
+    SL: 'sl_SI',
+    DE: 'de_DE',
+    NL: 'nl_NL'
+  };
+
+  const alternateLocales = Object.values(localeMap).filter(loc => loc !== localeMap[language]);
+
+  // Generate structured data
+  const poiSchema = generatePOISchema(poi, description, language);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: poi.displayName, url: canonicalUrl }
+  ]);
+  const combinedSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [poiSchema, breadcrumbSchema]
+  };
+
   return (
     <div className="poi-detail-content">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        image={poi.imagePath}
+        type="place"
+        locale={localeMap[language]}
+        alternateLocales={alternateLocales}
+        structuredData={combinedSchema}
+      />
       {/* Language flags and back button */}
       <div className="flag-layout">
         <Link to="/" className="back-button">← Back</Link>

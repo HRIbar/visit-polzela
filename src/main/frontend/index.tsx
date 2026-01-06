@@ -1,13 +1,18 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { router } from './routes';
 
 // Initialize the React app
 const container = document.getElementById('outlet') || document.body;
 const root = createRoot(container);
 
-root.render(<RouterProvider router={router} />);
+root.render(
+  <HelmetProvider>
+    <RouterProvider router={router} />
+  </HelmetProvider>
+);
 
 // Capture the beforeinstallprompt event for PWA installation
 let deferredPrompt: any;
