@@ -1,4 +1,4 @@
-castle;Polzela Castle;Historic castle in Polzela.;https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601;https://maps.app.goo.gl/jp9xW42AM45nbu2F8;https://maps.apple.com/?daddr=46.280336,15.072601&dirflg=d
+castle;Komenda castle in Polzela;Historic castle in Polzela.;https://www.openstreetmap.org/node/12017530355#map=19/46.280336/15.072601;https://maps.app.goo.gl/jp9xW42AM45nbu2F8;https://maps.apple.com/?daddr=46.280336,15.072601&dirflg=d
 park;Park Šenek;A serene park perfect for relaxation.;https://www.openstreetmap.org/way/326921620#map=19/46.283478/15.074862;https://maps.app.goo.gl/1vjKHXKhh8Rs4gUu9;https://maps.apple.com/?daddr=46.283478,15.074862&dirflg=d
 icecream;Medo's ice cream;Delicious local ice cream.;https://www.openstreetmap.org/#map=19/46.280175/15.076860;https://maps.app.goo.gl/gY4a8Z7X6Z9Y7Z7Y7;https://maps.apple.com/?daddr=46.280175,15.076860&dirflg=d
 mountoljka;Mount Oljka and the Mountaineering Lodge;Short hike to Polzela's most visited landmark;https://www.openstreetmap.org/#map=19/46.325665/15.058919;https://maps.app.goo.gl/XbGDZRxJdSeSL3n86;https://maps.apple.com/?daddr=46.325665,15.058919&dirflg=d

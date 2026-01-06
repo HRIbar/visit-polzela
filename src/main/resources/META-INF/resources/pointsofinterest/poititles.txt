@@ -1,4 +1,4 @@
-castle;EN:Polzela Castle;SL:Polzelski grad;DE:Polzela Schloss;NL:Kasteel Polzela
+castle;EN:Komenda Castle in Polzela;SL:Grad Komenda v Polzeli;DE:Schloss Komenda in Polzela;NL:Kasteel Komenda in Polzela
 park;EN:Park Šenek;SL:Park Šenek;DE:Park Šenek;NL:Park Šenek
 icecream;EN:Medo's ice cream;SL:Medo sladoled;DE:Medos Eiscreme;NL:Medo's IJs
 mountoljka;EN:Mount Oljka and the Mountaineering Lodge;SL:Oljka in planinska koča;DE:Oljka und die Berghütte;NL:Mount Oljka en de Berghut
