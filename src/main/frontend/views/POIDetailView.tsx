@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
+import { SEO } from '../components/SEO';
+import { generatePOISchema, generateBreadcrumbSchema } from '../utils/seoHelpers';
 import '../styles/poi-detail-view-styles.css';
 
 export default function POIDetailView() {

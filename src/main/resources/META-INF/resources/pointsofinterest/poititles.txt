@@ -1,11 +1,12 @@
-castle;EN:Polzela Castle;SL:Polzelski grad;DE:Polzela Schloss;NL:Kasteel Polzela
+castle;EN:Komenda Castle in Polzela;SL:Grad Komenda v Polzeli;DE:Schloss Komenda in Polzela;NL:Kasteel Komenda in Polzela
 park;EN:Park Šenek;SL:Park Šenek;DE:Park Šenek;NL:Park Šenek
 icecream;EN:Medo's ice cream;SL:Medo sladoled;DE:Medos Eiscreme;NL:Medo's IJs
+fortesa;EN:Fortesa Bakery;SL:Pekarna Fortesa;DE:Bäckerei Fortesa;NL:Bakkerij Fortesa
 mountoljka;EN:Mount Oljka and the Mountaineering Lodge;SL:Oljka in planinska koča;DE:Oljka und die Berghütte;NL:Mount Oljka en de Berghut
 maurerhouse;EN:Neža Maurer’s Birthplace;SL:Rojstna hiša Neže Maurer;DE:Neža Maurers Geburtsort;NL:Neža Maurers Geboortehuis
 romancamp;EN:Roman Legionary Camp;SL:Rimski legijski tabor;DE:Römisches Legionärslager;NL:Romeins Legioenkamp
 tractormuseum;EN:Museum of Vintage Tractors;SL:Muzej starodobnih traktorjev;DE:Museum für Oldtimer-Traktoren;NL:Oldtimer Tractor Museum
-cajhnhayrack;Cajhn's Hayrack;SL:Cajhnova kozolec;DE:Cajhns Heuhaufen;NL:Cajhns Hooiberg
+cajhnhayrack;EN:Cajhn's Hayrack;SL:Cajhnova kozolec;DE:Cajhns Heuhaufen;NL:Cajhns Hooiberg
 clayfigurines;EN:Whimsical Clay Figurines;SL:Humoristične glinene figurice;DE:Witzige Tonfiguren;NL:Grappige Klei Figuren
 noviklostermanor;EN:Novi Klošter Manor;SL:Novi Klošter;DE:Novi Klošter;NL:Novi Klošter
 stmargharetachurch;EN:Church of St. Margaret;SL:Cerkev sv. Margarete;DE:Kirche St. Margarete;NL:Kerk van St. Margareta
