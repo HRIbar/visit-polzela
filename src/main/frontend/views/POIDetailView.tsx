@@ -258,14 +258,6 @@ export default function POIDetailView() {
         url={poi.navigationUrl}
       />
 
-      {poi.appleNavigationUrl && poi.appleNavigationUrl !== poi.navigationUrl && (
-        <NavigationButton
-          imagePath="/images/applenavigationbutton.webp"
-          altText="Navigate with Apple Maps"
-          url={poi.appleNavigationUrl}
-        />
-      )}
-
       <MapComponent poi={poi} />
     </div>
   );
