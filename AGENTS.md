@@ -140,3 +140,6 @@ POI display order is determined by line order in `pois.txt`.
 | `src/main/resources/application.properties` | Quarkus config (`PORT` env var, über-jar, static paths, CORS) |
 | `vite.config.ts` | Standalone Vite config (root, outDir, dev proxy) |
 | `BUILD_SYSTEM_PRODUCTION_MVN.md` | Full build pipeline documentation |
+
+## Codemap
+Use codemap.md to quickly search for specific code locations, e.g. "Where is the POI REST endpoint implemented?" or "Where are the Vite build outputs configured?".
