@@ -39,23 +39,21 @@ The app features **16 curated attractions** including:
 
 ### Backend
 - **Quarkus 3.20.0**: Supersonic Subatomic Java Framework
-- **Vaadin Flow 24.7.6**: Full-stack web framework
+- **quarkus-rest-jackson**: JAX-RS REST endpoints with JSON serialization
 - **Java 17**: Required for Quarkus 3.0+
-- **Maven**: Build and dependency management
+- **Maven + frontend-maven-plugin**: Build and dependency management
 
 ### Frontend
 - **React 18.3.1**: UI component library
-- **React Router 7.9.3**: Client-side routing
+- **React Router 7.5.2**: Client-side routing
 - **TypeScript**: Type-safe JavaScript
-- **Vite**: Build tool and dev server
-- **IndexedDB (idb 8.0.3)**: Client-side data persistence
-- **Leaflet**: Interactive map rendering
+- **Vite 6**: Standalone build tool and dev server
+- **IndexedDB (idb 8.0.3)**: Client-side data persistence / offline cache
+- **Leaflet**: Interactive map rendering (loaded globally via CDN)
 
 ### PWA Features
 - **Service Worker**: Offline caching and resource management
-- **Workbox**: Advanced caching strategies
 - **Web App Manifest**: Installation and icon configuration
-- **HTTPS Support**: Secure connections via self-signed certificate
 
 ## 📁 Project Structure
 
@@ -107,47 +105,53 @@ visit-polzela/
    cd visit-polzela
    ```
 
-2. **Install dependencies**
+2. **Install npm dependencies**
    ```bash
-   mvn clean install
+   npm install
    ```
 
-3. **Run in development mode**
-   
+3. **Build the frontend**
+   ```bash
+   npm run build
+   ```
+
+4. **Run in development mode**
+
    Windows:
    ```bash
    mvnw quarkus:dev
    ```
-   
+
    Mac/Linux:
    ```bash
    ./mvnw quarkus:dev
    ```
 
-4. **Open in browser**
+5. **Open in browser**
    ```
-   https://localhost:8080/
+   http://localhost:8080/
    ```
-   
-   Note: Accept the self-signed certificate warning in your browser.
+
+> **Tip — frontend hot reload:** Run `npm run dev` in a second terminal and open
+> `http://localhost:5173` instead. Vite proxies `/api/*` to Quarkus for live HMR.
 
 ### Production Build
 
 1. **Build the application**
-   
+
    Windows:
    ```bash
-   mvnw package -Pproduction
+   mvnw package -DskipTests
    ```
-   
+
    Mac/Linux:
    ```bash
-   ./mvnw package -Pproduction
+   ./mvnw package -DskipTests
    ```
 
 2. **Run the production build**
    ```bash
-   java -jar target/quarkus-app/quarkus-run.jar
+   java -jar target/visit-polzela-1.0-runner.jar
    ```
 
 ### Docker Deployment
@@ -207,12 +211,12 @@ translationkey;EN:English text;SL:Slovenian text;DE:German text;NL:Dutch text
 
 Use in code:
 ```typescript
-const text = await dataService.getLocalizedText('translationkey', language);
+const texts = await dataService.getLocalizedTexts(language, ['translationkey']);
+const text = texts.get('translationkey') || 'fallback';
 ```
 
 ## 🎨 Styling and Theming
 
-- **Theme**: Vaadin Lumo (light theme)
 - **Responsive Breakpoints**: 768px (tablet), 480px (mobile)
 - **Max Content Width**: 800px for optimal readability
 - **Images**: WebP format for optimal performance
@@ -224,9 +228,11 @@ const text = await dataService.getLocalizedText('translationkey', language);
 
 **application.properties**: Quarkus settings
 ```properties
-quarkus.http.port=8080
-quarkus.http.ssl-port=8443
-quarkus.http.ssl.certificate.key-store-file=keystore.jks
+quarkus.http.port=${PORT:8080}
+quarkus.http.static-resources.enabled=true
+quarkus.http.static-resources.paths=META-INF/resources
+quarkus.http.cors=true
+quarkus.http.cors.origins=http://localhost:5173
 ```
 
 **manifest.json**: PWA configuration
@@ -319,5 +325,5 @@ For issues or questions about the app, please open an issue in the GitHub reposi
 
 **Visit Polzela** - Discover the hidden gems of Polzela, Slovenia 🇸🇮
 
-Made with ❤️ using Vaadin, Quarkus, and React
+Made with ❤️ using Quarkus and React
 

@@ -3,18 +3,33 @@
 | | |
 |---|---|
 | **Java** | 17 |
-| **Framework** | Quarkus 3.20.0 + Vaadin Flow 24.7.6 |
+| **Framework** | Quarkus 3.20.0 |
 | **Base package** | `com.example.starter.base` |
-| **Frontend** | React 18 + TypeScript SPA (Vaadin used as build harness only) |
+| **Frontend** | React 18 + TypeScript SPA (standalone Vite build) |
 
-> **⚠️ Architecture note:** The Vaadin Flow Java views (`MainView.java`, `POIDetailView.java`) are **disabled** — their `@Route` annotations are commented out. The active UI is the React SPA in `src/main/frontend/`. The Java layer exists only to run Quarkus (static file serving) and retain historical reference implementations.
+> **Architecture:** Vaadin has been fully removed. The Java layer exposes a REST API
+> (`/api/**`) and serves the Vite-built SPA as static files. All POI data flows from flat
+> text files through `POIService.java` → JAX-RS resources → JSON → `DataService.ts` → React.
 
 ---
 
-## No Constants, Utils, or REST Resource classes found
+## Java Package Tree
 
-The packages `utils`, `constants`, `common`, and `api/resource` do not exist in this codebase.  
-There are **no `TimeUtil`**, **no `Constants` class**, and **no REST endpoints** — cross-service integration is handled entirely client-side via flat text files and IndexedDB.
+```
+com.example.starter.base/
+├── Application.java          @QuarkusMain entry point
+├── dto/
+│   ├── POIDto.java           JSON response: name, displayName, shortDescription, description, imagePath, order, mapUrl, navigationUrl, appleNavigationUrl
+│   ├── POIImagesDto.java     JSON response: poiName, imageUrls[]
+│   └── LocalizedTextDto.java JSON response: texts{key→value}
+├── entity/
+│   └── PointOfInterest.java  Internal POJO (no CDI scope)
+├── resource/
+│   ├── POIResource.java      GET /api/pois, /api/pois/{key}, /api/pois/{key}/images
+│   └── TextResource.java     GET /api/texts
+└── services/
+    └── POIService.java       Parses pois.txt / poititles.txt / poi-descriptions/*.txt; caches in memory
+```
 
 ---
 
@@ -25,86 +40,69 @@ There are **no `TimeUtil`**, **no `Constants` class**, and **no REST endpoints**
 
 ---
 
-## src/main/java/com/example/starter/base/AppShell.java
+## src/main/java/com/example/starter/base/dto/POIDto.java
 
-- Implements: `AppShellConfigurator`
-- Annotation: `@PWA(name="Visit Polzela Progressive Web Application", manifestPath="manifest.json")`
-- Inlines `META-INF/resources/sw-register.js` into every page as a script block
-- Note: `vaadin.pwa.enabled=false` in `application.properties` overrides the built-in PWA; `sw.js` in `META-INF/resources/` is the active service worker
-
----
-
-## src/main/java/com/example/starter/base/config/CustomBootstrapListener.java
-
-- Implements: `VaadinServiceInitListener`
-- `serviceInit(ServiceInitEvent)` → `void` *(stub — no custom logic)*
+- Plain DTO (no CDI scope)
+- Fields: `name`, `displayName`, `shortDescription`, `description`, `imagePath`, `order`, `mapUrl`, `navigationUrl`, `appleNavigationUrl`
+- Serialized to JSON by `quarkus-rest-jackson`
 
 ---
 
-## src/main/java/com/example/starter/base/config/MapConfig.java
+## src/main/java/com/example/starter/base/dto/POIImagesDto.java
 
-- Scope: `@ApplicationScoped`
-- CDI producer:
-  - `createComponentRegistry()` → `LComponentManagementRegistry` *(produces `LDefaultComponentManagementRegistry` bound to `UI.getCurrent().getElement()`)*
+- Plain DTO
+- Fields: `poiName`, `imageUrls` (`List<String>`)
+
+---
+
+## src/main/java/com/example/starter/base/dto/LocalizedTextDto.java
+
+- Plain DTO
+- Fields: `texts` (`Map<String, String>`)
 
 ---
 
 ## src/main/java/com/example/starter/base/entity/PointOfInterest.java
 
-- Plain POJO — no CDI scope
+- Plain POJO — no CDI scope, no Vaadin dependencies
 - Fields: `name`, `displayName`, `description`, `imagePath`, `mapUrl`, `navigationUrl`, `appleNavigationUrl`
-- Notable public methods (non-boilerplate):
-  - `getImageResource()` → `StreamResource` *(loads `/META-INF/resources/images/{imagePath}` from classpath as a Vaadin stream)*
+- Kept for internal use; REST responses use `POIDto` instead
 
 ---
 
 ## src/main/java/com/example/starter/base/services/POIService.java
 
 - Scope: `@ApplicationScoped`
-- Injects: `OfflineStorageService`
 - Internal cache: `Map<String, Map<String, String>> titlesCache` keyed by language code (`EN`, `SL`, `DE`, `NL`)
 - Public methods:
-  - `getPointsOfInterest()` → `List<PointOfInterest>` *(delegates to English locale)*
-  - `getPointsOfInterest(Locale)` → `List<PointOfInterest>` *(reads `pois.txt`, merges localized titles from `poititles.txt`)*
-- Data source: `/META-INF/resources/pointsofinterest/pois.txt` (`;`-delimited, 6 fields per line)
-- Title source: `/META-INF/resources/pointsofinterest/poititles.txt` (`;`-delimited, `LANG:value` segments)
+  - `getLocalizedPOIsDto(String lang)` → `List<POIDto>` *(all POIs, no long description)*
+  - `getLocalizedPOIDto(String key, String lang)` → `POIDto` *(single POI with full description)*
+  - `getPOIImageUrls(String key)` → `List<String>` *(probes classpath for `{key}.webp`, `{key}1-3.webp`)*
+  - `getLocalizedTexts(String lang, List<String> keys)` → `Map<String, String>` *(UI strings)*
+- Data sources:
+  - `/META-INF/resources/pointsofinterest/pois.txt` (`;`-delimited, 6 fields)
+  - `/META-INF/resources/pointsofinterest/poititles.txt` (`;`-delimited, `LANG:value` segments)
+  - `/META-INF/resources/poi-descriptions/{key}.txt` (`LANG:` line-prefixed)
 
 ---
 
-## src/main/java/com/example/starter/base/services/OfflineStorageService.java
+## src/main/java/com/example/starter/base/resource/POIResource.java
 
 - Scope: `@ApplicationScoped`
-- Bridges Java POI data into browser IndexedDB via `UI.getCurrent().getPage().executeJs()`
-- IDB database name (in JS): `visit-polzela-db`, object store: `pois` (keyPath: `id`)
-- **Note:** This service is distinct from the active frontend path. The React SPA uses its own `DataService.ts` writing to IndexedDB DB `visit-polzela` (store `pois`, keyPath: `name`). These are **two separate databases**.
-- Public methods:
-  - `storePOIs(List<PointOfInterest>)` → `void`
-  - `getPOIs()` → `PendingJavaScriptResult`
-  - `isOnline()` → `PendingJavaScriptResult`
+- Path: `/api/pois`
+- Endpoints:
+  - `GET /api/pois?lang=EN` → `List<POIDto>`
+  - `GET /api/pois/{key}?lang=EN` → `POIDto` (or 404)
+  - `GET /api/pois/{key}/images` → `POIImagesDto`
 
 ---
 
-## src/main/java/com/example/starter/base/views/MainView.java *(DISABLED)*
+## src/main/java/com/example/starter/base/resource/TextResource.java
 
-- `@Route` is **commented out** — not registered, not reachable
-- Extends: `AppLayout`
-- Injects: `POIService`
-- Calls `OfflineStorageService` (via inline JS) and `POIService.getPointsOfInterest(Locale)` on language flag click
-- Kept as historical reference for the original Vaadin Flow implementation
-
----
-
-## src/main/java/com/example/starter/base/views/POIDetailView.java *(DISABLED)*
-
-- `@Route("poi")` is **commented out** — not registered, not reachable
-- Extends: `AppLayout`, implements `HasUrlParameter<String>`
-- Annotations: `@JavaScript("https://unpkg.com/leaflet@1.7.1/...")`, `@StyleSheet(...)`, `@PreserveOnRefresh`
-- Injects: `POIService`, `LComponentManagementRegistry`
-- `setParameter(BeforeEvent, String)` → `void` *(route handler — builds the detail page for a given POI key)*
-- Notable internal methods (public-facing surface):
-  - *(none — all helpers are private)*
-- Map coordinates parsed from OSM URL: last two path segments = `lat/lng`
-- Kept as historical reference for the original Vaadin Flow implementation
+- Scope: `@ApplicationScoped`
+- Path: `/api/texts`
+- Endpoints:
+  - `GET /api/texts?lang=EN&keys=welcome,takeme` → `LocalizedTextDto`
 
 ---
 
@@ -112,10 +110,9 @@ There are **no `TimeUtil`**, **no `Constants` class**, and **no REST endpoints**
 
 | File | Role |
 |------|------|
-| `src/main/frontend/services/DataService.ts` | Singleton — all data fetch, parse, IndexedDB read/write, i18n lookup |
-| `src/main/frontend/types/POI.ts` | `POI`, `POITitle`, `Language` types |
+| `src/main/frontend/services/DataService.ts` | Singleton — REST calls, IndexedDB cache, offline fallback |
+| `src/main/frontend/types/POI.ts` | `POI`, `Language` types |
 | `src/main/frontend/views/MainView.tsx` | Route `/` — POI grid, language switcher |
 | `src/main/frontend/views/POIDetailView.tsx` | Route `/poi/:name` — map, gallery, navigation |
 | `src/main/frontend/components/SEO.tsx` | `<SEO>` — react-helmet-async wrapper |
 | `src/main/frontend/utils/seoHelpers.ts` | `generateOrganizationSchema()`, `generatePOISchema()`, `generateBreadcrumbSchema()`, `generatePOIListSchema()` |
-

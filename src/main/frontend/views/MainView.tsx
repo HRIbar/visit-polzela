@@ -6,22 +6,19 @@ import { SEO } from '../components/SEO';
 import { generateOrganizationSchema, generatePOIListSchema } from '../utils/seoHelpers';
 import '../styles/main-view-styles.css';
 
+const dataService = DataService.getInstance();
+
 export default function MainView() {
   const [pois, setPois] = useState<POI[]>([]);
-  const [language, setLanguage] = useState<Language>('EN');
+  const [language, setLanguage] = useState<Language>(() => {
+    return (localStorage.getItem('selectedLanguage') as Language) || 'EN';
+  });
   const [loading, setLoading] = useState(true);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
   const [showInstallButton, setShowInstallButton] = useState(true);
-  const dataService = DataService.getInstance();
 
   useEffect(() => {
     initializeApp();
-
-    // Load saved language from localStorage
-    const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
 
     // Check if app is already in standalone mode (already installed)
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -29,15 +26,9 @@ export default function MainView() {
     }
 
     // Listen for the appinstalled event to hide button after installation
-    const handleAppInstalled = () => {
-      setShowInstallButton(false);
-    };
-
+    const handleAppInstalled = () => setShowInstallButton(false);
     window.addEventListener('appinstalled', handleAppInstalled);
-
-    return () => {
-      window.removeEventListener('appinstalled', handleAppInstalled);
-    };
+    return () => window.removeEventListener('appinstalled', handleAppInstalled);
   }, []);
 
   useEffect(() => {
@@ -49,7 +40,8 @@ export default function MainView() {
 
   const initializeApp = async () => {
     try {
-      await dataService.initializeData();
+      const savedLang = (localStorage.getItem('selectedLanguage') as Language) || 'EN';
+      await dataService.initializeData(savedLang);
       setLoading(false);
     } catch (error) {
       console.error('Error initializing app:', error);
@@ -59,8 +51,8 @@ export default function MainView() {
 
   const loadPOIs = async () => {
     try {
-      const localizedPOIs = await dataService.getPOIsWithLocalizedTitles(language);
-      setPois(localizedPOIs);
+      const localizedPOIs = await dataService.loadPOIsFromREST(language);
+      setPois(localizedPOIs.sort((a, b) => a.order - b.order));
     } catch (error) {
       console.error('Error loading POIs:', error);
     }
@@ -68,8 +60,8 @@ export default function MainView() {
 
   const loadWelcomeText = async () => {
     try {
-      const text = await dataService.getLocalizedText('welcome', language);
-      setWelcomeText(text);
+      const texts = await dataService.getLocalizedTexts(language, ['welcome']);
+      setWelcomeText(texts.get('welcome') || 'Welcome to');
     } catch (error) {
       console.error('Error loading welcome text:', error);
     }

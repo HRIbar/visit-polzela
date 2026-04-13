@@ -1,11 +1,8 @@
 import { openDB } from 'idb';
-import { POI, POITitle, Language } from '../types/POI';
+import { POI, Language } from '../types/POI';
 
 const DB_NAME = 'visit-polzela';
 const POI_STORE = 'pois';
-const TITLES_STORE = 'titles';
-const DATA_VERSION = 7; // Increment this to force reload of POIs
-const VERSION_KEY = 'data-version';
 
 export class DataService {
   private static instance: DataService;
@@ -22,13 +19,14 @@ export class DataService {
 
   async initDB() {
     if (!this.db) {
-      this.db = await openDB(DB_NAME, 1, {
+      this.db = await openDB(DB_NAME, 2, {
         upgrade(db) {
+          // Remove the old 'titles' store from the Vaadin-era schema
+          if (db.objectStoreNames.contains('titles')) {
+            db.deleteObjectStore('titles');
+          }
           if (!db.objectStoreNames.contains(POI_STORE)) {
             db.createObjectStore(POI_STORE, { keyPath: 'name' });
-          }
-          if (!db.objectStoreNames.contains(TITLES_STORE)) {
-            db.createObjectStore(TITLES_STORE, { keyPath: 'name' });
           }
         },
       });
@@ -36,27 +34,16 @@ export class DataService {
     return this.db;
   }
 
-  async loadPOIsFromStatic(): Promise<POI[]> {
+  /**
+   * Fetch all POIs from REST and cache in IndexedDB for offline fallback.
+   */
+  async loadPOIsFromREST(lang: Language): Promise<POI[]> {
     try {
-      const response = await fetch('/pointsofinterest/pois.txt');
-      const text = await response.text();
-      const lines = text.trim().split('\n');
+      const response = await fetch(`/api/pois?lang=${lang}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const pois: POI[] = await response.json();
 
-      const pois: POI[] = lines.map((line, index) => {
-        const parts = line.split(';');
-        return {
-          name: parts[0],
-          displayName: parts[1],
-          description: parts[2],
-          imagePath: `/images/${parts[0]}.webp`,
-          mapUrl: parts[3],
-          navigationUrl: parts[4],
-          appleNavigationUrl: parts[5] || parts[4],
-          order: index
-        };
-      });
-
-      // Store in IndexedDB for offline access
+      // Cache in IndexedDB for offline access
       const db = await this.initDB();
       const tx = db.transaction(POI_STORE, 'readwrite');
       for (const poi of pois) {
@@ -66,58 +53,64 @@ export class DataService {
 
       return pois;
     } catch (error) {
-      console.error('Error loading POIs from static file:', error);
-      // Fallback to IndexedDB
+      console.warn('[DataService] REST fetch failed, falling back to IndexedDB:', error);
       return this.getPOIsFromDB();
     }
   }
 
-  async loadTitlesFromStatic(): Promise<POITitle[]> {
+  /**
+   * Fetch a single POI with full localized description from REST.
+   * Falls back to IndexedDB cached entry on network failure.
+   */
+  async getPOIFromREST(key: string, lang: Language): Promise<POI | null> {
     try {
-      const response = await fetch('/pointsofinterest/poititles.txt');
-      const text = await response.text();
-      const lines = text.trim().split('\n');
-
-      const titles: POITitle[] = lines.map(line => {
-        const parts = line.split(';');
-        const title: POITitle = {
-          name: parts[0],
-          en: '',
-          sl: '',
-          de: '',
-          nl: ''
-        };
-
-        // Parse language-specific titles
-        for (let i = 1; i < parts.length; i++) {
-          const part = parts[i].trim();
-          if (part.startsWith('EN:')) {
-            title.en = part.substring(3);
-          } else if (part.startsWith('SL:')) {
-            title.sl = part.substring(3);
-          } else if (part.startsWith('DE:')) {
-            title.de = part.substring(3);
-          } else if (part.startsWith('NL:')) {
-            title.nl = part.substring(3);
-          }
-        }
-
-        return title;
-      });
-
-      // Store in IndexedDB for offline access
-      const db = await this.initDB();
-      const tx = db.transaction(TITLES_STORE, 'readwrite');
-      for (const title of titles) {
-        await tx.store.put(title);
+      const response = await fetch(`/api/pois/${encodeURIComponent(key)}?lang=${lang}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP ${response.status}`);
       }
-      await tx.done;
+      const poi: POI = await response.json();
 
-      return titles;
+      // Update cache with the enriched (description-bearing) entry
+      const db = await this.initDB();
+      await db.put(POI_STORE, poi);
+
+      return poi;
     } catch (error) {
-      console.error('Error loading titles from static file:', error);
-      // Fallback to IndexedDB
-      return this.getTitlesFromDB();
+      console.warn(`[DataService] REST fetch failed for POI "${key}", using cache:`, error);
+      const db = await this.initDB();
+      return (await db.get(POI_STORE, key)) ?? null;
+    }
+  }
+
+  /**
+   * Fetch localized UI text strings (e.g. 'welcome', 'takeme') from REST.
+   */
+  async getLocalizedTexts(lang: Language, keys: string[]): Promise<Map<string, string>> {
+    try {
+      const keysParam = keys.join(',');
+      const response = await fetch(`/api/texts?lang=${lang}&keys=${keysParam}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data: { texts: Record<string, string> } = await response.json();
+      return new Map(Object.entries(data.texts));
+    } catch (error) {
+      console.warn('[DataService] Failed to load localized texts:', error);
+      return new Map();
+    }
+  }
+
+  /**
+   * Fetch available image URLs for a POI (main + up to 3 gallery images).
+   */
+  async getPOIImages(key: string): Promise<string[]> {
+    try {
+      const response = await fetch(`/api/pois/${encodeURIComponent(key)}/images`);
+      if (!response.ok) return [];
+      const data: { imageUrls: string[] } = await response.json();
+      return data.imageUrls;
+    } catch (error) {
+      console.warn(`[DataService] Failed to load images for "${key}":`, error);
+      return [];
     }
   }
 
@@ -126,69 +119,11 @@ export class DataService {
     return db.getAll(POI_STORE);
   }
 
-  async getTitlesFromDB(): Promise<POITitle[]> {
-    const db = await this.initDB();
-    return db.getAll(TITLES_STORE);
-  }
-
-  async getPOIByName(name: string): Promise<POI | undefined> {
-    const db = await this.initDB();
-    return db.get(POI_STORE, name);
-  }
-
-  async getPOIsWithLocalizedTitles(language: Language): Promise<POI[]> {
-    const [pois, titles] = await Promise.all([
-      this.getPOIsFromDB(),
-      this.getTitlesFromDB()
-    ]);
-
-    return pois
-      .sort((a, b) => a.order - b.order)
-      .map(poi => {
-        const title = titles.find(t => t.name === poi.name);
-        if (title) {
-          const langKey = language.toLowerCase() as keyof Omit<POITitle, 'name'>;
-          return {
-            ...poi,
-            displayName: title[langKey] || title.en || poi.displayName
-          };
-        }
-        return poi;
-      });
-  }
-
-  async getLocalizedText(key: string, language: Language): Promise<string> {
-    const titles = await this.getTitlesFromDB();
-    const title = titles.find(t => t.name === key);
-
-    if (title) {
-      const langKey = language.toLowerCase() as keyof Omit<POITitle, 'name'>;
-      return title[langKey] || title.en || key;
-    }
-
-    return key;
-  }
-
-  async initializeData(): Promise<void> {
+  async initializeData(lang: Language): Promise<void> {
     try {
-      // Always reload titles to ensure we have the latest translations
-      await this.loadTitlesFromStatic();
-
-      // Check version in localStorage
-      const storedVersion = localStorage.getItem(VERSION_KEY);
-      const currentVersion = DATA_VERSION.toString();
-
-      // Force reload if version changed or POIs are empty
-      const pois = await this.getPOIsFromDB();
-      if (storedVersion !== currentVersion || pois.length === 0) {
-        console.log('[DataService] Reloading POIs due to version change or empty cache');
-        // Load POI data from static files
-        await this.loadPOIsFromStatic();
-        // Update stored version
-        localStorage.setItem(VERSION_KEY, currentVersion);
-      }
+      await this.loadPOIsFromREST(lang);
     } catch (error) {
-      console.error('Error initializing data:', error);
+      console.error('[DataService] Error initializing data:', error);
     }
   }
 }
