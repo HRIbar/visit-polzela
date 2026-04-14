@@ -39,23 +39,21 @@ The app features **16 curated attractions** including:
 
 ### Backend
 - **Quarkus 3.20.0**: Supersonic Subatomic Java Framework
-- **Vaadin Flow 24.7.6**: Full-stack web framework
+- **quarkus-rest-jackson**: JAX-RS REST endpoints with JSON serialization
 - **Java 17**: Required for Quarkus 3.0+
-- **Maven**: Build and dependency management
+- **Maven + frontend-maven-plugin**: Build and dependency management
 
 ### Frontend
 - **React 18.3.1**: UI component library
-- **React Router 7.9.3**: Client-side routing
+- **React Router 7.5.2**: Client-side routing
 - **TypeScript**: Type-safe JavaScript
-- **Vite**: Build tool and dev server
-- **IndexedDB (idb 8.0.3)**: Client-side data persistence
-- **Leaflet**: Interactive map rendering
+- **Vite 6**: Standalone build tool and dev server
+- **IndexedDB (idb 8.0.3)**: Client-side data persistence / offline cache
+- **Leaflet**: Interactive map rendering (loaded globally via CDN)
 
 ### PWA Features
 - **Service Worker**: Offline caching and resource management
-- **Workbox**: Advanced caching strategies
 - **Web App Manifest**: Installation and icon configuration
-- **HTTPS Support**: Secure connections via self-signed certificate
 
 ## 📁 Project Structure
 
@@ -107,47 +105,53 @@ visit-polzela/
    cd visit-polzela
    ```
 
-2. **Install dependencies**
+2. **Install npm dependencies**
    ```bash
-   mvn clean install
+   npm install
    ```
 
-3. **Run in development mode**
-   
+3. **Build the frontend**
+   ```bash
+   npm run build
+   ```
+
+4. **Run in development mode**
+
    Windows:
    ```bash
    mvnw quarkus:dev
    ```
-   
+
    Mac/Linux:
    ```bash
    ./mvnw quarkus:dev
    ```
 
-4. **Open in browser**
+5. **Open in browser**
    ```
-   https://localhost:8080/
+   http://localhost:8080/
    ```
-   
-   Note: Accept the self-signed certificate warning in your browser.
+
+> **Tip — frontend hot reload:** Run `npm run dev` in a second terminal and open
+> `http://localhost:5173` instead. Vite proxies `/api/*` to Quarkus for live HMR.
 
 ### Production Build
 
 1. **Build the application**
-   
+
    Windows:
    ```bash
-   mvnw package -Pproduction
+   mvnw package -DskipTests
    ```
-   
+
    Mac/Linux:
    ```bash
-   ./mvnw package -Pproduction
+   ./mvnw package -DskipTests
    ```
 
 2. **Run the production build**
    ```bash
-   java -jar target/quarkus-app/quarkus-run.jar
+   java -jar target/visit-polzela-1.0-runner.jar
    ```
 
 ### Docker Deployment
@@ -207,12 +211,12 @@ translationkey;EN:English text;SL:Slovenian text;DE:German text;NL:Dutch text
 
 Use in code:
 ```typescript
-const text = await dataService.getLocalizedText('translationkey', language);
+const texts = await dataService.getLocalizedTexts(language, ['translationkey']);
+const text = texts.get('translationkey') || 'fallback';
 ```
 
 ## 🎨 Styling and Theming
 
-- **Theme**: Vaadin Lumo (light theme)
 - **Responsive Breakpoints**: 768px (tablet), 480px (mobile)
 - **Max Content Width**: 800px for optimal readability
 - **Images**: WebP format for optimal performance
@@ -224,9 +228,11 @@ const text = await dataService.getLocalizedText('translationkey', language);
 
 **application.properties**: Quarkus settings
 ```properties
-quarkus.http.port=8080
-quarkus.http.ssl-port=8443
-quarkus.http.ssl.certificate.key-store-file=keystore.jks
+quarkus.http.port=${PORT:8080}
+quarkus.http.static-resources.enabled=true
+quarkus.http.static-resources.paths=META-INF/resources
+quarkus.http.cors=true
+quarkus.http.cors.origins=http://localhost:5173
 ```
 
 **manifest.json**: PWA configuration
@@ -257,77 +263,17 @@ Users can install the app by:
 - **Dynamic content**: Network-first with cache fallback
 - **Images**: Cache-first for performance
 
-## 📱 Android App Deployment
+## 🗺️ Map Integration
 
-### Capacitor Integration
+### OpenStreetMap
+- Free, open-source mapping
+- Leaflet.js library for rendering
+- Custom markers for each POI
 
-This project now includes **Capacitor by Ionic** for building native Android apps and deploying to Google Play Store.
-
-#### Quick Build for Android
-
-```bash
-# Build web assets and sync to Android
-npm run build:mobile
-
-# Open in Android Studio
-npm run cap:open
-
-# Build release bundle for Play Store
-npm run deploy:prepare
-```
-
-#### Available NPM Scripts
-
-- `npm run cap:sync` - Sync web assets to Android platform
-- `npm run cap:open` - Open project in Android Studio
-- `npm run build:mobile` - Build web assets + sync to Android
-- `npm run deploy:prepare` - Complete build ready for Play Store (creates AAB)
-- `npm run android:bundle` - Build Android App Bundle (AAB)
-- `npm run android:build` - Build release APK
-- `npm run android:clean` - Clean Android build
-
-#### App Configuration
-
-- **App ID**: `com.polzela.tourism`
-- **App Name**: Visit Polzela
-- **Package Format**: Android App Bundle (AAB) for Play Store
-
-#### Documentation
-
-For complete Android deployment instructions, see:
-- **[ANDROID_DEPLOYMENT.md](ANDROID_DEPLOYMENT.md)** - Complete guide with Play Store setup, signing, and deployment
-- **[QUICKSTART_ANDROID.md](QUICKSTART_ANDROID.md)** - Quick reference for building and deploying
-
-#### Prerequisites for Android Build
-
-1. **Android Studio** - [Download here](https://developer.android.com/studio)
-2. **Java JDK 17** - Already installed for Quarkus
-3. **Keystore** - For signing release builds (instructions in deployment guide)
-
-#### First-time Setup
-
-```bash
-# Capacitor is already initialized. Just sync your web assets:
-npm run cap:sync
-
-# Then open in Android Studio to build
-npm run cap:open
-```
-
-#### Google Play Store
-
-To deploy to Google Play Store:
-1. Create a Google Play Developer account ($25 one-time fee)
-2. Generate a signing keystore (see ANDROID_DEPLOYMENT.md)
-3. Build release bundle: `npm run deploy:prepare`
-4. Upload AAB to Play Console
-5. Complete store listing (screenshots, description, privacy policy)
-6. Submit for review
-
-Output locations:
-- **Release AAB**: `android/app/build/outputs/bundle/release/app-release.aab`
-- **Release APK**: `android/app/build/outputs/apk/release/app-release.apk`
-- **Debug APK**: `android/app/build/outputs/apk/debug/app-debug.apk`
+### Navigation
+- **Google Maps**: Android and web users
+- **Apple Maps**: iOS users
+- Direct deep-linking with coordinates
 
 ## 🚧 Development Tips
 
@@ -379,4 +325,5 @@ For issues or questions about the app, please open an issue in the GitHub reposi
 
 **Visit Polzela** - Discover the hidden gems of Polzela, Slovenia 🇸🇮
 
-Made with ❤️ using Vaadin, Quarkus, and React
+Made with ❤️ using Quarkus and React
+

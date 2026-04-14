@@ -6,18 +6,17 @@ import { SEO } from '../components/SEO';
 import { generatePOISchema, generateBreadcrumbSchema } from '../utils/seoHelpers';
 import '../styles/poi-detail-view-styles.css';
 
+const dataService = DataService.getInstance();
+
 export default function POIDetailView() {
   const { name } = useParams<{ name: string }>();
   const [poi, setPoi] = useState<POI | null>(null);
   const [language, setLanguage] = useState<Language>(() => {
-    // Load language from localStorage, default to 'EN' if not set
-    const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
-    return savedLanguage || 'EN';
+    return (localStorage.getItem('selectedLanguage') as Language) || 'EN';
   });
   const [description, setDescription] = useState<string>('');
   const [takeMeText, setTakeMeText] = useState<string>('Take me there!');
   const [loading, setLoading] = useState(true);
-  const dataService = DataService.getInstance();
 
   useEffect(() => {
     if (name) {
@@ -28,22 +27,17 @@ export default function POIDetailView() {
   const loadPOI = async (poiName: string) => {
     try {
       setLoading(true);
-      const poiData = await dataService.getPOIByName(decodeURIComponent(poiName));
+      // Fetch POI with full localized description from REST
+      const poiData = await dataService.getPOIFromREST(decodeURIComponent(poiName), language);
 
       if (poiData) {
-        // Get localized title
-        const localizedPOIs = await dataService.getPOIsWithLocalizedTitles(language);
-        const localizedPOI = localizedPOIs.find(p => p.name === poiData.name);
+        setPoi(poiData);
+        // Description is included in the REST response
+        setDescription(poiData.description || '');
 
-        setPoi(localizedPOI || poiData);
-
-        // Load description
-        const desc = await loadDescription(poiData.name);
-        setDescription(desc);
-
-        // Get localized "Take me there!" text
-        const takeMe = await dataService.getLocalizedText('takeme', language);
-        setTakeMeText(takeMe);
+        // Fetch localized "Take me there!" text
+        const texts = await dataService.getLocalizedTexts(language, ['takeme']);
+        setTakeMeText(texts.get('takeme') || 'Take me there!');
       }
       setLoading(false);
     } catch (error) {
@@ -52,39 +46,8 @@ export default function POIDetailView() {
     }
   };
 
-  const loadDescription = async (poiName: string): Promise<string> => {
-    try {
-      const response = await fetch(`/poi-descriptions/${poiName}.txt`);
-      if (!response.ok) {
-        return 'Description not available.';
-      }
-
-      const text = await response.text();
-      const lines = text.split('\n');
-      const langPrefix = `${language}:`;
-
-      // Look for language-specific description
-      const langLine = lines.find(line => line.startsWith(langPrefix));
-      if (langLine) {
-        return langLine.substring(langPrefix.length).trim();
-      }
-
-      // Fallback to English
-      const enLine = lines.find(line => line.startsWith('EN:'));
-      if (enLine) {
-        return enLine.substring(3).trim();
-      }
-
-      return 'Description not available in the selected language.';
-    } catch (error) {
-      console.error('Error loading description:', error);
-      return 'Error loading description.';
-    }
-  };
-
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
-    // Save language selection to localStorage
     localStorage.setItem('selectedLanguage', newLanguage);
   };
 
@@ -123,19 +86,26 @@ export default function POIDetailView() {
   );
 
   const ImageGallery = ({ poi }: { poi: POI }) => {
-    const basePath = poi.imagePath.replace('.webp', '');
+    const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
     const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+      dataService.getPOIImages(poi.name).then(allUrls => {
+        // Gallery images are the numbered ones (exclude the main image)
+        setGalleryUrls(allUrls.filter(url => /\d\.webp$/.test(url)));
+      });
+    }, [poi.name]);
 
     return (
       <>
         <div className="image-gallery">
-          {[1, 2, 3].map(i => (
+          {galleryUrls.map((url, i) => (
             <img
               key={i}
-              src={`/images/${poi.name}${i}.webp`}
+              src={url}
               alt={poi.displayName}
               className="gallery-image"
-              onClick={() => setEnlargedImage(`/images/${poi.name}${i}.webp`)}
+              onClick={() => setEnlargedImage(url)}
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
