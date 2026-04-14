@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
 import { SEO } from '../components/SEO';
+import { CachedImage } from '../components/CachedImage';
 import { generatePOISchema, generateBreadcrumbSchema } from '../utils/seoHelpers';
 import '../styles/poi-detail-view-styles.css';
 
@@ -91,7 +92,6 @@ export default function POIDetailView() {
 
     useEffect(() => {
       dataService.getPOIImages(poi.name).then(allUrls => {
-        // Gallery images are the numbered ones (exclude the main image)
         setGalleryUrls(allUrls.filter(url => /\d\.webp$/.test(url)));
       });
     }, [poi.name]);
@@ -100,7 +100,7 @@ export default function POIDetailView() {
       <>
         <div className="image-gallery">
           {galleryUrls.map((url, i) => (
-            <img
+            <CachedImage
               key={i}
               src={url}
               alt={poi.displayName}
@@ -115,7 +115,7 @@ export default function POIDetailView() {
 
         {enlargedImage && (
           <div className="image-dialog" onClick={() => setEnlargedImage(null)}>
-            <img
+            <CachedImage
               src={enlargedImage}
               alt={poi.displayName}
               className="enlarged-image"
@@ -206,7 +206,7 @@ export default function POIDetailView() {
 
       <h2 className="poi-title">{poi.displayName}</h2>
 
-      <img
+      <CachedImage
         src={poi.imagePath}
         alt={poi.displayName}
         className="poi-main-image"

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
-import { DataService } from '../services/DataService';
+import { DataService, SyncProgressCallback } from '../services/DataService';
 import { SEO } from '../components/SEO';
+import { CachedImage } from '../components/CachedImage';
 import { generateOrganizationSchema, generatePOIListSchema } from '../utils/seoHelpers';
 import '../styles/main-view-styles.css';
 
@@ -14,6 +15,7 @@ export default function MainView() {
     return (localStorage.getItem('selectedLanguage') as Language) || 'EN';
   });
   const [loading, setLoading] = useState(true);
+  const [syncProgress, setSyncProgress] = useState<{ message: string; progress: number } | null>(null);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
   const [showInstallButton, setShowInstallButton] = useState(true);
 
@@ -41,10 +43,15 @@ export default function MainView() {
   const initializeApp = async () => {
     try {
       const savedLang = (localStorage.getItem('selectedLanguage') as Language) || 'EN';
-      await dataService.initializeData(savedLang);
+      const onProgress: SyncProgressCallback = (message, progress) => {
+        setSyncProgress({ message, progress });
+      };
+      await dataService.initializeData(savedLang, onProgress);
+      setSyncProgress(null);
       setLoading(false);
     } catch (error) {
       console.error('Error initializing app:', error);
+      setSyncProgress(null);
       setLoading(false);
     }
   };
@@ -118,7 +125,30 @@ export default function MainView() {
   };
 
   if (loading) {
-    return <div className="main-content">Loading...</div>;
+    return (
+      <div className="main-content">
+        {syncProgress ? (
+          <div className="sync-overlay">
+            <div className="sync-icon">🗺️</div>
+            <h2 className="sync-title">Visit Polzela</h2>
+            <p className="sync-message">{syncProgress.message}</p>
+            <div className="sync-progress-bar">
+              <div
+                className="sync-progress-fill"
+                style={{ width: `${syncProgress.progress}%` }}
+              />
+            </div>
+            <p className="sync-percent">{syncProgress.progress}%</p>
+          </div>
+        ) : (
+          <div className="sync-overlay">
+            <div className="sync-icon">🗺️</div>
+            <h2 className="sync-title">Visit Polzela</h2>
+            <p className="sync-message">Loading…</p>
+          </div>
+        )}
+      </div>
+    );
   }
 
   // Generate SEO content based on selected language
@@ -223,7 +253,7 @@ export default function MainView() {
           <Link key={poi.name} to={`/poi/${encodeURIComponent(poi.name)}`} className="poi-link">
             <div className="poi-item">
               <h2 className="poi-title">{poi.displayName}</h2>
-              <img
+              <CachedImage
                 src={poi.imagePath}
                 alt={poi.displayName}
                 className="poi-image"
