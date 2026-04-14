@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
 import { DataService } from '../services/DataService';
 import { SEO } from '../components/SEO';
@@ -175,7 +175,6 @@ export default function POIDetailView() {
     <div className="poi-detail-content">
       {/* Language flags and back button */}
       <div className="flag-layout">
-        <Link to="/" className="back-button">← Back</Link>
         <div className="flags-container">
           <img
             src="/images/siflag.webp"
