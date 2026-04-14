@@ -6,10 +6,21 @@
     "dev": "vite",
     "build": "vite build",
     "build:web": "vite build",
-    "build:mobile": "vite build --config vite.mobile.config.ts",
-    "preview": "vite preview"
+    "build:frontend": "vite build --config vite.mobile.config.ts",
+    "build:mobile": "vite build --config vite.mobile.config.ts && npx cap sync android",
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "cap:copy": "npx cap copy android",
+    "android:build": "cd android && ./gradlew assembleRelease",
+    "android:bundle": "cd android && ./gradlew bundleRelease",
+    "android:clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/app": "^6.0.2",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/splash-screen": "^6.0.2",
     "idb": "^8.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -18,6 +29,7 @@
     "react-router-dom": "^7.9.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
     "@types/react": "18.3.20",
     "@types/react-dom": "18.3.6",
     "@vitejs/plugin-react": "4.4.1",
