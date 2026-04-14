@@ -2,14 +2,14 @@
 
 ## Prerequisites
 
-| Tool | Required version | Download |
-|------|-----------------|---------|
-| **Node.js** | ≥ 20.x | https://nodejs.org |
-| **npm** | ≥ 10.x (bundled with Node) | — |
-| **Android Studio** | Ladybug 2024.2 or newer | https://developer.android.com/studio |
-| **Android SDK** | compileSdk 35, minSdk 23 | Install via Android Studio SDK Manager |
-| **Java (JDK)** | 21 | Bundled with Android Studio, or install separately |
-| **Gradle** | 8.11.1 (downloaded automatically by the Gradle wrapper) | — |
+| Tool | Required version                                       | Download |
+|------|--------------------------------------------------------|---------|
+| **Node.js** | ≥ 20.x                                                 | https://nodejs.org |
+| **npm** | ≥ 10.x (bundled with Node)                             | — |
+| **Android Studio** | Ladybug 2024.2 or newer                                | https://developer.android.com/studio |
+| **Android SDK** | compileSdk 35, minSdk 23                               | Install via Android Studio SDK Manager |
+| **Java (JDK)** | 21                                                     | Bundled with Android Studio, or install separately |
+| **Gradle** | 9.1.1 (downloaded automatically by the Gradle wrapper) | — |
 
 > **Windows only**: use PowerShell or Git Bash for all commands below.  
 > The project ships its own `node/` binary; you can also use a system Node.js installation.
