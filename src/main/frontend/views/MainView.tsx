@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { POI, Language } from '../types/POI';
-import { DataService } from '../services/DataService';
+import { DataService, SyncProgressCallback } from '../services/DataService';
 import { SEO } from '../components/SEO';
+import { CachedImage } from '../components/CachedImage';
 import { generateOrganizationSchema, generatePOIListSchema } from '../utils/seoHelpers';
 import '../styles/main-view-styles.css';
 
+const dataService = DataService.getInstance();
+
 export default function MainView() {
   const [pois, setPois] = useState<POI[]>([]);
-  const [language, setLanguage] = useState<Language>('EN');
+  const [language, setLanguage] = useState<Language>(() => {
+    return (localStorage.getItem('selectedLanguage') as Language) || 'EN';
+  });
   const [loading, setLoading] = useState(true);
+  const [syncProgress, setSyncProgress] = useState<{ message: string; progress: number } | null>(null);
   const [welcomeText, setWelcomeText] = useState<string>('Welcome to');
   const [showInstallButton, setShowInstallButton] = useState(true);
-  const dataService = DataService.getInstance();
 
   useEffect(() => {
     initializeApp();
-
-    // Load saved language from localStorage
-    const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
 
     // Check if app is already in standalone mode (already installed)
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -29,15 +28,9 @@ export default function MainView() {
     }
 
     // Listen for the appinstalled event to hide button after installation
-    const handleAppInstalled = () => {
-      setShowInstallButton(false);
-    };
-
+    const handleAppInstalled = () => setShowInstallButton(false);
     window.addEventListener('appinstalled', handleAppInstalled);
-
-    return () => {
-      window.removeEventListener('appinstalled', handleAppInstalled);
-    };
+    return () => window.removeEventListener('appinstalled', handleAppInstalled);
   }, []);
 
   useEffect(() => {
@@ -49,18 +42,24 @@ export default function MainView() {
 
   const initializeApp = async () => {
     try {
-      await dataService.initializeData();
+      const savedLang = (localStorage.getItem('selectedLanguage') as Language) || 'EN';
+      const onProgress: SyncProgressCallback = (message, progress) => {
+        setSyncProgress({ message, progress });
+      };
+      await dataService.initializeData(savedLang, onProgress);
+      setSyncProgress(null);
       setLoading(false);
     } catch (error) {
       console.error('Error initializing app:', error);
+      setSyncProgress(null);
       setLoading(false);
     }
   };
 
   const loadPOIs = async () => {
     try {
-      const localizedPOIs = await dataService.getPOIsWithLocalizedTitles(language);
-      setPois(localizedPOIs);
+      const localizedPOIs = await dataService.loadPOIsFromREST(language);
+      setPois(localizedPOIs.sort((a, b) => a.order - b.order));
     } catch (error) {
       console.error('Error loading POIs:', error);
     }
@@ -68,8 +67,8 @@ export default function MainView() {
 
   const loadWelcomeText = async () => {
     try {
-      const text = await dataService.getLocalizedText('welcome', language);
-      setWelcomeText(text);
+      const texts = await dataService.getLocalizedTexts(language, ['welcome']);
+      setWelcomeText(texts.get('welcome') || 'Welcome to');
     } catch (error) {
       console.error('Error loading welcome text:', error);
     }
@@ -126,7 +125,30 @@ export default function MainView() {
   };
 
   if (loading) {
-    return <div className="main-content">Loading...</div>;
+    return (
+      <div className="main-content">
+        {syncProgress ? (
+          <div className="sync-overlay">
+            <div className="sync-icon">🗺️</div>
+            <h2 className="sync-title">Visit Polzela</h2>
+            <p className="sync-message">{syncProgress.message}</p>
+            <div className="sync-progress-bar">
+              <div
+                className="sync-progress-fill"
+                style={{ width: `${syncProgress.progress}%` }}
+              />
+            </div>
+            <p className="sync-percent">{syncProgress.progress}%</p>
+          </div>
+        ) : (
+          <div className="sync-overlay">
+            <div className="sync-icon">🗺️</div>
+            <h2 className="sync-title">Visit Polzela</h2>
+            <p className="sync-message">Loading…</p>
+          </div>
+        )}
+      </div>
+    );
   }
 
   // Generate SEO content based on selected language
@@ -231,7 +253,7 @@ export default function MainView() {
           <Link key={poi.name} to={`/poi/${encodeURIComponent(poi.name)}`} className="poi-link">
             <div className="poi-item">
               <h2 className="poi-title">{poi.displayName}</h2>
-              <img
+              <CachedImage
                 src={poi.imagePath}
                 alt={poi.displayName}
                 className="poi-image"

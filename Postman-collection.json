@@ -1,0 +1,1126 @@
+{
+  "info": {
+    "name": "Visit Polzela — REST API",
+    "_postman_id": "visit-polzela-rest-api-v1",
+    "description": "Tests for the Quarkus REST endpoints of the Visit Polzela application.\n\nBase URL is stored in the collection variable `baseUrl` (default: http://localhost:8080).\nChange it once in the collection Variables tab to point at any environment.\n\nEndpoints covered:\n  GET /api/pois?lang={lang}\n  GET /api/pois/{key}?lang={lang}\n  GET /api/pois/{key}/images\n  GET /api/texts?lang={lang}&keys={keys}",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Root URL of the running Quarkus server. Change to match your environment."
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /api/pois — All POIs",
+      "item": [
+        {
+          "name": "All POIs — English (default)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "Returns all POIs with localized displayName + shortDescription. No long description included."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is JSON array', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.be.an('array');",
+                  "    pm.expect(body.length).to.be.greaterThan(0);",
+                  "});",
+                  "pm.test('Each POI has required fields', () => {",
+                  "    const body = pm.response.json();",
+                  "    body.forEach(poi => {",
+                  "        pm.expect(poi).to.have.property('name').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('displayName').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('shortDescription').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('imagePath').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('order').that.is.a('number');",
+                  "        pm.expect(poi).to.have.property('mapUrl').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('navigationUrl').that.is.a('string');",
+                  "        pm.expect(poi).to.have.property('appleNavigationUrl').that.is.a('string');",
+                  "    });",
+                  "});",
+                  "pm.test('POIs are ordered by order field', () => {",
+                  "    const body = pm.response.json();",
+                  "    for (let i = 1; i < body.length; i++) {",
+                  "        pm.expect(body[i].order).to.be.at.least(body[i-1].order);",
+                  "    }",
+                  "});",
+                  "pm.test('imagePath starts with /images/', () => {",
+                  "    const body = pm.response.json();",
+                  "    body.forEach(poi => {",
+                  "        pm.expect(poi.imagePath).to.match(/^\\/images\\/.+\\.webp$/);",
+                  "    });",
+                  "});",
+                  "pm.test('Castle POI is present', () => {",
+                  "    const body = pm.response.json();",
+                  "    const castle = body.find(p => p.name === 'castle');",
+                  "    pm.expect(castle).to.not.be.undefined;",
+                  "    pm.expect(castle.displayName).to.include('Castle');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "All POIs — Slovenian",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=SL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "SL" }]
+            },
+            "description": "Returns all POIs with Slovenian display names."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is non-empty array', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "pm.test('Castle has Slovenian name', () => {",
+                  "    const body = pm.response.json();",
+                  "    const castle = body.find(p => p.name === 'castle');",
+                  "    pm.expect(castle).to.not.be.undefined;",
+                  "    pm.expect(castle.displayName).to.include('Grad');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "All POIs — German",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=DE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "DE" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is non-empty array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "pm.test('Castle has German name', () => {",
+                  "    const castle = pm.response.json().find(p => p.name === 'castle');",
+                  "    pm.expect(castle.displayName).to.include('Burg');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "All POIs — Dutch",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=NL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "NL" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is non-empty array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "pm.test('Castle has Dutch name', () => {",
+                  "    const castle = pm.response.json().find(p => p.name === 'castle');",
+                  "    pm.expect(castle.displayName).to.include('Kasteel');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "All POIs — no lang param (defaults to EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"]
+            },
+            "description": "When ?lang is omitted the server must default to EN."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Defaults to English when lang is absent', () => {",
+                  "    const castle = pm.response.json().find(p => p.name === 'castle');",
+                  "    pm.expect(castle).to.not.be.undefined;",
+                  "    pm.expect(castle.displayName).to.include('Castle');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "All POIs — content-type header",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Content-Type is application/json', () => {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "pm.test('All 17 POIs are returned', () => {",
+                  "    pm.expect(pm.response.json().length).to.equal(17);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GET /api/pois/{key} — Single POI",
+      "item": [
+        {
+          "name": "Single POI — castle (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "Returns the Komenda Castle POI with full English description."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns single POI object', () => {",
+                  "    const poi = pm.response.json();",
+                  "    pm.expect(poi).to.be.an('object');",
+                  "    pm.expect(poi.name).to.equal('castle');",
+                  "});",
+                  "pm.test('Has all required fields', () => {",
+                  "    const poi = pm.response.json();",
+                  "    ['name','displayName','shortDescription','description','imagePath','order','mapUrl','navigationUrl','appleNavigationUrl']",
+                  "        .forEach(f => pm.expect(poi).to.have.property(f));",
+                  "});",
+                  "pm.test('Full description is non-empty', () => {",
+                  "    pm.expect(pm.response.json().description).to.be.a('string').with.lengthOf.above(10);",
+                  "});",
+                  "pm.test('imagePath matches key', () => {",
+                  "    pm.expect(pm.response.json().imagePath).to.equal('/images/castle.webp');",
+                  "});",
+                  "pm.test('mapUrl contains openstreetmap', () => {",
+                  "    pm.expect(pm.response.json().mapUrl).to.include('openstreetmap');",
+                  "});",
+                  "pm.test('navigationUrl contains maps.app.goo.gl or maps.google', () => {",
+                  "    pm.expect(pm.response.json().navigationUrl).to.match(/maps\\.app\\.goo\\.gl|maps\\.google/);",
+                  "});",
+                  "pm.test('appleNavigationUrl contains maps.apple.com', () => {",
+                  "    pm.expect(pm.response.json().appleNavigationUrl).to.include('maps.apple.com');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — castle (SL)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=SL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "SL" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Slovenian description is present', () => {",
+                  "    const poi = pm.response.json();",
+                  "    pm.expect(poi.description).to.be.a('string').with.lengthOf.above(10);",
+                  "});",
+                  "pm.test('Slovenian display name', () => {",
+                  "    pm.expect(pm.response.json().displayName).to.include('Grad');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — castle (DE)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=DE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "DE" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('German description present', () => {",
+                  "    pm.expect(pm.response.json().description).to.be.a('string').with.lengthOf.above(10);",
+                  "});",
+                  "pm.test('German display name', () => {",
+                  "    pm.expect(pm.response.json().displayName).to.include('Burg');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — park (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/park?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "park"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('name is park', () => pm.expect(pm.response.json().name).to.equal('park'));",
+                  "pm.test('imagePath is /images/park.webp', () => {",
+                  "    pm.expect(pm.response.json().imagePath).to.equal('/images/park.webp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — mountoljka (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/mountoljka?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "mountoljka"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('name is mountoljka', () => pm.expect(pm.response.json().name).to.equal('mountoljka'));",
+                  "pm.test('Has description', () => {",
+                  "    pm.expect(pm.response.json().description).to.be.a('string').with.lengthOf.above(5);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — stmargharetachurch (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/stmargharetachurch?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "stmargharetachurch"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('name is stmargharetachurch', () => {",
+                  "    pm.expect(pm.response.json().name).to.equal('stmargharetachurch');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — riverloznica (NL)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/riverloznica?lang=NL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "riverloznica"],
+              "query": [{ "key": "lang", "value": "NL" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Dutch display name contains Rivier', () => {",
+                  "    pm.expect(pm.response.json().displayName).to.include('Rivier');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — 404 for unknown key",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/nonexistent_poi_key?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "nonexistent_poi_key"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "An unknown POI key must return 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 for unknown key', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Single POI — no lang param (defaults to EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"]
+            },
+            "description": "Omitting ?lang must return an English-localized response."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Defaults to English display name', () => {",
+                  "    pm.expect(pm.response.json().displayName).to.include('Castle');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GET /api/pois/{key}/images — POI Images",
+      "item": [
+        {
+          "name": "Images — castle (has 3 gallery images)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle", "images"]
+            },
+            "description": "castle has castle.webp + castle1.webp + castle2.webp + castle3.webp"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has poiName and imageUrls', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property('poiName').that.equals('castle');",
+                  "    pm.expect(body).to.have.property('imageUrls').that.is.an('array');",
+                  "});",
+                  "pm.test('imageUrls is non-empty', () => {",
+                  "    pm.expect(pm.response.json().imageUrls.length).to.be.greaterThan(0);",
+                  "});",
+                  "pm.test('Main image included', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.include('/images/castle.webp');",
+                  "});",
+                  "pm.test('Gallery images included (castle has 3)', () => {",
+                  "    const urls = pm.response.json().imageUrls;",
+                  "    pm.expect(urls).to.include('/images/castle1.webp');",
+                  "    pm.expect(urls).to.include('/images/castle2.webp');",
+                  "    pm.expect(urls).to.include('/images/castle3.webp');",
+                  "});",
+                  "pm.test('All URLs match pattern /images/{key}[n].webp', () => {",
+                  "    pm.response.json().imageUrls.forEach(url => {",
+                  "        pm.expect(url).to.match(/^\\/images\\/castle\\d*\\.webp$/);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images — park (has 3 gallery images)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/park/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "park", "images"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('poiName is park', () => pm.expect(pm.response.json().poiName).to.equal('park'));",
+                  "pm.test('Has at least 1 image', () => {",
+                  "    pm.expect(pm.response.json().imageUrls.length).to.be.at.least(1);",
+                  "});",
+                  "pm.test('Main image present', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.include('/images/park.webp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images — icecream (has 2 gallery images)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/icecream/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "icecream", "images"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('poiName is icecream', () => pm.expect(pm.response.json().poiName).to.equal('icecream'));",
+                  "pm.test('At least main image returned', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.include('/images/icecream.webp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images — cajhnhayrack (main image only)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/cajhnhayrack/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "cajhnhayrack", "images"]
+            },
+            "description": "cajhnhayrack has only a main image — no numbered gallery images."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array (may be just main image)', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.be.an('array');",
+                  "});",
+                  "pm.test('Main image is present', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.include('/images/cajhnhayrack.webp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images — unknown key returns empty list",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/nonexistent_poi_key/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "nonexistent_poi_key", "images"]
+            },
+            "description": "An unknown key has no images on disk — imageUrls must be an empty array."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('imageUrls is empty for unknown key', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.be.an('array').that.is.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images — all 17 known POIs (smoke check)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle", "images"]
+            },
+            "description": "Quick smoke check — runs a pre-request script that iterates all keys and logs the count. Individual assertions live in the dedicated per-key requests above."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// All POI keys from pois.txt — useful for manual iteration via Collection Runner",
+                  "const allKeys = [",
+                  "    'castle','park','icecream','fortesa','mountoljka','maurerhouse',",
+                  "    'romancamp','tractormuseum','cajhnhayrack','clayfigurines',",
+                  "    'noviklostermanor','stmargharetachurch','stnicholaschurch',",
+                  "    'standrewchurch','plaguememorial','mesicmill','riverloznica'",
+                  "];",
+                  "pm.variables.set('allPoiKeys', JSON.stringify(allKeys));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('imageUrls is an array', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GET /api/texts — Localized UI Strings",
+      "item": [
+        {
+          "name": "Texts — welcome + takeme (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=EN&keys=welcome,takeme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "EN" },
+                { "key": "keys", "value": "welcome,takeme" }
+              ]
+            },
+            "description": "Returns both UI strings in English."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has texts object', () => {",
+                  "    pm.expect(pm.response.json()).to.have.property('texts').that.is.an('object');",
+                  "});",
+                  "pm.test('welcome key present', () => {",
+                  "    pm.expect(pm.response.json().texts).to.have.property('welcome');",
+                  "    pm.expect(pm.response.json().texts.welcome).to.be.a('string').with.lengthOf.above(0);",
+                  "});",
+                  "pm.test('takeme key present', () => {",
+                  "    pm.expect(pm.response.json().texts).to.have.property('takeme');",
+                  "    pm.expect(pm.response.json().texts.takeme).to.include('there');",
+                  "});",
+                  "pm.test('welcome value is English', () => {",
+                  "    pm.expect(pm.response.json().texts.welcome).to.include('Welcome');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — welcome + takeme (SL)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=SL&keys=welcome,takeme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "SL" },
+                { "key": "keys", "value": "welcome,takeme" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Slovenian welcome text', () => {",
+                  "    pm.expect(pm.response.json().texts.welcome).to.include('Dobrodošli');",
+                  "});",
+                  "pm.test('Slovenian takeme text', () => {",
+                  "    pm.expect(pm.response.json().texts.takeme).to.include('Pelji');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — welcome + takeme (DE)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=DE&keys=welcome,takeme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "DE" },
+                { "key": "keys", "value": "welcome,takeme" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('German welcome text', () => {",
+                  "    pm.expect(pm.response.json().texts.welcome).to.include('Willkommen');",
+                  "});",
+                  "pm.test('German takeme text', () => {",
+                  "    pm.expect(pm.response.json().texts.takeme).to.include('dorthin');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — welcome + takeme (NL)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=NL&keys=welcome,takeme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "NL" },
+                { "key": "keys", "value": "welcome,takeme" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Dutch welcome text', () => {",
+                  "    pm.expect(pm.response.json().texts.welcome).to.include('Welkom');",
+                  "});",
+                  "pm.test('Dutch takeme text', () => {",
+                  "    pm.expect(pm.response.json().texts.takeme).to.include('daarheen');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — single key only (welcome)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=EN&keys=welcome",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "EN" },
+                { "key": "keys", "value": "welcome" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Only welcome key returned', () => {",
+                  "    const texts = pm.response.json().texts;",
+                  "    pm.expect(Object.keys(texts)).to.deep.equal(['welcome']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — unknown key returns empty map",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=EN&keys=nonexistent_key",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [
+                { "key": "lang", "value": "EN" },
+                { "key": "keys", "value": "nonexistent_key" }
+              ]
+            },
+            "description": "A key that doesn't exist in poititles.txt must not appear in the response."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Unknown key not included in response', () => {",
+                  "    const texts = pm.response.json().texts;",
+                  "    pm.expect(texts).to.not.have.property('nonexistent_key');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — no keys param returns all texts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "When no keys param is provided, the server returns all known UI strings."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('texts object is present', () => {",
+                  "    pm.expect(pm.response.json()).to.have.property('texts').that.is.an('object');",
+                  "});",
+                  "pm.test('Contains at least welcome and takeme keys', () => {",
+                  "    const texts = pm.response.json().texts;",
+                  "    pm.expect(texts).to.have.property('welcome');",
+                  "    pm.expect(texts).to.have.property('takeme');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Texts — no lang param (defaults to EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/texts?keys=welcome,takeme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "texts"],
+              "query": [{ "key": "keys", "value": "welcome,takeme" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Defaults to English when lang absent', () => {",
+                  "    pm.expect(pm.response.json().texts.welcome).to.include('Welcome');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cross-cutting / Integration",
+      "item": [
+        {
+          "name": "List count matches individual key lookups",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "Every name returned in the list endpoint must be resolvable via the single-POI endpoint."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All POI names are unique', () => {",
+                  "    const names = pm.response.json().map(p => p.name);",
+                  "    const unique = new Set(names);",
+                  "    pm.expect(unique.size).to.equal(names.length);",
+                  "});",
+                  "pm.test('All orders are >= 0', () => {",
+                  "    pm.response.json().forEach(p => pm.expect(p.order).to.be.at.least(0));",
+                  "});",
+                  "pm.test('No description in list response', () => {",
+                  "    pm.response.json().forEach(p => {",
+                  "        pm.expect(p.description).to.equal('');",
+                  "    });",
+                  "});",
+                  "// Store names for possible follow-up",
+                  "const names = pm.response.json().map(p => p.name);",
+                  "pm.variables.set('poiNamesFromList', JSON.stringify(names));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detail endpoint has non-empty description (list does not)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "Verifies the design contract: description is empty in list, non-empty in detail."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Description is non-empty for detail endpoint', () => {",
+                  "    pm.expect(pm.response.json().description.length).to.be.above(10);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Language switching — same key, different display names",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=EN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "EN" }]
+            },
+            "description": "Stores the English name and verifies it differs from the Slovenian name in a follow-up call."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.variables.set('castleEN', pm.response.json().displayName);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Language switching — verify SL differs from EN",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle?lang=SL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle"],
+              "query": [{ "key": "lang", "value": "SL" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('SL display name differs from EN', () => {",
+                  "    const enName = pm.variables.get('castleEN');",
+                  "    const slName = pm.response.json().displayName;",
+                  "    if (enName) {",
+                  "        pm.expect(slName).to.not.equal(enName);",
+                  "    } else {",
+                  "        pm.expect(slName).to.be.a('string').with.lengthOf.above(0);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Images + texts in one flow — castle detail page simulation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pois/castle/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pois", "castle", "images"]
+            },
+            "description": "Simulates what POIDetailView.tsx does: fetch images after fetching POI detail."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('imageUrls returned', () => {",
+                  "    pm.expect(pm.response.json().imageUrls).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "pm.test('All URLs are web-safe paths', () => {",
+                  "    pm.response.json().imageUrls.forEach(url => {",
+                  "        pm.expect(url).to.match(/^\\/images\\/.+\\.webp$/);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

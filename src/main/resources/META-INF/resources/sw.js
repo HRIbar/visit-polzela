@@ -1,222 +1,110 @@
-const CACHE_NAME = 'visit-polzela-v7'; // Increment version to force update
-const urlsToCache = [
+// Increment CACHE_NAME when the app shell JS/CSS changes to force a cache refresh.
+// POI images and JSON are managed by DataService via the separate 'poi-images-v1' bucket.
+const CACHE_NAME = 'visit-polzela-shell-v1';
+
+// App-shell only — everything that must be available before any network call.
+// POI images, .txt description files, and legacy offline scripts are intentionally excluded.
+const SHELL_URLS = [
   '/',
   '/index.html',
-  // Points of interest data files
-  '/pointsofinterest/pois.txt',
-  '/pointsofinterest/poititles.txt',
-  '/pointsofinterest/pois.json',
-  '/pointsofinterest/pois-complete.json',
-  // POI description files
-  '/poi-descriptions/cajhnhayrack.txt',
-  '/poi-descriptions/castle.txt',
-  '/poi-descriptions/clayfigurines.txt',
-  '/poi-descriptions/icecream.txt',
-  '/poi-descriptions/jelovsekgranary.txt',
-  '/poi-descriptions/maurerhouse.txt',
-  '/poi-descriptions/mesicmill.txt',
-  '/poi-descriptions/mountoljka.txt',
-  '/poi-descriptions/noviklostermanor.txt',
-  '/poi-descriptions/park.txt',
-  '/poi-descriptions/plaguememorial.txt',
-  '/poi-descriptions/riverloznica.txt',
-  '/poi-descriptions/romancamp.txt',
-  '/poi-descriptions/standrewchurch.txt',
-  '/poi-descriptions/stmargharetachurch.txt',
-  '/poi-descriptions/stnicholaschurch.txt',
-  '/poi-descriptions/tractormuseum.txt',
-  '/poi-descriptions/fortesa.txt',
-  // Offline scripts
-  '/frontend/offline-handler.js',
-  '/frontend/offline-router.js',
-  '/frontend/offline-store.js',
-  '/js/offline-store.js',
-  // Manifest and icons
   '/manifest.webmanifest',
   '/favicon.ico',
-  // Flag images
+  // UI-chrome images that ship inside the APK / public-mobile/
   '/images/siflag.webp',
   '/images/ukflag.webp',
   '/images/deflag.webp',
   '/images/nlflag.webp',
-  // UI images
-  '/images/polzela.webp',
   '/images/grbpolzela.webp',
+  '/images/polzela.webp',
   '/images/navigationbutton.webp',
   '/images/applenavigationbutton.webp',
-  '/images/applenavigationbutton.png',
   '/images/placeholder.png',
-  // POI images
-  '/images/cajhnhayrack.webp',
-  '/images/castle.webp',
-  '/images/castle1.webp',
-  '/images/castle2.webp',
-  '/images/castle3.webp',
-  '/images/clayfigurines.webp',
-  '/images/icecream.webp',
-  '/images/icecream1.webp',
-  '/images/icecream2.webp',
-  '/images/jelovsekgranary.webp',
-  '/images/maurerhouse.webp',
-  '/images/maurerhouse1.webp',
-  '/images/maurerhouse2.webp',
-  '/images/maurerhouse3.webp',
-  '/images/mesicmill.webp',
-  '/images/mountoljka.webp',
-  '/images/mountoljka1.webp',
-  '/images/mountoljka2.webp',
-  '/images/mountoljka3.webp',
-  '/images/noviklostermanor.webp',
-  '/images/park.webp',
-  '/images/park1.webp',
-  '/images/park2.webp',
-  '/images/park3.webp',
-  '/images/plaguememorial.webp',
-  '/images/riverloznica.webp',
-  '/images/romancamp.webp',
-  '/images/romancamp1.webp',
-  '/images/romancamp2.webp',
-  '/images/standrewchurch.webp',
-  '/images/standrewchurch1.webp',
-  '/images/standrewchurch2.webp',
-  '/images/stmargharetachurch.webp',
-  '/images/stmargharetachurch1.webp',
-  '/images/stnicholaschurch.webp',
-  '/images/stnicholaschurch1.webp',
-  '/images/stnicholaschurch2.webp',
-  '/images/tractormuseum.webp',
-  '/images/fortesa.webp',
-  '/images/fortesa1.webp',
-  '/images/fortesa2.webp'
 ];
 
-// Install event - cache resources
+// ── Install: cache the app shell ──────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  console.log('[SW] Installing…');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[SW] Caching static resources');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('[SW] Skip waiting to activate immediately');
-        return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('[SW] Installation failed:', error);
-      })
+      .then(cache => cache.addAll(SHELL_URLS))
+      .then(() => self.skipWaiting())
+      .catch(err => console.error('[SW] Install failed:', err))
   );
 });
 
-// Activate event - clean up old caches
+// ── Activate: delete stale caches (except poi-images-v1) ─────────────────────
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
+  console.log('[SW] Activating…');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('[SW] Claiming clients');
-      return self.clients.claim();
-    })
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(k => k !== CACHE_NAME && k !== 'poi-images-v1')
+          .map(k => {
+            console.log('[SW] Deleting old cache:', k);
+            return caches.delete(k);
+          })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// Fetch event - serve from cache or network
+// ── Fetch ─────────────────────────────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-http(s) requests (e.g., chrome-extension://)
-  if (!url.protocol.startsWith('http')) {
-    return;
-  }
+  if (!url.protocol.startsWith('http')) return;
 
-  // For navigation requests (page loads), always serve index.html from cache
-  // This allows React Router to handle routing client-side when offline
+  // Navigation requests → serve index.html (React Router handles routing)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          // If online and successful, return the response
-          if (response && response.ok) {
-            return response;
-          }
-          // If failed, serve cached index.html
-          return caches.match('/index.html');
-        })
-        .catch(() => {
-          // If offline, serve cached index.html
-          console.log('[SW] Offline - serving cached index.html for navigation');
-          return caches.match('/index.html');
-        })
+        .then(res => (res && res.ok ? res : caches.match('/index.html')))
+        .catch(() => caches.match('/index.html'))
     );
     return;
   }
 
-  // For all other requests, use cache-first strategy with runtime caching
+  // /api/** → network-first (DataService handles IndexedDB fallback)
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(request)
+        .then(res => {
+          if (res && res.ok && request.method === 'GET') {
+            caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
+          }
+          return res;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Everything else → cache-first (app shell JS/CSS/images)
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log('[SW] Serving from cache:', url.pathname);
-          return cachedResponse;
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+      return fetch(request).then(res => {
+        if (!res || res.status !== 200 || request.method !== 'GET') return res;
+        const contentType = res.headers.get('content-type') || '';
+        if (
+          contentType.includes('javascript') ||
+          contentType.includes('css') ||
+          contentType.includes('image') ||
+          url.pathname.endsWith('.webp') ||
+          url.pathname.endsWith('.png') ||
+          url.pathname.endsWith('.ico')
+        ) {
+          caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
         }
-
-        // If not in cache, try network and cache the response
-        return fetch(request)
-          .then((networkResponse) => {
-            // Don't cache non-successful responses or non-GET requests
-            if (!networkResponse || networkResponse.status !== 200 || request.method !== 'GET') {
-              return networkResponse;
-            }
-
-            // Clone the response before caching
-            const responseToCache = networkResponse.clone();
-
-            // Cache JavaScript, CSS, images, and JSON responses
-            const contentType = networkResponse.headers.get('content-type') || '';
-            if (
-              contentType.includes('javascript') ||
-              contentType.includes('css') ||
-              contentType.includes('image') ||
-              contentType.includes('json') ||
-              url.pathname.endsWith('.js') ||
-              url.pathname.endsWith('.css') ||
-              url.pathname.endsWith('.webp') ||
-              url.pathname.endsWith('.png') ||
-              url.pathname.endsWith('.jpg') ||
-              url.pathname.endsWith('.json')
-            ) {
-              caches.open(CACHE_NAME).then((cache) => {
-                console.log('[SW] Runtime caching:', url.pathname);
-                cache.put(request, responseToCache);
-              });
-            }
-
-            return networkResponse;
-          })
-          .catch((error) => {
-            console.error('[SW] Fetch failed for:', url.pathname, error);
-            // Return a meaningful offline response for failed requests
-            if (url.pathname.endsWith('.html')) {
-              return caches.match('/index.html');
-            }
-            return new Response('Offline - resource not available', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
-          });
-      })
+        return res;
+      }).catch(() =>
+        new Response('Offline — resource not available', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain' }
+        })
+      );
+    })
   );
 });
