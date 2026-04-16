@@ -158,4 +158,10 @@ POI display order is determined by line order in `pois.txt`.
 | `BUILD_SYSTEM_PRODUCTION_MVN.md` | Full build pipeline documentation |
 
 ## Codemap
-Use codemap.md to quickly search for specific code locations, e.g. "Where is the POI REST endpoint implemented?" or "Where are the Vite build outputs configured?".
+`codemap.md` is the authoritative per-file reference for this codebase. Use it to look up:
+
+- **Java layer** — `POIService.java` method signatures, `POIResource.java` / `TextResource.java` endpoints, DTO field lists
+- **Frontend layer** — `DataService.ts` public API, IndexedDB store keys, Cache API constants; `CachedImage.tsx` props; `routes.tsx` structure; `types/POI.ts` interface fields
+- **Build configs** — side-by-side comparison of `vite.config.ts` vs `vite.mobile.config.ts` (`publicDir`, `VITE_API_BASE_URL`, `outDir`)
+
+Each top-level file has its own `## path/to/file` section with fields, method signatures, and key constants so you can orient quickly without opening the file.

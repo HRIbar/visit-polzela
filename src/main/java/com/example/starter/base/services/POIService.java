@@ -1,13 +1,13 @@
 package com.example.starter.base.services;
 
 import com.example.starter.base.dto.POIDto;
+import com.example.starter.base.entity.POITranslationEntity;
+import com.example.starter.base.entity.PointOfInterestEntity;
+import com.example.starter.base.entity.UITextEntity;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,8 @@ import java.util.Map;
 @ApplicationScoped
 public class POIService {
 
-    private final Map<String, Map<String, String>> titlesCache = new HashMap<>();
+    @Inject
+    EntityManager em;
 
     /**
      * Returns all POIs with localized displayName and shortDescription.
@@ -24,39 +25,32 @@ public class POIService {
      */
     public List<POIDto> getLocalizedPOIsDto(String lang) {
         String languageCode = lang.toUpperCase();
-        Map<String, String> localizedTitles = loadLocalizedTitles(languageCode);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createQuery(
+                "SELECT p, t FROM PointOfInterestEntity p " +
+                        "LEFT JOIN POITranslationEntity t ON t.id.poiKey = p.key AND t.id.lang = :lang " +
+                        "ORDER BY p.displayOrder")
+                .setParameter("lang", languageCode)
+                .getResultList();
+
         List<POIDto> result = new ArrayList<>();
-        String poisPath = "/META-INF/resources/pointsofinterest/pois.txt";
-
-        try (InputStream is = getClass().getResourceAsStream(poisPath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-
-            String line;
-            int order = 0;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-                String[] parts = line.split(";");
-                if (parts.length >= 6) {
-                    String key = parts[0].trim();
-                    String displayName = localizedTitles.getOrDefault(key, parts[1].trim());
-                    result.add(new POIDto(
-                            key,
-                            displayName,
-                            parts[2].trim(),
-                            "",
-                            "/images/" + key + ".webp",
-                            order++,
-                            parts[3].trim(),
-                            parts[4].trim(),
-                            parts[5].trim()
-                    ));
-                }
-            }
-        } catch (IOException | NullPointerException e) {
-            System.err.println("Error reading pois.txt: " + e.getMessage());
+        for (Object[] row : rows) {
+            PointOfInterestEntity p = (PointOfInterestEntity) row[0];
+            POITranslationEntity t = (POITranslationEntity) row[1];
+            String displayName = (t != null && t.displayName != null) ? t.displayName : p.key;
+            result.add(new POIDto(
+                    p.key,
+                    displayName,
+                    p.shortDescription,
+                    "",
+                    "/images/" + p.key + ".webp",
+                    p.displayOrder,
+                    p.osmUrl,
+                    p.googleMapsUrl,
+                    p.appleMapsUrl
+            ));
         }
-
         return result;
     }
 
@@ -66,61 +60,56 @@ public class POIService {
      */
     public POIDto getLocalizedPOIDto(String key, String lang) {
         String languageCode = lang.toUpperCase();
-        Map<String, String> localizedTitles = loadLocalizedTitles(languageCode);
-        String poisPath = "/META-INF/resources/pointsofinterest/pois.txt";
 
-        try (InputStream is = getClass().getResourceAsStream(poisPath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-
-            String line;
-            int order = 0;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-                String[] parts = line.split(";");
-                if (parts.length >= 6 && parts[0].trim().equals(key)) {
-                    String displayName = localizedTitles.getOrDefault(key, parts[1].trim());
-                    String description = loadDescription(key, languageCode);
-                    return new POIDto(
-                            key,
-                            displayName,
-                            parts[2].trim(),
-                            description,
-                            "/images/" + key + ".webp",
-                            order,
-                            parts[3].trim(),
-                            parts[4].trim(),
-                            parts[5].trim()
-                    );
-                }
-                order++;
-            }
-        } catch (IOException | NullPointerException e) {
-            System.err.println("Error reading pois.txt for key " + key + ": " + e.getMessage());
+        PointOfInterestEntity poi = em.find(PointOfInterestEntity.class, key);
+        if (poi == null) {
+            return null;
         }
 
-        return null;
+        @SuppressWarnings("unchecked")
+        List<POITranslationEntity> translations = em.createQuery(
+                "SELECT t FROM POITranslationEntity t WHERE t.id.poiKey = :key AND t.id.lang = :lang")
+                .setParameter("key", key)
+                .setParameter("lang", languageCode)
+                .getResultList();
+
+        POITranslationEntity t = translations.isEmpty() ? null : translations.get(0);
+
+        // Fallback to EN if requested language not found
+        if (t == null && !"EN".equals(languageCode)) {
+            @SuppressWarnings("unchecked")
+            List<POITranslationEntity> enFallback = em.createQuery(
+                    "SELECT t FROM POITranslationEntity t WHERE t.id.poiKey = :key AND t.id.lang = 'EN'")
+                    .setParameter("key", key)
+                    .getResultList();
+            t = enFallback.isEmpty() ? null : enFallback.get(0);
+        }
+
+        String displayName = (t != null && t.displayName != null) ? t.displayName : poi.key;
+        String description = (t != null && t.description != null) ? t.description : "";
+
+        return new POIDto(
+                poi.key,
+                displayName,
+                poi.shortDescription,
+                description,
+                "/images/" + poi.key + ".webp",
+                poi.displayOrder,
+                poi.osmUrl,
+                poi.googleMapsUrl,
+                poi.appleMapsUrl
+        );
     }
 
     /**
-     * Returns available image URLs for a POI by probing the classpath.
-     * Checks main image and gallery images 1-3.
+     * Returns available image URLs for a POI ordered by sortOrder.
      */
     public List<String> getPOIImageUrls(String key) {
-        List<String> urls = new ArrayList<>();
-        String[] candidates = {
-                "/images/" + key + ".webp",
-                "/images/" + key + "1.webp",
-                "/images/" + key + "2.webp",
-                "/images/" + key + "3.webp"
-        };
-        for (String imagePath : candidates) {
-            InputStream probe = getClass().getResourceAsStream("/META-INF/resources" + imagePath);
-            if (probe != null) {
-                urls.add(imagePath);
-                try { probe.close(); } catch (IOException ignored) {}
-            }
-        }
+        @SuppressWarnings("unchecked")
+        List<String> urls = em.createQuery(
+                "SELECT i.imagePath FROM POIImageEntity i WHERE i.poi.key = :key ORDER BY i.sortOrder")
+                .setParameter("key", key)
+                .getResultList();
         return urls;
     }
 
@@ -130,76 +119,47 @@ public class POIService {
      */
     public Map<String, String> getLocalizedTexts(String lang, List<String> keys) {
         String languageCode = lang.toUpperCase();
-        Map<String, String> allTitles = loadLocalizedTitles(languageCode);
         Map<String, String> result = new HashMap<>();
 
+        List<UITextEntity> texts;
         if (keys == null || keys.isEmpty()) {
-            return new HashMap<>(allTitles);
+            texts = UITextEntity.list("id.lang", languageCode);
+        } else {
+            texts = UITextEntity.list("id.lang = ?1 AND id.key IN ?2", languageCode, keys);
         }
-        for (String k : keys) {
-            if (allTitles.containsKey(k)) {
-                result.put(k, allTitles.get(k));
+
+        for (UITextEntity t : texts) {
+            result.put(t.id.key, t.value);
+        }
+
+        // Also include POI title translations when no specific keys are requested
+        // (matches old behavior where getLocalizedTexts returned all titles + UI texts)
+        if (keys == null || keys.isEmpty()) {
+            @SuppressWarnings("unchecked")
+            List<POITranslationEntity> poiTitles = em.createQuery(
+                    "SELECT t FROM POITranslationEntity t WHERE t.id.lang = :lang")
+                    .setParameter("lang", languageCode)
+                    .getResultList();
+            for (POITranslationEntity pt : poiTitles) {
+                result.put(pt.id.poiKey, pt.displayName);
             }
-        }
-        return result;
-    }
-
-    private String loadDescription(String key, String languageCode) {
-        String descPath = "/META-INF/resources/poi-descriptions/" + key + ".txt";
-        String langPrefix = languageCode + ":";
-        String enFallback = null;
-
-        try (InputStream is = getClass().getResourceAsStream(descPath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith(langPrefix)) {
-                    return line.substring(langPrefix.length()).trim();
-                }
-                if (enFallback == null && line.startsWith("EN:")) {
-                    enFallback = line.substring(3).trim();
-                }
-            }
-        } catch (IOException | NullPointerException e) {
-            // Description file not found — return empty
-        }
-
-        return enFallback != null ? enFallback : "";
-    }
-
-    private Map<String, String> loadLocalizedTitles(String languageCode) {
-        if (titlesCache.containsKey(languageCode)) {
-            return titlesCache.get(languageCode);
-        }
-
-        Map<String, String> titles = new HashMap<>();
-        String resourcePath = "/META-INF/resources/pointsofinterest/poititles.txt";
-
-        try (InputStream is = getClass().getResourceAsStream(resourcePath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-                String[] parts = line.split(";");
-                if (parts.length >= 2) {
-                    String name = parts[0].trim();
-                    for (int i = 1; i < parts.length; i++) {
-                        String part = parts[i].trim();
-                        if (part.startsWith(languageCode + ":")) {
-                            titles.put(name, part.substring(languageCode.length() + 1));
-                            break;
-                        }
+        } else {
+            // Check if any requested keys are POI keys (not UI text keys)
+            for (String k : keys) {
+                if (!result.containsKey(k)) {
+                    @SuppressWarnings("unchecked")
+                    List<POITranslationEntity> pts = em.createQuery(
+                            "SELECT t FROM POITranslationEntity t WHERE t.id.poiKey = :key AND t.id.lang = :lang")
+                            .setParameter("key", k)
+                            .setParameter("lang", languageCode)
+                            .getResultList();
+                    if (!pts.isEmpty()) {
+                        result.put(k, pts.get(0).displayName);
                     }
                 }
             }
-        } catch (IOException | NullPointerException e) {
-            System.err.println("Error reading poititles.txt: " + e.getMessage());
         }
 
-        titlesCache.put(languageCode, titles);
-        return titles;
+        return result;
     }
 }
